@@ -30,13 +30,13 @@ export default async function DashboardPage() {
             </div>
 
             {/* High Density Stats Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+            <div className="grid gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-4">
+                <Card className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow card-sm p-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
                         <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Detailed Scans</CardTitle>
                         <ShieldCheck className="h-4 w-4 text-primary" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4">
+                    <CardContent className="p-0">
                         <div className="text-2xl font-bold font-mono">{stats.totalScans}</div>
                         <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
                             <TrendingUp className="w-3 h-3 text-emerald-500" />
@@ -44,36 +44,36 @@ export default async function DashboardPage() {
                         </p>
                     </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-emerald-500 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                <Card className="border-l-4 border-l-emerald-500 shadow-sm hover:shadow-md transition-shadow card-sm p-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
                         <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Clean Traffic</CardTitle>
                         <Zap className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4">
+                    <CardContent className="p-0">
                         <div className="text-2xl font-bold font-mono">{stats.cleanEmails}</div>
                         <p className="text-xs text-muted-foreground mt-1">
                             Verdicts marked Safe
                         </p>
                     </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-rose-500 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                <Card className="border-l-4 border-l-rose-500 shadow-sm hover:shadow-md transition-shadow card-sm p-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
                         <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Risk Profile</CardTitle>
                         <AlertOctagon className="h-4 w-4 text-rose-500" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4">
+                    <CardContent className="p-0">
                         <div className={`text-2xl font-bold font-mono ${stats.riskLevel === 'High' ? 'text-rose-600' : 'text-foreground'}`}>{stats.riskLevel}</div>
                         <div className="mt-2 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                             <div className={`h-full rounded-full ${stats.riskLevel === 'High' ? 'bg-rose-500 w-[70%]' : stats.riskLevel === 'Medium' ? 'bg-yellow-500 w-[40%]' : 'bg-green-500 w-[10%]'}`} />
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-slate-500 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                <Card className="border-l-4 border-l-slate-500 shadow-sm hover:shadow-md transition-shadow card-sm p-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
                         <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Threats Found</CardTitle>
                         <Activity className="h-4 w-4 text-slate-500" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4">
+                    <CardContent className="p-0">
                         <div className="text-2xl font-bold font-mono">{stats.threatsFound}</div>
                         <p className="text-xs text-muted-foreground mt-1">
                             High Risk / Malicious
@@ -82,13 +82,13 @@ export default async function DashboardPage() {
                 </Card>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <div className="grid gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-7">
                 {/* Attack Vectors - More Analytical */}
-                <Card className="col-span-4 lg:col-span-5 shadow-sm">
+                <Card className="col-span-4 lg:col-span-5 shadow-sm card-md p-0">
                     <CardHeader className="px-6 py-4 border-b">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle className="text-base">Recent Analysis History</CardTitle>
+                                <CardTitle className="text-base card-title">Recent Analysis History</CardTitle>
                                 <CardDescription className="text-xs">
                                     Your personal scan log.
                                 </CardDescription>
@@ -134,9 +134,9 @@ export default async function DashboardPage() {
                 </Card>
 
                 {/* Targeted User Widget */}
-                <Card className="col-span-3 lg:col-span-2 shadow-sm bg-muted/10 border-dashed">
+                <Card className="col-span-3 lg:col-span-2 shadow-sm bg-muted/10 border-dashed card-md">
                     <CardHeader className="px-6 py-4">
-                        <CardTitle className="text-sm">Usage Quota</CardTitle>
+                        <CardTitle className="text-sm card-title">Usage Quota</CardTitle>
                         <CardDescription className="text-xs">Current plan limits.</CardDescription>
                     </CardHeader>
                     <CardContent className="px-6 pb-6">

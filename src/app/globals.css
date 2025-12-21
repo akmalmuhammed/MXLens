@@ -37,7 +37,8 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-outfit);
+  --font-heading: var(--font-inter);
+  /* Unified font family */
   --font-mono: var(--font-mono);
 
   --shadow-soft-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -57,10 +58,62 @@
 }
 
 :root {
-  /* Enterprise Light Palette */
-  /* Slate-50 */
-  /* Slate-900 */
+  /* FONT SIZES - 8pt Scale */
+  --text-xs: 0.75rem;
+  /* 12px */
+  --text-sm: 0.875rem;
+  /* 14px */
+  --text-base: 1rem;
+  /* 16px */
+  --text-lg: 1.125rem;
+  /* 18px */
+  --text-xl: 1.25rem;
+  /* 20px */
+  --text-2xl: 1.5rem;
+  /* 24px */
+  --text-3xl: 1.875rem;
+  /* 30px */
+  --text-4xl: 2.25rem;
+  /* 36px */
+  --text-5xl: 3rem;
+  /* 48px */
+  --text-6xl: 3.75rem;
+  /* 60px */
+  --text-7xl: 4.5rem;
+  /* 72px */
 
+  /* SPACING SCALE */
+  --space-0: 0;
+  --space-1: 0.125rem;
+  /* 2px */
+  --space-2: 0.25rem;
+  /* 4px */
+  --space-3: 0.5rem;
+  /* 8px */
+  --space-4: 0.75rem;
+  /* 12px */
+  --space-6: 1rem;
+  /* 16px */
+  --space-8: 1.5rem;
+  /* 24px */
+  --space-10: 2rem;
+  /* 32px */
+  --space-12: 2.5rem;
+  /* 40px */
+  --space-16: 3rem;
+  /* 48px */
+  --space-20: 4rem;
+  /* 64px */
+  --space-24: 5rem;
+  /* 80px */
+  --space-32: 6rem;
+  /* 96px */
+  --space-40: 8rem;
+  /* 128px */
+  --space-48: 10rem;
+  /* 160px */
+
+  /* Enterprise Light Palette */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
 
@@ -69,29 +122,21 @@
 
   /* Brand Colors */
   --primary: oklch(0.205 0 0);
-  /* Cyan-600 */
   --primary-foreground: oklch(0.985 0 0);
 
   --secondary: oklch(0.97 0 0);
-  /* Slate-200 */
   --secondary-foreground: oklch(0.205 0 0);
 
   --muted: oklch(0.97 0 0);
-  /* Slate-100 */
   --muted-foreground: oklch(0.556 0 0);
-  /* Slate-500 */
 
   --accent: oklch(0.97 0 0);
-  /* Cyan-50 */
   --accent-foreground: oklch(0.205 0 0);
-  /* Cyan-600 */
 
   --destructive: oklch(0.577 0.245 27.325);
-  /* Rose-500 */
   --destructive-foreground: #FFFFFF;
 
   --success: #10B981;
-  /* Emerald-500 */
   --success-foreground: #FFFFFF;
 
   --border: oklch(0.922 0 0);
@@ -121,39 +166,30 @@
 .dark {
   /* Enterprise Dark Palette */
   --background: oklch(0.145 0 0);
-  /* Rich Navy Black */
   --foreground: oklch(0.985 0 0);
 
   --card: oklch(0.205 0 0);
-  /* Gray-900/Navy mix */
   --card-foreground: oklch(0.985 0 0);
 
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
 
   --primary: oklch(0.922 0 0);
-  /* Brand Cyan */
   --primary-foreground: oklch(0.205 0 0);
 
   --secondary: oklch(0.269 0 0);
-  /* Slate-800 */
   --secondary-foreground: oklch(0.985 0 0);
 
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  /* Slate-400 */
 
   --accent: oklch(0.269 0 0);
-  /* Cyan-900/Navy */
   --accent-foreground: oklch(0.985 0 0);
-  /* Cyan-400 */
 
   --destructive: oklch(0.704 0.191 22.216);
-  /* Rose-700 */
   --destructive-foreground: #FFFFFF;
 
   --success: #10B981;
-  /* Emerald-500 */
   --success-foreground: #FFFFFF;
 
   --border: oklch(1 0 0 / 10%);
@@ -273,11 +309,92 @@
   }
 }
 
+@layer components {
+
+  /* COMPONENT SIZING SYSTEM */
+  /* BUTTON SIZES */
+  .btn-xs {
+    @apply px-[var(--space-4)] py-[var(--space-2)] text-[length:var(--text-xs)] h-6;
+  }
+
+  .btn-sm {
+    @apply px-[var(--space-6)] py-[var(--space-3)] text-[length:var(--text-sm)] h-8;
+  }
+
+  .btn-md {
+    @apply px-[var(--space-8)] py-[var(--space-4)] text-[length:var(--text-base)] h-10;
+  }
+
+  .btn-lg {
+    @apply px-[var(--space-12)] py-[var(--space-6)] text-[length:var(--text-lg)] h-12;
+  }
+
+  .btn-xl {
+    @apply px-[var(--space-16)] py-[var(--space-8)] text-[length:var(--text-xl)] h-14;
+  }
+
+  /* CARD SIZES */
+  .card-sm {
+    @apply p-[var(--space-6)] rounded-[var(--radius-md)];
+  }
+
+  .card-md {
+    @apply p-[var(--space-10)] rounded-[var(--radius-lg)];
+  }
+
+  .card-lg {
+    @apply p-[var(--space-16)] rounded-[var(--radius-xl)];
+  }
+
+  /* TYPOGRAPHY UTILITIES */
+  .hero-headline {
+    @apply text-[length:var(--text-6xl)] font-bold tracking-tight leading-tight;
+  }
+
+  .section-headline {
+    @apply text-[length:var(--text-4xl)] font-semibold leading-tight;
+  }
+
+  .card-title {
+    @apply text-[length:var(--text-2xl)] font-semibold leading-snug;
+  }
+
+  .body-text {
+    @apply text-[length:var(--text-base)] font-normal leading-normal;
+  }
+
+  .technical-text {
+    @apply font-mono text-[length:var(--text-sm)] leading-relaxed;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight text-foreground;
+  }
+
+  h1 {
+    @apply text-[length:var(--text-4xl)] font-bold;
+  }
+
+  h2 {
+    @apply text-[length:var(--text-3xl)] font-semibold;
+  }
+
+  h3 {
+    @apply text-[length:var(--text-2xl)] font-semibold;
   }
 }
