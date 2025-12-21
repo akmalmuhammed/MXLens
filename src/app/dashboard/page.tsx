@@ -7,16 +7,6 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Activity, ShieldAlert, ShieldCheck, TrendingUp, Users, Zap, Globe, AlertOctagon } from "lucide-react";
-
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Activity, ShieldAlert, ShieldCheck, TrendingUp, Users, Zap, Globe, AlertOctagon } from "lucide-react";
 import { getDashboardStats } from "@/actions/dashboard";
 import { formatDistanceToNow } from "date-fns";
 
