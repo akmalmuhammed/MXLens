@@ -5,7 +5,7 @@ import { db as prisma } from "@/lib/db";
 
 // Temporary auth config until DB is set up
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    // adapter: PrismaAdapter(prisma), // Disabled: DB connection failed. Using purely Mock/JWT for now.
+    adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" }, // Required for Credentials provider
     providers: [
         Credentials({
