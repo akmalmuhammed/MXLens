@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 
-export async function createCheckoutSession() {
+export async function createCheckoutSession(isYearly: boolean = false) {
     const session = await auth();
 
     if (!session || !session.user || !session.user.id) {
@@ -39,6 +39,10 @@ export async function createCheckoutSession() {
         });
     }
 
+    const priceId = isYearly
+        ? (process.env.STRIPE_PRICE_ID_PRO_YEARLY || "price_mock_pro_yearly")
+        : (process.env.STRIPE_PRICE_ID_PRO_MONTHLY || "price_mock_pro_monthly");
+
     // Create Checkout Session
     const checkoutSession = await stripe.checkout.sessions.create({
         customer: customerId,
@@ -48,9 +52,7 @@ export async function createCheckoutSession() {
         },
         line_items: [
             {
-                // Replace with your actual Price ID from Stripe Dashboard
-                // For dev, use a mock or environment variable
-                price: process.env.STRIPE_PRICE_ID_PRO || "price_mock_pro_monthly",
+                price: priceId,
                 quantity: 1,
             },
         ],
