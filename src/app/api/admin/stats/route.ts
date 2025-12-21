@@ -35,7 +35,7 @@ export async function GET(req: Request) {
                 proUsers,
                 conversionRate: totalUsers > 0 ? (proUsers / totalUsers * 100).toFixed(1) + '%' : '0%'
             },
-            recentActivity: recentLogs.map(log => ({
+            recentActivity: recentLogs.map((log: any) => ({
                 user: log.user.email,
                 verdict: log.verdict,
                 score: log.score,
