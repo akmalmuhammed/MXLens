@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { ModeToggle } from "@/components/ModeToggle";
+import { UserNav } from "./UserNav";
 
 interface NavbarProps {
     user?: {
@@ -36,26 +37,19 @@ export function Navbar({ user }: NavbarProps) {
                 {user ? (
                     <div className="flex items-center gap-4">
                         <Link href="/dashboard">
-                            <Button variant="ghost" className="text-sm font-medium">
+                            <Button variant="ghost" className="text-sm font-medium hidden md:flex">
                                 Dashboard
                             </Button>
                         </Link>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span className="hidden md:inline-block">
-                                {user.email}
-                            </span>
-                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                <User className="h-4 w-4" />
-                            </div>
-                        </div>
+                        <UserNav user={user} />
                     </div>
                 ) : (
                     <div className="flex items-center gap-2">
                         <Link href="/auth/signin">
                             <Button variant="ghost">Sign In</Button>
                         </Link>
-                        <Link href="/analyze">
-                            <Button>Analyze Email</Button>
+                        <Link href="/auth/signup">
+                            <Button>Sign Up</Button>
                         </Link>
                     </div>
                 )}
