@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { User, CreditCard, Key } from "lucide-react";
+import { User, CreditCard, Key, Settings2, Bell, Shield, Database, Blocks } from "lucide-react";
 
 export default function SettingsLayout({
     children,
@@ -12,15 +12,21 @@ export default function SettingsLayout({
             <aside className="w-full md:w-64 space-y-2">
                 <h2 className="text-xl font-bold mb-6 px-4">Settings</h2>
                 <NavLink href="/settings/profile" icon={User}>Profile</NavLink>
-                <NavLink href="/settings/billing" icon={CreditCard}>Billing</NavLink>
-                <NavLink href="/settings/api-keys" icon={Key}>API Keys</NavLink>
+                <NavLink href="/settings/preferences" icon={Settings2}>Preferences</NavLink>
+                <NavLink href="/settings/notifications" icon={Bell}>Notifications</NavLink>
+                <NavLink href="/settings/security" icon={Shield}>Security</NavLink>
+                <NavLink href="/settings/data" icon={Database}>Data & Privacy</NavLink>
+                <div className="pt-4 mt-4 border-t border-border/50">
+                    <NavLink href="/settings/billing" icon={CreditCard}>Billing</NavLink>
+                    <NavLink href="/settings/api-keys" icon={Key}>API Keys</NavLink>
+                </div>
             </aside>
 
             {/* Main Content */}
             <div className="flex-1 bg-card border border-border/50 rounded-xl p-6 md:p-8">
                 {children}
             </div>
-        </div>
+        </div >
     );
 }
 

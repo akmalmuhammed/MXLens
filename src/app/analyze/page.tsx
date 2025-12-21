@@ -19,7 +19,7 @@ export default function AnalyzePage() {
                 </div>
             </div>
 
-            <div className="bg-card border border-border/50 rounded-xl shadow-[0_0_20px_-10px_var(--primary)] h-[calc(100vh-180px)] overflow-hidden transition-all hover:border-primary/30">
+            <div className="bg-card border border-border/50 rounded-xl shadow-[0_0_20px_-10px_var(--primary)] h-[calc(100vh-180px)] overflow-y-auto transition-all hover:border-primary/30">
                 <EmailAnalyzer />
             </div>
 

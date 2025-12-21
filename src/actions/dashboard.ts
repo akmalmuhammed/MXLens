@@ -11,7 +11,9 @@ export async function getDashboardStats() {
             threatsFound: 0,
             cleanEmails: 0,
             riskLevel: "Low",
-            recentLogs: []
+            recentLogs: [],
+            dailyScans: 0,
+            isPremium: false
         };
     }
 
@@ -60,11 +62,26 @@ export async function getDashboardStats() {
         }
     });
 
+    // 6. Daily Usage (Free Tier Limit)
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const dailyScans = await db.usageLog.count({
+        where: {
+            userId,
+            timestamp: {
+                gte: startOfDay
+            }
+        }
+    });
+
     return {
         totalScans,
         threatsFound,
         cleanEmails,
         riskLevel,
-        recentLogs
+        recentLogs,
+        isPremium: true, // Mocked for "Pro" user experience as requested
+        dailyScans
     };
 }
