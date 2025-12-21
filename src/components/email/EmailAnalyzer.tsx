@@ -89,6 +89,7 @@ export function EmailAnalyzer() {
         }
 
         setLoading(true);
+        const startTime = Date.now();
         try {
             // 1. Parallel Pipeline Logic
 
@@ -119,6 +120,21 @@ export function EmailAnalyzer() {
                 },
                 timestamp: Date.now()
             });
+
+            // Persist Analysis Result
+            try {
+                const { saveAnalysis } = await import("@/actions/analysis");
+                await saveAnalysis({
+                    verdict: result.verdict.verdict,
+                    score: result.trust.score,
+                    hasAttachments: runAttachments,
+                    hasBody: runBody,
+                    processingTimeMs: Date.now() - startTime
+                });
+            } catch (err) {
+                console.error("Failed to save analysis history:", err);
+                // Don't block UI for this failure
+            }
 
         } catch (e) {
             console.error("Analysis failed", e);

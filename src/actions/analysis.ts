@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { db } from "@/lib/db";
 import "server-only";
 
 export interface UsageResult {
@@ -13,25 +14,53 @@ export interface UsageResult {
 export async function checkAndTrackUsage(): Promise<UsageResult> {
     const session = await auth();
 
-    if (!session || !session.user) {
-        // Not logged in -> Client side should handle Guest logic, but if they somehow call this:
-        return { allowed: false, remaining: 0, reason: "Authentication required for advanced tracking", isGuest: true };
+    if (!session || !session.user || !session.user.id) {
+        return { allowed: false, remaining: 0, reason: "Authentication required", isGuest: true };
     }
 
-    // Mock Supabase Check
-    // TODO: Connect to real Supabase "UsageLogs" table
-    console.log(`[Server] Tracking usage for user: ${session.user.email}`);
+    const user = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { messageLimit: true, usageCount: true }
+    });
 
-    // Mock Limit: 10 per day for free registered
-    const DAILY_LIMIT = 10;
-    const currentUsageMock = 0; // Fetch from DB
+    if (!user) {
+        return { allowed: false, remaining: 0, reason: "User not found", isGuest: false };
+    }
 
-    if (currentUsageMock >= DAILY_LIMIT) {
+    if (user.usageCount >= user.messageLimit) {
         return { allowed: false, remaining: 0, reason: "Daily limit reached. Upgrade to Premium." };
     }
 
-    // Mock Increment
-    // await supabase.from('usage').insert(...)
+    return { allowed: true, remaining: user.messageLimit - user.usageCount };
+}
 
-    return { allowed: true, remaining: DAILY_LIMIT - currentUsageMock - 1 };
+export async function saveAnalysis(data: {
+    verdict: string;
+    score: number;
+    hasAttachments: boolean;
+    hasBody: boolean;
+    processingTimeMs: number;
+}) {
+    const session = await auth();
+    if (!session?.user?.id) return null;
+
+    // 1. Log the usage
+    const log = await db.usageLog.create({
+        data: {
+            userId: session.user.id,
+            verdict: data.verdict,
+            score: data.score,
+            hasAttachments: data.hasAttachments,
+            hasBody: data.hasBody,
+            processingTimeMs: data.processingTimeMs,
+        }
+    });
+
+    // 2. Increment user usage count
+    await db.user.update({
+        where: { id: session.user.id },
+        data: { usageCount: { increment: 1 } }
+    });
+
+    return log;
 }
