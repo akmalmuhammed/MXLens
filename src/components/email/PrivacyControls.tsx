@@ -26,7 +26,7 @@ export function PrivacyControls({ analyzeBody, setAnalyzeBody, analyzeAttachment
                         <Label htmlFor="body-mode" className="text-sm font-medium">Analyze Email Body</Label>
                         <p className="text-xs text-muted-foreground">Scans text & HTML for phishing patterns.</p>
                     </div>
-                    <Switch id="body-mode" checked={analyzeBody} onChange={(e) => setAnalyzeBody(e.target.checked)} />
+                    <Switch id="body-mode" checked={analyzeBody} onCheckedChange={setAnalyzeBody} />
                 </div>
 
                 <div className="flex items-center justify-between space-x-2 border p-3 rounded bg-background">
@@ -34,7 +34,7 @@ export function PrivacyControls({ analyzeBody, setAnalyzeBody, analyzeAttachment
                         <Label htmlFor="att-mode" className="text-sm font-medium">Analyze Attachment Metadata</Label>
                         <p className="text-xs text-muted-foreground">Checks filenames for double extensions.</p>
                     </div>
-                    <Switch id="att-mode" checked={analyzeAttachments} onChange={(e) => setAnalyzeAttachments(e.target.checked)} />
+                    <Switch id="att-mode" checked={analyzeAttachments} onCheckedChange={setAnalyzeAttachments} />
                 </div>
             </div>
 
