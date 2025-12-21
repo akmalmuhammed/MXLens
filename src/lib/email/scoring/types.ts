@@ -52,7 +52,7 @@ export interface ValidationPenalty {
     value: number; // Negative number
     critical?: boolean;
     warning?: boolean;
-    source?: 'header' | 'body' | 'cross' | 'attachment';
+    source?: 'header' | 'body' | 'cross' | 'attachment' | 'ml';
 }
 
 export interface ScoreComponent {

@@ -5,7 +5,8 @@ import { CrossContextScorer } from "./CrossContextScorer";
 import { AttachmentScorer } from "./AttachmentScorer";
 import { TrustCalculator } from "./TrustCalculator";
 import { ConfidenceCalculator } from "./ConfidenceCalculator";
-import { NormalizedSignals, ScoringResult } from "./types";
+import { NormalizedSignals, ScoringResult, ValidationPenalty } from "./types";
+import { DetectionPipeline } from "../detection/Pipeline";
 import { AnalysisResult } from "../HeaderParser";
 
 export class AnalysisEngine {
@@ -24,7 +25,16 @@ export class AnalysisEngine {
         const crossScore = CrossContextScorer.score(signals);
         const attachmentScore = AttachmentScorer.score(signals);
 
-        // 3. Aggregate Trust
+        // 3. Run Detection Pipeline (New V2 Logic)
+        const pipeline = new DetectionPipeline();
+        const { results: pipelineResults, totalPenalty: pipelinePenalty } = pipeline.run({
+            header: headerResult,
+            signals: signals,
+            emailBody: emailBody,
+            options: options
+        });
+
+        // 4. Aggregate Trust (Legacy + Pipeline)
         const trustResult = TrustCalculator.calculate(
             headerScore,
             bodyScore,
@@ -33,10 +43,23 @@ export class AnalysisEngine {
             signals
         );
 
-        // 4. Calculate Confidence
+        // Merge Pipeline Penalties into Trust Score
+        // Ensure score doesn't drop below 0
+        trustResult.score = Math.max(0, trustResult.score + pipelinePenalty);
+
+        // Map pipeline results to penalties format and add to trust result
+        const newPenalties: ValidationPenalty[] = pipelineResults.map(r => ({
+            reason: r.reason,
+            value: r.penalty,
+            critical: r.score > 0.8,
+            source: 'ml' // effectively "advanced logic"
+        }));
+        trustResult.penalties.push(...newPenalties);
+
+        // 5. Calculate Confidence
         const confidenceResult = ConfidenceCalculator.calculate(signals);
 
-        // 5. Determine Final Verdict Label
+        // 6. Determine Final Verdict Label
         const verdict = this.determineVerdict(trustResult.score, confidenceResult.score, signals, trustResult);
 
         return {

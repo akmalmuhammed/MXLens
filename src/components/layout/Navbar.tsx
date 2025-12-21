@@ -1,15 +1,8 @@
-"use client";
-
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, User, LogOut } from "lucide-react";
-// import { signOut } from "@/auth"; // Cannot use server action directly in client component like this easily for onClick?
-// actually we can if we pass it, or use a client-side signOut from next-auth/react (but that requires SessionProvider)
-// For simplicity in client component without SessionProvider, we can use a server action passed down OR just a simple form.
-
-// Let's use a server action wrapper or just standard next-auth/react if installed.
-// Since we are using "next-auth beta", client side `signOut` is available but needs provider.
-// Let's stick to a Form action for SignOut for now to be robust without Context.
+import { LogOut, User } from "lucide-react";
+import { ModeToggle } from "@/components/ModeToggle";
 
 interface NavbarProps {
     user?: {
@@ -21,58 +14,52 @@ interface NavbarProps {
 
 export function Navbar({ user }: NavbarProps) {
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 items-center mx-auto px-4">
-                <div className="mr-4 hidden md:flex">
-                    <Link href="/" className="mr-6 flex items-center space-x-2">
-                        <ShieldCheck className="h-6 w-6" />
-                        <span className="hidden font-bold sm:inline-block">MXLens</span>
-                    </Link>
-                    <nav className="flex items-center space-x-6 text-sm font-medium">
-                        <Link href="/analyze" className="transition-colors hover:text-foreground/80 text-foreground/60">
-                            Analyze
-                        </Link>
-                        {user && (
-                            <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">
-                                Dashboard
-                            </Link>
-                        )}
-                        <Link href="/docs" className="transition-colors hover:text-foreground/80 text-foreground/60">
-                            Documentation
-                        </Link>
-                    </nav>
+        <nav className="flex items-center justify-between border-b bg-background px-4 py-3 md:px-6">
+            <Link href="/" className="flex items-center gap-2 font-semibold text-lg md:text-xl shrink-0">
+                <div className="relative h-8 w-8 bg-cyan-500 rounded-lg flex items-center justify-center text-white mr-1">
+                    <span className="font-bold">MX</span>
                 </div>
+                <span className="hidden md:inline-block">MXLens</span>
+            </Link>
 
-                <div className="flex flex-1 items-center justify-end space-x-2">
-                    {user ? (
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <User className="h-4 w-4" />
-                                <span className="hidden sm:inline-block">{user.name || user.email}</span>
-                            </div>
-                            <Link href="/api/auth/signout">
-                                <Button variant="ghost" size="sm">
-                                    <LogOut className="h-4 w-4 mr-2" />
-                                    Log out
-                                </Button>
-                            </Link>
-                        </div>
-                    ) : (
-                        <nav className="flex items-center space-x-2">
-                            <Link href="/auth/signin">
-                                <Button variant="ghost" size="sm">
-                                    Login
-                                </Button>
-                            </Link>
-                            <Link href="/auth/register">
-                                <Button size="sm">
-                                    Sign Up
-                                </Button>
-                            </Link>
-                        </nav>
-                    )}
-                </div>
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground absolute left-1/2 -translate-x-1/2">
+                <Link href="/features" className="hover:text-cyan-500 transition-colors">Features</Link>
+                <Link href="/pricing" className="hover:text-cyan-500 transition-colors">Pricing</Link>
+                <Link href="/use-cases" className="hover:text-cyan-500 transition-colors">Use Cases</Link>
+                <Link href="/docs" className="hover:text-cyan-500 transition-colors">Docs</Link>
+                <Link href="/blog" className="hover:text-cyan-500 transition-colors">Blog</Link>
             </div>
-        </header>
+
+            <div className="flex items-center gap-4">
+                <ModeToggle />
+
+                {user ? (
+                    <div className="flex items-center gap-4">
+                        <Link href="/dashboard">
+                            <Button variant="ghost" className="text-sm font-medium">
+                                Dashboard
+                            </Button>
+                        </Link>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span className="hidden md:inline-block">
+                                {user.email}
+                            </span>
+                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <User className="h-4 w-4" />
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2">
+                        <Link href="/auth/signin">
+                            <Button variant="ghost">Sign In</Button>
+                        </Link>
+                        <Link href="/analyze">
+                            <Button>Analyze Email</Button>
+                        </Link>
+                    </div>
+                )}
+            </div>
+        </nav>
     );
 }
