@@ -9,8 +9,14 @@ import { Footer } from "@/components/landing/Footer";
 import Link from "next/link";
 import { FAQ } from "@/components/landing/FAQ";
 
+import { createCheckoutSession } from "@/actions/stripe";
+
 export default function PricingPage() {
     const [isYearly, setIsYearly] = useState(true);
+
+    const handleSubscribe = async () => {
+        await createCheckoutSession(isYearly);
+    };
 
     return (
         <div className="min-h-screen bg-black text-foreground flex flex-col">
@@ -26,7 +32,7 @@ export default function PricingPage() {
                     <span className={`text-sm font-medium ${!isYearly ? "text-white" : "text-muted-foreground"}`}>Monthly</span>
                     <Switch
                         checked={isYearly}
-                        onChange={(e) => setIsYearly(e.target.checked)}
+                        onCheckedChange={setIsYearly}
                         className="data-[state=checked]:bg-cyan-600"
                     />
                     <span className={`text-sm font-medium ${isYearly ? "text-white" : "text-muted-foreground"}`}>
@@ -75,7 +81,7 @@ export default function PricingPage() {
                                 "Early Access to Beta Features"
                             ]}
                             cta="Start Trial"
-                            href="/auth/signup"
+                            action={handleSubscribe} // Pass action instead of href
                             variant="primary"
                             popular
                         />
@@ -121,6 +127,7 @@ function PricingCard({
     missing,
     cta,
     href,
+    action,
     variant = "outline",
     popular = false
 }: {
@@ -131,7 +138,8 @@ function PricingCard({
     features: string[],
     missing?: string[],
     cta: string,
-    href: string,
+    href?: string,
+    action?: () => void,
     variant?: "outline" | "primary",
     popular?: boolean
 }) {
@@ -175,8 +183,9 @@ function PricingCard({
                 ))}
             </div>
 
-            <Link href={href} className="w-full">
+            {action ? (
                 <Button
+                    onClick={action}
                     className={`w-full h-12 font-semibold ${variant === 'primary'
                         ? "bg-cyan-600 hover:bg-cyan-500 text-white"
                         : "bg-transparent border border-input hover:bg-accent hover:text-accent-foreground"
@@ -184,7 +193,18 @@ function PricingCard({
                 >
                     {cta}
                 </Button>
-            </Link>
+            ) : (
+                <Link href={href || "#"} className="w-full">
+                    <Button
+                        className={`w-full h-12 font-semibold ${variant === 'primary'
+                            ? "bg-cyan-600 hover:bg-cyan-500 text-white"
+                            : "bg-transparent border border-input hover:bg-accent hover:text-accent-foreground"
+                            }`}
+                    >
+                        {cta}
+                    </Button>
+                </Link>
+            )}
         </div>
     );
 }
