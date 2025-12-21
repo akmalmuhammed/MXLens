@@ -6,6 +6,17 @@ import { db as prisma } from "@/lib/db";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 
+declare module "next-auth" {
+    interface User {
+        role?: string;
+    }
+    interface Session {
+        user: {
+            role?: string;
+        } & import("next-auth").DefaultSession["user"];
+    }
+}
+
 // Temporary auth config until DB is set up
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -59,6 +70,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 // return Response.redirect(new URL('/dashboard', nextUrl));
             }
             return true;
+        },
+        async jwt({ token, user }) {
+            if (user) {
+                token.role = user.role;
+                token.id = user.id;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (token && session.user) {
+                session.user.role = token.role as string;
+                session.user.id = token.id as string;
+            }
+            return session;
         },
     },
 });
