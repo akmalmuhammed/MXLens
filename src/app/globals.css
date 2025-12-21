@@ -31,10 +31,11 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
 
   --font-sans: var(--font-inter);
   --font-heading: var(--font-inter);
@@ -143,7 +144,32 @@
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
 
-  --radius: 0.625rem;
+  /* BORDER RADIUS SYSTEM */
+  --radius-sm: 4px;
+  /* Small elements */
+  --radius-md: 8px;
+  /* Default - cards, buttons */
+  --radius-lg: 12px;
+  /* Large cards */
+  --radius-xl: 16px;
+  /* Feature sections */
+  --radius-2xl: 24px;
+  /* Hero elements */
+  --radius-full: 9999px;
+  /* Pills, avatars */
+
+  /* SHADOW SYSTEM */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* GLOW EFFECTS */
+  --glow-sm: 0 0 10px rgba(0, 217, 255, 0.2);
+  --glow-md: 0 0 20px rgba(0, 217, 255, 0.3);
+  --glow-lg: 0 0 30px rgba(0, 217, 255, 0.4);
 
   /* Chart Colors */
   --chart-1: oklch(0.646 0.222 41.116);
