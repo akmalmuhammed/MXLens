@@ -1,0 +1,362 @@
+Received: from DO0P289MB0013.QATP289.PROD.OUTLOOK.COM (2603:1096:790:9::12) by
+ DO3P289MB0188.QATP289.PROD.OUTLOOK.COM with HTTPS; Tue, 11 Nov 2025 07:01:44
+ +0000
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=fail;
+ b=KkzoWWtrI1BpOMMwo/Rcjr4v1t8L5dHXJmG9eQhC+6w3GfDFOhG+nnw6x6vmm70HVHWK31xv9wgzD8Og63oBuD3x+pqQlG/JrpGviGKtgaSPRnxbmxXA+FuL9VhqltrXJCsfBPLj9yKPL5BFB1avtt+t/eZSAcFTOgwErOisuAXVf8Eu73PjF65BYgCcNuTv5jjh+gsTSYVflM13YoE+y25DcO+KtkD3EpSO0mANfTkmFFVaEdl8e+eIbTunpbLNNf6YBNgAkNnz139kSHAil3dTFdFCFKToX/q1MskFfuQ/WUzWJa9l3R0b7Qho08xS3RstRcHkX0Me2I2k+VIfsg==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pxvUcrQVIHrHRJDOJEXv70ixnM9Hdds3u4cLM9qMTe0=;
+ b=qz2106eSFHzNEBWJS7KxrlYYsguT5jn4mwll1JtHc9vYPqr9zjwoa54nqLYvfDuS1Mu3PIM42e8cv1U9Z/ij2zD9yt5kD4kYRPNYRhYKy9YV06Y4eoaMDFpf2lplFVAgYf/qF4x7rnaGHkHGcZ9s+ItxqReCE+cufDPvzD3W83RaYmDgY+EcsnG/I7ir3njt1U4U1aJu0iHCR87E7G4mMwTYDS/v6s3JMJXUHmLGB2yHq22P/GOKH7ueT35jQXK36+8F/5f/r4HMYhV8oxZvrBsAJyQ4Rc7nR7ifNT/HEe1Sl69/Pm0EZYCPq72G1/q05n/Q4x0hY12A58qCONhnTA==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=softfail (sender ip
+ is 18.185.115.169) smtp.rcpttodomain=aspire.qa
+ smtp.mailfrom=taskthreads.shop; dmarc=none action=none
+ header.from=taskthreads.shop; dkim=fail (body hash did not verify)
+ header.d=taskthreads.shop; arc=fail (35)
+Received: from DUZPR01CA0025.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:46b::13) by DO0P289MB0013.QATP289.PROD.OUTLOOK.COM
+ (2603:1096:790:9::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.16; Tue, 11 Nov
+ 2025 06:58:47 +0000
+Received: from DU2PEPF0001E9C4.eurprd03.prod.outlook.com
+ (2603:10a6:10:46b:cafe::61) by DUZPR01CA0025.outlook.office365.com
+ (2603:10a6:10:46b::13) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9298.16 via Frontend Transport; Tue,
+ 11 Nov 2025 06:58:43 +0000
+Authentication-Results: spf=softfail (sender IP is 18.185.115.169)
+ smtp.mailfrom=taskthreads.shop; dkim=fail (body hash did not verify)
+ header.d=taskthreads.shop;dmarc=none action=none
+ header.from=taskthreads.shop;compauth=none reason=405
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
+ taskthreads.shop discourages use of 18.185.115.169 as permitted sender)
+Received: from inpost.tmes.trendmicro.eu (18.185.115.169) by
+ DU2PEPF0001E9C4.mail.protection.outlook.com (10.167.8.73) with Microsoft SMTP
+ Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9298.6 via
+ Frontend Transport; Tue, 11 Nov 2025 06:58:44 +0000
+Received: from 44.202.169.32_.trendmicro.com (unknown [172.21.170.141])
+	by inpost.tmes.trendmicro.eu (Postfix) with SMTP id A2E9C1000030C
+	for <edwin.ndungu@aspire.qa>; Tue, 11 Nov 2025 06:58:44 +0000 (UTC)
+ARC-Authentication-Results: i=1; tmes.trendmicro.com; spf=pass (sender IP address: 44.202.169.32) smtp.mailfrom=taskthreads.shop; dkim=pass (signatures verified) header.d=taskthreads.shop; dmarc=pass action=no records header.from=taskthreads.shop; arc=none
+ARC-Message-Signature: i=1; a=rsa-sha256; d=tmes.trendmicro.com;
+	s=tm-arc-20210909; t=1762844324; c=relaxed/relaxed;
+	bh=pxvUcrQVIHrHRJDOJEXv70ixnM9Hdds3u4cLM9qMTe0=; h=From; b=CqvD/MF/0Mht6W3dkElPR149G83rAyF7pg2XPH+M0Z9E6tiLA3fIMgD/LfqYc1sajSZx8JVpDddAL8p+rdRdCv6TaAcZOLqQrWoFHQ+snC1DLpeF21g1wOy2xP0q5r2SNS2q3Xauo6R+xV0z+9PhSmkxptK6DDoMMTYVnJ8ZecP8Yh6fYk+pNFD0dw+ecDQ6pT2WJwdrP0jQiD82lromMxEErOOYo6s8o+ewNSSeaCXMiu4vBfeWXQQPmE7nQJYB/4LEiRTb2bq/vCu7B2VSWHJlqni3jRrAkmHj++uLZkFN770t6GkTO+pWYeIPHDC0CLrM8E8QqxtyR22duP8+sw==
+ARC-Seal: i=1; a=rsa-sha256; d=tmes.trendmicro.com; s=tm-arc-20210909;
+	t=1762844324; cv=none; b=g4twzxF80w1Ge5k4lTB6znGF7YPZVjQkVrS758xsndzMNLZnZ3EGUsteDM2BOA6b7dfIbpMz1q/gm2h7uZ+zi3eYLfsGi8pSsIopC2ecWLLLqxNxK6Dsg25kRJxYpLAV4CfWYDz0bPNrBHY37VhSaX83GspX+IAMr0WLLguSFS9d82sG3spUo9cOYNqDnamTTAUvvL6swkem/XNm33GkjqBMg+Kg94H+G3YfgEtd98EpJvoKJ5SGpvliMpxcmDj2PwKBlLYwTVgn06vJLkeUK6h/f5/aY4o6LqZqT4qiIr4ZutSIWFV6Jge6t8ADjptjUV2u+l9KY8J4/GjjI2Tzww==
+X-TM-MAIL-RECEIVED-TIME: 1762844306.808000
+X-TM-MAIL-UUID: 439a9e76-de94-4296-be92-b6dd0ddcd3ff
+Received: from omta033.useast.a.cloudfilter.net (unknown [44.202.169.32])
+	by inpre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id C580610000FE4
+	for <edwin.ndungu@aspire.qa>; Tue, 11 Nov 2025 06:58:25 +0000 (UTC)
+Received: from eig-obgw-6006b.ext.cloudfilter.net ([10.0.30.211])
+	by cmsmtp with ESMTPS
+	id IWtwvLa8OU1JTIiKUvcUIi; Tue, 11 Nov 2025 06:58:14 +0000
+Received: from 162-215-240-16.unifiedlayer.com ([162.215.253.205])
+	by cmsmtp with ESMTPS
+	id IiJUv4NNke5vdIiJUvHblc; Tue, 11 Nov 2025 06:57:12 +0000
+X-Authority-Analysis: v=2.4 cv=PI0P+eqC c=1 sm=1 tr=0 ts=6912de48
+ a=sJTV1pjTJVuryyS0rki5Eg==:117 a=8w9llkkM1HCFgukvNvqHfQ==:17
+ a=IkcTkHD0fZMA:10 a=MKtGQD3n3ToA:10 a=1oJP67jkp3AA:10 a=6UeiqGixMTsA:10
+ a=cW0sKc72QmcA:10 a=OAYLjqWlAAAA:8 a=jR0oqdVpAAAA:8 a=4MWVebOEXKrZh1w6vgsA:9
+ a=QEXdDO2ut3YA:10 a=fer-FpEFihwEQLFopRky:22 a=iEWXMNQR11VYUQfeeeui:22
+ a=uqnILQX2bln0idSxC9wc:22 a=NWVoK91CQySWRX1oVYDe:22 a=IAWQsMFN_4hLPs5-1z28:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=taskthreads.shop; s=default; h=Content-Type:MIME-Version:Date:
+	Content-Transfer-Encoding:Subject:To:From:Reply-To:References:In-Reply-To:
+	Message-ID:Sender:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=x0+MfVyhjIfUSRUToQmDEmNvcOUiKuVUPOPUJPt7y9Y=; b=rkdqWolLDAxeCKlHBXE1M2A9hG
+	tYncXfVc12eqbjwyNLiEdl4SqjUtNB9qf0lKZv4UFqwOdyUSpZ4SNMC1nSWiTBoAjWwhzPhnKHBJx
+	9EhjGtWNhHM44kBc1dt54jTtTgyneqKcpKROPq8l121l2lUxneBjXEUG7R+U8BHkOd13c4fl4V2sz
+	7odGMzMgMx/fVjU4kErU/gAjlPk3SaJAC5KPuVUexc7AI05IWvaHn7J13AE+yE/xYqgz1TlCao1JW
+	raE6ykKFuzbQwITxSrqlNUq2FAdD9tXLul3N4zZvPsHShxus7nBY8Z0+B6KzTPoaKrx/3WDqDsLO7
+	W9jFkrSQ==;
+Received: from ec2-52-87-225-66.compute-1.amazonaws.com ([52.87.225.66]:50626 helo=019a71b4-45cd-7bfe-aa2d-64b5a2f67ad2.local)
+	by md-99.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.1)
+	(envelope-from <rebecca.haye@taskthreads.shop>)
+	id 1vIiJT-00000002HiO-3cHw
+	for edwin.ndungu@aspire.qa;
+	Tue, 11 Nov 2025 12:27:11 +0530
+Message-ID: <019a71b4-45cd-7bfe-aa2d-64b5a2f67ad2@taskthreads.shop>
+In-Reply-To: <019a6361-1159-7ee9-a196-b5aaae87fc4a@taskthreads.shop>
+References: <019a6361-1159-7ee9-a196-b5aaae87fc4a@taskthreads.shop>
+Reply-To: valentina@dz.international
+From: Rebecca Hayes <rebecca.haye@taskthreads.shop>
+To: edwin.ndungu@aspire.qa
+Subject: EXTERNAL: Re: Fully customizable items designed to elevate  Aspire
+ Academy presence.
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 11 Nov 2025 06:57:11 +0000
+Content-Type: text/plain; charset=utf-8
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - md-99.webhostbox.net
+X-AntiAbuse: Original Domain - aspire.qa
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - taskthreads.shop
+X-BWhitelist: no
+X-Source-IP: 52.87.225.66
+X-Source-L: No
+X-Exim-ID: 1vIiJT-00000002HiO-3cHw
+X-Source:
+X-Source-Args:
+X-Source-Dir:
+X-Source-Sender: ec2-52-87-225-66.compute-1.amazonaws.com (019a71b4-45cd-7bfe-aa2d-64b5a2f67ad2.local) [52.87.225.66]:50626
+X-Source-Auth: rebecca.haye@taskthreads.shop
+X-Email-Count: 16
+X-Org: HG=dishared_whb_net_legacy;ORG=directi;
+X-Source-Cap: dGFpbG8wZTY7Ymlncm9jazttZC05OS53ZWJob3N0Ym94Lm5ldA==
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfKlW1CxxGuYHcXRreh190L/q/SMg3chzP72IjOq8ba6h0WOhNnQiBGyKf3+d2rO3ku0gmZzlhEIZPtAbj/cyYRh1PAsUzHOu4Ux7+AvzZWGR5MHBVgpq
+ Mx1YuLj0iLALQj9+n71wveqwMFGQVSFdMJOFxJ4J8Ld3/A/IPqR1o5M+pQg6P94U+HLROYXLjNly+852bkJmf8LZ8bg7VhDjppSwUhvoWfKFtkRhfdA3y+et
+X-TM-Received-SPF: Pass (domain of rebecca.haye@taskthreads.shop designates 
+	44.202.169.32 as permitted sender) client-ip=44.202.169.32; 
+	envelope-from=rebecca.haye@taskthreads.shop; 
+	helo=omta033.useast.a.cloudfilter.net
+X-TM-Authentication-Results: spf=pass (sender IP address: 44.202.169.32) 
+	smtp.mailfrom=taskthreads.shop; dkim=pass (signatures verified) 
+	header.d=taskthreads.shop; dmarc=pass action=no records 
+	header.from=taskthreads.shop; arc=none
+X-TM-AS-ERS: 44.202.169.32-127.9.0.1
+X-TM-AS-SMTP: 1.0 b210YTAzMy51c2Vhc3QuYS5jbG91ZGZpbHRlci5uZXQ= 
+	cmViZWNjYS5oYXllQHRhc2t0aHJlYWRzLnNob3A=
+X-TM-AS-URLRatingInfo: 71-93-=?us-ascii?B?aHR0cHM6Ly9wcm94YXJteS5jb20vdW5zdW
+	IvMS8wMTlhNWZkNy0wZWQzLTdjNzktYTJjZi0zODZjMWE0YjViMWI=
+X-TM-AS-URL-Rewrite: 2/2
+X-TMASE-Version: StarCloud-1.3-9.2.1005-29568.005
+X-TMASE-Result: 10--10.423600-10.000000
+X-TMASE-MatchedRID: SwuGGk/UMKoy1iZKNjGrIVhkmCjWYvWl7dPAJIBRcp0+WEPHsHFl0Dgs
+	XzLh9833Ffpoj6HA4e1bMn7cdsE9fNM3sP5BlUDjju2XlcEx9HR6fLkWr6oHRCj0mN+iwDFZmyS
+	40LWuDvkd79Smn/h5xE7vhRXvABzwGHJmlm7L3xw+093PcBFs7n7PFyzZECPRX7CjhtTyZdSZfB
+	lTm14d/vgZ5Wj3/8vHxOWT0hxDDgH3pk5qjymrQqEdrhqOPissHKqgYbpP2hxkWt242W3L2/bGb
+	JSEavxGxO+b+VjqmqJYVUNH2SsRNP/YUvG9XA6wOagwGSua5/+YJgzgxqgVT3vBA9C/1eiF7E//
+	2feai0ab+QRAyyKDBNQ2h3Fcz8jdqdBD4dlcFILQF1KxVHxMgrueT4Q7MJk1pq5yT2pCAraJkce
+	zle6Ws/Z3jzTiKbDfVLdbonfKopLmX1AX2ZRm1i0Bn78ydPlVYsrkDmZ3Sv2a+5wAMyTXCmRSno
+	vnYbX4aFKLPQ5mqUAx1VkYm/swMe58s/rOhbK+eaDIRhfzIdbFhXMjdQIJpg==
+X-TMASE-XGENCLOUD: 28d5d5e6-cfa6-4049-8e6f-8189c5141b8f-0-0-200-0
+X-TM-Addin-Auth: eodCBrIhNiTpfAqzNYkYNPilFXcklQleBthwLDTvcUQZXKdynBFTVZghjzo
+	DO1JAbdwDHHMh1/ptI8SnnsOp8kI3anBamKj2KRySTBpllT3TSkfX4TD4FNSB6XHv4x8zdYKOXX
+	6redeR/VI4xSZlLUuEF1C0Lig8XoyHH9EbpHPiJZTRpHKHfKtUhy2Xop6i5M+bgKXcWS3zWchni
+	1Ii0Nbh+xnRIEPxxP4Wtkz3nZ1Dk3UUNwaZvjJG26YHBKqQf9Wid/1saHsJqM23r3FFqfZKmf53
+	yBG8oebqYZs7f4U9l4TCR1Iyv8k9oN9W4egx.XiIRl+nKXGG7iVwJS9Jew2WJG1EWH16NsKhHu1
+	DDWkl0TRdtV8WHmpcoYFhQcREP99zPdN3aE2k4DKc2E/MY4OmrAQjXVWnnub7satEuAXFTVulcq
+	KV1K/7Rq4RZLKK/RiLmxYoenR6pGOO4kCFaqO65Z7SAFrJU6hOqNy19sayfFOzcnX5WHR/iIRHH
+	3xqsHphU+95vE90nyadKZyWjsOYwN33/Kn2WEnOa5zflXQDVWUpY3EvBuuDZrjogMXC/v5S6sIk
+	Tvbk5S19ulrLXf0njN9ZiKwoxvuWXuLIreGiGJ4UZ6rJ/kNlD2dh4ebRppZT3GbvF7FhdYNxbpW
+	vzMw==
+X-TM-Addin-ProductCode: EMS
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,28:1,30:1,33:0,34:0-0
+X-TM-RISKAI-PTN-VERSION: 1.22.0+20251111.6ff2782
+X-TM-RISKAI-MATCHEDFID: WyJGSUwwMjQiLCAiRklMMDMzIiwgIkZJTDAzNiIsICJGSUwwMzci
+	LCAiRklMMDQwIiwgIkZJTDA0MSIsICJGSUwwNDIiLCAiRklMMDQzIiwgIkZJTDA0NCIsICJGSUw
+	wNDUiLCAiRklMMDU2IiwgIkZJTDA3MiIsICJGSUwwNzgiLCAiRklMMDgxTiIsICJGSUwwODUiLC
+	AiRklMMDg3IiwgIkZJTDA5NiIsICJGSUwwOTciLCAiRklMMDk4IiwgIkZJTDExOCIsICJGSUwxN
+	DgiLCAiRklMMTUwIiwgIkZJTDE1NiIsICJGSUwxNjkiLCAiRklMMTgwIiwgIkZJTDE5NiIsICJG
+	SUwxOTgiLCAiRklMMTk5IiwgIkZJTDIwMCIsICJGSUwyMDMiLCAiRklMMjM4IiwgIkZJTDI1MSJd
+X-TM-Deliver-Signature: DBE70DB2CF8AA5DA2D3EA8ECDDC11334
+Return-Path: rebecca.haye@taskthreads.shop
+X-MS-Exchange-Organization-ExpirationStartTime: 11 Nov 2025 06:58:45.4573
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id: 86f20681-1365-40f3-4b9a-08de20efc1d7
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU2PEPF0001E9C4:EE_|DO0P289MB0013:EE_|DO3P289MB0188:EE_
+X-MS-Exchange-Organization-AuthSource: DU2PEPF0001E9C4.eurprd03.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id: 86f20681-1365-40f3-4b9a-08de20efc1d7
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-MS-Exchange-Organization-SCL: -1
+X-Microsoft-Antispam: BCL:0;ARA:13230040|82310400026|41022699024|3122999009;
+X-Forefront-Antispam-Report: CIP:18.185.115.169;CTRY:DE;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:inpost.tmes.trendmicro.eu;PTR:inpost.tmes.trendmicro.eu;CAT:NONE;SFS:(13230040)(82310400026)(41022699024)(3122999009);DIR:INB;
+X-MS-Exchange-ABP-GUID: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2025 06:58:44.9537
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86f20681-1365-40f3-4b9a-08de20efc1d7
+X-MS-Exchange-CrossTenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-MS-Exchange-CrossTenant-AuthSource: DU2PEPF0001E9C4.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DO0P289MB0013
+X-MS-Exchange-Transport-EndToEndLatency: 00:02:59.8131529
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.9298.012
+X-Microsoft-Antispam-Mailbox-Delivery:
+	ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4717077)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?UEVwZmMvMXZKVjh0Z3lod2E2NnZOUFBDQnBKVVVwUFJmUnVWallvM1NkZ012?=
+ =?utf-8?B?cTU5bFZQWkJlYW52ZUVEZURhTy9hNlNtWGJUdE5Ha25aL05lS2hudk1XUVBn?=
+ =?utf-8?B?bGlTRWNKMEY4UjVZQTlyaWFPNFdydlB0Y1NDYXE0elM3ZWQ2RmlqWi9NTG96?=
+ =?utf-8?B?S1duSlJ2SmFZMWxTVGpoTmorS0w1QnBZb2JENlprNlRUdWx6T241dHp3Ry9y?=
+ =?utf-8?B?MWUvUEdaQVNQVzlhcUZYQzZybzNSQ2VIZW4rTGltZ0YrZ09jenVkT2x1R3N0?=
+ =?utf-8?B?ek01Z3puc2N6VmdybUVsS01PMHJiNUZqQXUvejdTcFVLZUxqaU5PcVBxU29W?=
+ =?utf-8?B?TVd0a0RCaW1RaXk2U2kvbzU1R2grbGxhRS95TTN4emh0YWRHL1JTSSt0N2pY?=
+ =?utf-8?B?b0VYQVdzd0RuNWZkNWs2RlVCdC9vd3Y0R1JpdGU2MFRnSlRLQU1tck5EWXAz?=
+ =?utf-8?B?c0UzeE1kRWc5Q0lMSkQ3dGV3R1BTWFdVYWY2N3h6cm9abnlyK0hwcjdpWkln?=
+ =?utf-8?B?OXZrREdYOXQxN2xqbmFncFpxa0ovc3NDU1l3QzlqZVF1ODE4Y29uNnBxKzdT?=
+ =?utf-8?B?OEo4WEJGb2ppNUVtVGsrUTVOQlI2QUM4S3plNVVUR25DeEFBREp4NGZBdFcw?=
+ =?utf-8?B?K09zbHVUb1kyUm5WN3lGR1h0UDkyaWdjNnhmYWQ3R0g1TGZVT3dxem9oUmEz?=
+ =?utf-8?B?YkROKzVXNTJxNml2QmFMaTJ3dm1UeEV1VG92NWs5NjFpbGFtZ3I1cE5KbnRv?=
+ =?utf-8?B?eTJOalZhS2hLRWJYTzN1NWZPM2FyQjJwSWEvdVNzTTJDdEtaTVBvR2haNTAx?=
+ =?utf-8?B?MTAvNDRJQ0o4U0daM2hqV1JrbGQ5MmQ2UzVkNkFsWGllY1pQbzQzZDZWMy80?=
+ =?utf-8?B?ajdtMUZzRHg2T1p0a3cxejRPem1aalAxYWFDU09lWlMwMUU2VHdmbkt5SDhJ?=
+ =?utf-8?B?a1JjTEZHc0gyWkNlM2F3a0xRdTZNWnArQWJEVG5TaVdNTUxEeEc2RHg1MmNN?=
+ =?utf-8?B?Y1ZrMUlQZzlPRFB2L1RCZmZRV2NSWGQvQUFFY25OV0NiSm5WeHRob0F4ZVRQ?=
+ =?utf-8?B?K1QyVmZmQ1FoOTJaaSsrbmFNb0hjUGJESEFQZnlLbXZtaWhSZjBKQjJiVTNl?=
+ =?utf-8?B?dGZWbVRsUjJGQ2JWbmt5WlpwSEU0ZHVJV1E1NnRlNC9veE4ra1VRcDdnb21x?=
+ =?utf-8?B?ZlJxZTlpWHdSVXZMcVRLQTMrSEFvTU5FNWJ5WXMwM28vT0xBY3hhSUpQMzJM?=
+ =?utf-8?B?eGtmaDRYR3ljaThkcTBjemJHdDR1ODRIaXM5VnJGWmhWVUdnTUwwUUlGMCtG?=
+ =?utf-8?B?VUtYTUtpbHpXamRRS29YOTZOdForUlZ5K0Y4dnphZGY4TXV0MUtTaC9uMllJ?=
+ =?utf-8?B?Z1VpaWd0bU1vdXFDeG9BdWhsL2xuYXRVS0R1d2R4R3dFZENMQXdoZU9SN1JI?=
+ =?utf-8?B?WGQ1a0d6dlAvaHVvMzY0N2dZbWdkVlZpLzZvWUZDM3ZZYTdnVVU0SHFjVy9N?=
+ =?utf-8?B?Q0QyZDZZQUVQa0NVenVsY2prWXNISDZ2KzVnK1UvMWVsbkpkbjZZcllaeGt4?=
+ =?utf-8?B?ZU0wQjhrQk1UcFN4K2hkRXNyWW03QWZtME1MMzM0cnQwTFlxT2c0eFlabVE4?=
+ =?utf-8?B?elRQTmZodmEvRDA1UWFBS0hCZi8yZjlmNE1iVmRhRDlqLzZXMkZOZzY4UHZ4?=
+ =?utf-8?B?OWpnWXZVVjJpL1EwejhoejVySU9YVFpNSmdwVTl6VVZSY1ZmUTkyb3ZWb3Bu?=
+ =?utf-8?B?eGJ5QUpqNXU5L1J5ajdsOTRLT3hPb0J4T2Y3UVJzVG5KaTVIQ1VrYkxlRnU1?=
+ =?utf-8?B?Uk4wN2YzMW9nOHRYMTlxblhxeDhZditrTXpMMit3OTl1bEt4eWhsUnBnci94?=
+ =?utf-8?B?Z1UyRkdLN2ZidlkyTVAwSmxLRldRVzlUN0k2VHVVVGIwWFpOUUNVd2NYdVFi?=
+ =?utf-8?B?NUZGSzRoUUhUcTZ6R25KUW5pZjlNeHBFY3krUkZEZ2JFVFI3WUdjRDFHZzVI?=
+ =?utf-8?B?MmJIL0JIMmpWUXBMYVJDSlpUT1JPVXdaOEhHdTRTVU1VRVdhQmswTkxWY01G?=
+ =?utf-8?B?SUFaRzhUUnVsekVsbGJFQ1cxQVhyYU4zOG1OcnRtWHE1R1ZvSEhSRzRyS2po?=
+ =?utf-8?B?VFhBUnVDbldDKzc0OTRVdWdvd2R4T2tYZG5HVkNNam1GWXNMSllDTVZiM0Uy?=
+ =?utf-8?B?MzhnM3FhbXZOUFNBdWNDSWozR3FpWENRVXlaRGxRdWN1ZTRKSEhvSGF6K3ly?=
+ =?utf-8?B?L29WeXNGazlKa3JlK2VoZXY2c0hGMzdJRFdBZHJidnh0ZEFQaGpNWU52d0hj?=
+ =?utf-8?B?RjlBcHIzYjRlSllQOXA2NmUrcHpHZlZSSFllMHRBcitrNFUxNGp0MkxXS1F0?=
+ =?utf-8?B?RFNhYUtKNTdOQWdneG9qeXJQMGs5SnMyWUlaeFljd01NVXJUY2VRREd5bGNV?=
+ =?utf-8?B?T0VDTmF2azUzdEtNdHVyNWpmMmhzcEtWS3g2WnowUmdVSlVVcDFzS0dZV3pv?=
+ =?utf-8?B?SmZUNjZRV3FPR0lpa0ZNZ0IraDFSV0M2alE0M2VwaWE1NW5EdTZKK1NneDJt?=
+ =?utf-8?B?TW9TOER6K3pXQ3MxSkxyck9LYzRlaGFkNkxVajI3WE9Cak1oL3RNVmY0MXVy?=
+ =?utf-8?B?MjgycXNVL0hPSXVnc21wNkZkQ3pUcWNlUXY5bHZPRmpKekRQdVJyNUJSL2Nv?=
+ =?utf-8?B?KysrRk1HY2xpZEhzeVEyUVc4eDVQVlFDZ3UxelBjM3Rac2x4dWlEbHFrcUoy?=
+ =?utf-8?B?QXc2UjFhMW0zeFFqUlZCTkdKWm5yenF2QjEyblYxbitmeTM3OVBJQ0MwL0sx?=
+ =?utf-8?B?R1JyamNNdFhTYTR2Rk5TS1RyQzJiWDI1ZmgyZ0tSZHFBZFdQUUNzbzY5eHRz?=
+ =?utf-8?B?Zk8yZytSS1lneG0xN002UG1rZ2FNbEYvY0xKK29hbWh1VE1uMWk2OGhpak85?=
+ =?utf-8?B?Q3RqWGlsaVd0RFl2Z29Nd0laOGREOWpJRC85WHhsR0lnWC8vYlQ3b2U4dW44?=
+ =?utf-8?B?czU0dGNSaXF1b0l1ZjhTMm5oUTRWTnNwY09EQ1c3T2IrVzZHSi84Vk16Z1po?=
+ =?utf-8?B?VHdRc0tVdzhTbDRhemp5bVY4eTZlb21HaldhTGdpa1RFOXg3SlNvd09GTkE2?=
+ =?utf-8?B?ajl1emlIZ2xtekw4TmxDNEVLR2tpTTJIZHByK3dFSmFkYmRtMkY4SWE2L0Zn?=
+ =?utf-8?B?YjN1TzNBcm5TOHdQeUN1dFI2WlNqOFlBT2VRVjJZdUg3WTdrRWFQYkI5UlEw?=
+ =?utf-8?B?R2xhcUJaUHFMbmZvV3l3VzFFSEw2ZDVUVVozMThGM1JLNGY3TnlHVDZDaDBW?=
+ =?utf-8?B?QnBPMnRSTEtpMGxzTVdOM1d0OEJMeWoydHl5cXR6NUNKSUcrQzQ4R0ZId0xD?=
+ =?utf-8?B?VEVlaDdBdkxyMzF5WXlQZWljZExTYjZwamUrN0IyRmN0Q2kwNlBCUGlKdnhM?=
+ =?utf-8?B?RFZJa3dNWmVyMjYxbzN3bWIrU2IxRzdRZjBVc3JPQ1MxN0hMc2J1RVhrY0gw?=
+ =?utf-8?B?NzlvOFlVbjhWNXRBVW96dXRweUljb0pLTXdxRE5QeFlDdjlKL3FXbXFrWFRs?=
+ =?utf-8?B?aHloMHl3NXBXR2llaU9tNUJlQmtnNENqL1IzUmhyaE1RMXd4MFErcjM4TXNu?=
+ =?utf-8?B?YndYQVgvNHpWOWxlK0k5a2ZRU1o1cngvRzlkN0NGdG94SmZTNGFlOTBQZWlW?=
+ =?utf-8?B?cVl5dU9vUzI4RkxuWjdZTUlBM1F3eWJLZ1FNL2RWNGxMSHRSb2xPUjkxK21T?=
+ =?utf-8?B?M0E1RTNqL2VlWHBiWEdoSk5XTlYzWDJoY2Y4TEdrTmU1TXJBMEtSci9hVS8y?=
+ =?utf-8?B?dkFUMGFhNDB2SGN0eGVHelZzMkNtdjZRSW1CQmw4cG1tQVFRWUgwa2F6Z2pU?=
+ =?utf-8?B?ckpTTk5BQjFxdVlrZG84bkRCaEVlS1E3SjYrQ25ndWQwOHMrQUZrZzNER0Vj?=
+ =?utf-8?B?TVk5WWdiK3FNeGtFNExPa3JyTjNRSGJGbnVuSmg4NWFZcSs4cW9NT1NWa3I4?=
+ =?utf-8?B?UWNuRG0vdGhZbFgrNkt4WVNaeVFKcE0zNVBrZ3YyV1A5OG43MlJCZWZiUTNp?=
+ =?utf-8?B?RlB1aEs2Z0M0aHVCUnMvSi9SdU5xaWdIamM2dFJUT3JtRlpaV1N2VWx4bS9j?=
+ =?utf-8?B?aTliejBSTDhQNFlMcWd2UEVURHByZHVKTTVJeElGcmhYUVNHQnFjdm9BUERV?=
+ =?utf-8?B?R2dialNoQXd3b2ZMWGlUTkZTZ2JHcG51cnh6Sitqc0Z1NlBuZktXb3I0T0V0?=
+ =?utf-8?B?dEk3ekRqRUNTakR1aVAxRHFLMzMzcnZjbzVsSjR3eXY5NUxRczZUdXoxMHQw?=
+ =?utf-8?B?QmthQjEyM0N2Z21KaUpNT1dUZW5XT09aZm9WNDN3VURUWEkzeUd3L3ZDTi9C?=
+ =?utf-8?B?VTVJUDJpZ3dXcXBGZ3IwTjNqTGRWbTdWbzdseDVrSS84WkpvTzl1M1AvMk95?=
+ =?utf-8?B?ZHhidXFyMVdEOUt4SzZrckxuTTJtNlFSYlNhdTgrbXRxdWc2U1daN05la25J?=
+ =?utf-8?B?dmJVOEhLKzB0NlBYZm9xWjdPc3U5NmNEVHZrRTJ6b0Z6UHplOTdJcVY1WmhT?=
+ =?utf-8?B?RFpJUXQxTEZjaS9SY1RlYVd3dVdYaDh4TWxla05pMTdYTHlNNmpvTXduODBj?=
+ =?utf-8?B?WFJ0R2hHMHN1M1JKdm5IeTZCWXdsQVhIV0JRaW1Wbm10c2crYVFIVlAzcHZT?=
+ =?utf-8?B?dzdyS0pNakE0U0o5Q2FJTzRQUll6N0tab3Rmb0g0YUFZVGkvRC9xM1d6TTJZ?=
+ =?utf-8?B?cUc0ODZoTHJTNGVScmhjNzR6YXhmVUIxdXdRU2tkNkxVU1NoR2VyYjdQRmM4?=
+ =?utf-8?B?TEhPaFI2MGI2RG5oNXNWV3R4VTJ1d3ppWUN2cUo0Sm15MXBuM0k3YWpuM1U0?=
+ =?utf-8?B?SnRtZnRsZDFhdjBmbDcwYkpLOEluTkt4ZmVVYjVER2U3WGFpV3ZLN1FBWW1H?=
+ =?utf-8?B?d1BhYWJUa1VLYkpiL0IrYUxSMlF1WFRkMEw2ZG9zT0hScGowY0cyaXBNWDdp?=
+ =?utf-8?B?NHNLYmVOZVFDTGg0ZEJqbjhFNXY3VUt5cnYybXpRVldPZ2FVM3kybkRrQ2tm?=
+ =?utf-8?B?SWZmclpiK3k4VG1BY0NKSXZRbGI3US9PUml3b3g1aEtWSUZRRGR2RzdNd0xi?=
+ =?utf-8?B?bUcyMk9mRGtPeks4bS91VkVQRkVrYjRZazVCRVZ5NXh0LzBKRENHSEM4NXkx?=
+ =?utf-8?B?TjdtZ3NwQlFaVWhnNkNDUFdjNmRjclRxa1A1U2U1VHdsRjdZbTltTWh4Z2E2?=
+ =?utf-8?B?QnNSWnZuYTAxaklpemhnQjJkWDQ3NGxsaHBTOS9raE1lMTUzUT09?=
+MIME-Version: 1.0
+
+CAUTION: This email originated from an external entity outside of Aspire Zo=
+ne Foundation. Do not click on links or open attachments unless you recogni=
+ze the sender and know that the content is safe.
+
+Hi Edwin,
+
+I hope you're doing well! I wanted to quickly follow up on my previous emai=
+l. If you're still considering exploring our products and services, we'd lo=
+ve to help support your upcoming projects.
+
+Let me know if you'd like more details or have any questions.
+
+Best regards,
+
+Rebecca
+Business Development Manager
+DG International
+OPT OUT https://ddec1-0-en-ctp.trendmicro.com:443/wis/clicktime/v1/query?ur=
+l=3Dhttps%3a%2f%2fproxarmy.com%2funsub%2f1%2f019a5fd7%2d0ed3%2d7c79%2da2cf%=
+2d386c1a4b5b1b&umid=3D439a9e76-de94-4296-be92-b6dd0ddcd3ff&rct=3D1762844306=
+&auth=3D391e4da4dcdfc9db806032a8b23daa65b4a22137-b12c88d320dba5977876b61bd1=
+fa7bd3977ba91d
+
+On Sat, November 8, 2025 12:11 PM, Rebecca Hayes <rebecca.haye@taskthreads.=
+shop>
+[rebecca.haye@taskthreads.shop]> wrote:
+
+> Hi Edwin,
+>
+> I hope you're doing well! I wanted to quickly follow up on my previous em=
+ail. If you're still considering exploring our products and services, we'd =
+love to help support your upcoming projects.
+>
+> Let me know if you'd like more details or have any questions.
+>
+> Best regards,
+>
+> Rebecca
+> Business Development Manager
+> DG International
+> OPT OUT https://ddec1-0-en-ctp.trendmicro.com:443/wis/clicktime/v1/query?=
+url=3Dhttps%3a%2f%2fproxrubbedintegral.com%2funsub%2f1%2f019a5fd7%2d0ed3%2d=
+7c79%2da2cf%2d386c1a4b5b1b&umid=3D439a9e76-de94-4296-be92-b6dd0ddcd3ff&rct=
+=3D1762844306&auth=3D391e4da4dcdfc9db806032a8b23daa65b4a22137-f5d457a9db5d9=
+399d2f4edb6f2dcd78c6ba07751
+> On Fri, November 7, 2025 8:06 PM, Rebecca Hayes <rebecca.haye@taskthreads=
+.shop>
+> [rebecca.haye@taskthreads.shop]> wrote:
+>
+> > Hi Edwin,
+> >
+> > I hope you're doing well!
+> >
+> > I=E2=80=99m reaching out to explore how DG International can support As=
+pire Academy with custom, sustainable products for you.
+> >
+> > DG International is a global manufacturing leader=E2=80=94recently reco=
+gnized on the INC5000 list=E2=80=94specializing in high-quality, fully cust=
+omizable items designed to elevate your brand presence.
+> >
+> > A quick overview of what we provide
+> >
+> >  * Apparel: Tees, Hoodies, Activewear
+> >  * Event Essentials: Bags, Towels, Headwear
+> >  * Promo Products: Custom-branded merch to make your event memorable
+> >  * Uniforms: Sports, Safety, and Teamwear with your branding
+> >
+> >
+> > We take care of design, private labeling, custom logos, and pre-product=
+ion samples=E2=80=94plus full logistics support (air & sea freight) to ensu=
+re smooth and timely delivery.
+> >
+> > If you have any events coming up, I=E2=80=99d love to send over a few s=
+amples with sustainable, custom products.
+> >
+> > Reply =E2=80=9CNO THANKS=E2=80=9D if you do not want to receive further=
+ emails.
+> >
+> > Regards,
+> >
+> > Rebecca
+> > Business Development Manager
+> > DG International
+> >
+

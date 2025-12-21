@@ -1,0 +1,333 @@
+Received: from DO2P289MB0171.QATP289.PROD.OUTLOOK.COM (2603:1096:790:2e::7)
+ by DO3P289MB0286.QATP289.PROD.OUTLOOK.COM with HTTPS; Tue, 25 Nov 2025
+ 09:03:34 +0000
+Received: from DU7PR01CA0007.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:50f::7) by DO2P289MB0171.QATP289.PROD.OUTLOOK.COM
+ (2603:1096:790:2e::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9343.18; Tue, 25
+ Nov 2025 09:03:32 +0000
+Received: from DB5PEPF00014B9C.eurprd02.prod.outlook.com
+ (2603:10a6:10:50f:cafe::76) by DU7PR01CA0007.outlook.office365.com
+ (2603:10a6:10:50f::7) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9343.18 via Frontend Transport;
+ Tue, 25 Nov 2025 09:03:25 +0000
+Received: from inpost.tmes.trendmicro.eu (18.185.115.105) by
+ DB5PEPF00014B9C.mail.protection.outlook.com (10.167.8.170) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id
+ 15.20.9366.7 via Frontend Transport; Tue, 25 Nov 2025 09:03:30 +0000
+Received: from 209.85.219.54_.trendmicro.com (unknown [172.21.169.43])	by
+ inpost.tmes.trendmicro.eu (Postfix) with SMTP id 4880610000BF6	for
+ <azareei@akh.com.qa>; Tue, 25 Nov 2025 09:03:30 +0000 (UTC)
+Received: from mail-qv1-f54.google.com (unknown [209.85.219.54])	by
+ inpre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id
+ D42DF10000C3E	for <azareei@akh.com.qa>; Tue, 25 Nov 2025 09:02:08 +0000
+ (UTC)
+Received: by mail-qv1-f54.google.com with SMTP id
+ 6a1803df08f44-8826b83e405so76724106d6.0        for <azareei@akh.com.qa>;
+ Tue, 25 Nov 2025 01:02:08 -0800 (PST)
+Received: from ip-172-31-42-144.ca-central-1.compute.internal
+ (ec2-3-96-45-253.ca-central-1.compute.amazonaws.com. [3.96.45.253])
+        by smtp.gmail.com with ESMTPSA id
+ 6a1803df08f44-8846e575439sm117662516d6.47.2025.11.25.01.02.00        for
+ <azareei@akh.com.qa>        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384
+ bits=256/256);        Tue, 25 Nov 2025 01:02:00 -0800 (PST)
+Arc-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
+ b=Z4cH8o+5O7FMDAhC5V6KG5St/f9OzfI2ub/AUsxINP19Hm1nRKmYpGhWqe0OaoBzVxIv3TI54CCUMmvsRWSDiu4911oUiOhrYb34ppfcPFGmfXCPELGJ0c5mKP4qOPIi7TBFlQc87972W1l3ZRe8x4+xKqe65yP3+wu2BYcYzWV7sNLm6g+tUndXOEJLKDndnK9FoMij7eZ8/K0TojrQ7aZYp5IPXgjKdz8ziFLdHOekUfoDVUy8fjqktMi7ej2AkIZQpGyFbGeK24AqKnDNwJwKaZEbJD2/iHgAaJxZgeEUr48xgx7kwATU5M8+cvCtRx4bs24m30aXBa+J/WH3rw==
+Arc-Seal: i=1; a=rsa-sha256; d=tmes.trendmicro.com; s=tm-arc-20210909;
+	t=1764061410; cv=none;
+ b=oD5XjwJ9E9hdON+U3unDg2NRJZiCtT6N3bVzOQr9IIjt6MX2nvapHJvrbRsJoBMaWrNm9td24mN23EGUTlApo+3F80L5R3VWxFLzf5n2z/6v20FZspvN0iBuCdGUWX9Oz5dwh0+iLU1su7dHY8XQtZENwK0oSuo2TEHcOlhDnl/SeO8ghlkvy+DegQHzI9h6BZkyWQ05RQq7I/84tSEz3Dyr2+b4SmlLFS9vlCOLX6h3fzqq6aoqS86fNQYljqA3AuwyV41UCMRZ02xZ693dn4F9bSHFrkASRYv0Zt1FEpvpwKt5zynWbGqf5yf+0zaSZJnnxSRT8Tze5nG1XvNxkQ==
+Arc-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed;
+ d=microsoft.com; s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xNMpUjxDrFHSh7bXWWURCldR339orxrT+lb4lnOZ3+8=;
+ b=Rch4KolgybKGy/iHY9vgLbZzhezqUUBDaVxQZWiE28AcptwR18LxHhzrQWjjHpsAF2R+9Hc5i/Mo9FnaQ3oBFuhib7UHUH/eGAiAIkxfayZKe4VWL37YqE2np8UQTgBdPHCTryAF0MzeBt4ZrrOn9KsEwClZkj405oiYzYeqzleg8Mz27OY+kiEXkTTCMLIChSXnMcr7tovNptuDCsNUs5jfXl9bica0QCnb3sWjOZJ2Av5AueaDL73l+Jp2V2LjOOhmFzmgAXf3pw3GFVFGqbsSrczgFNQ5QTCCm4UvEBzYWEoKql/559YSwxjlVXM5FZErcl0udsX1pHaZpz6coQ==
+Arc-Message-Signature: i=1; a=rsa-sha256; d=tmes.trendmicro.com;
+	s=tm-arc-20210909; t=1764061410; c=relaxed/relaxed;
+	bh=xNMpUjxDrFHSh7bXWWURCldR339orxrT+lb4lnOZ3+8=; h=From;
+ b=RAWBPn60Wg4hLVlDbcZHCAbGQ8JYXT5PZhsfm6KBjAjmWrwIk9tjbJEgc87LE9TjfxxVdFICiFBagjW44IHW5ReUlRRw0Clcoq2B33R3dQqpssNgjxJiP05qLzSgY5Yb3LvklMFReU1tSonP28LjHIPeeuc10B9k+8XSVLLhrwv61GblD+JJZpByynFV/ToSdfr92tsPGqD6LW/bNI8Vonu+KGC0cqNU1SRG2yaEayxlRNoCvC8+DA8UHFaKfUobZNexp4ma8uYr7oyTrkAzx0e+mQdVTpi4nWqNfBMA9N46p5lZIu9AhBuRnkNLyvNFwJttBnS4CuhQxiY80qQdAg==
+Arc-Authentication-Results: i=2; mx.microsoft.com 1; spf=softfail (sender
+ ip is 18.185.115.105) smtp.rcpttodomain=akh.com.qa
+ smtp.mailfrom=gupshup-solutions.com; dmarc=fail (p=reject sp=reject
+ pct=100) action=oreject header.from=gupshup-solutions.com; dkim=pass
+ (signature was verified)
+ header.d=gupshup-solutions-com.20230601.gappssmtp.com; arc=pass (0 oda=0
+ ltdi=0 93)
+Arc-Authentication-Results: i=1; tmes.trendmicro.com; spf=pass (sender IP
+ address: 209.85.219.54) smtp.mailfrom=gupshup-solutions.com; dkim=none (no
+ processed signatures) header.d=none; dmarc=pass action=reject
+ header.from=gupshup-solutions.com; arc=none
+Authentication-Results: spf=softfail (sender IP is 18.185.115.105)
+ smtp.mailfrom=gupshup-solutions.com; dkim=pass (signature was verified)
+ header.d=gupshup-solutions-com.20230601.gappssmtp.com;dmarc=fail
+ action=oreject header.from=gupshup-solutions.com;compauth=none reason=451
+Received-Spf: SoftFail (protection.outlook.com: domain of transitioning
+ gupshup-solutions.com discourages use of 18.185.115.105 as permitted
+ sender)
+X-Tm-Mail-Received-Time: 1764061328.868000
+X-Tm-Mail-Uuid: 30c1d829-567a-4139-b662-75b82ae55e8d
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gupshup-solutions-com.20230601.gappssmtp.com; s=20230601;
+ t=1764061322; x=1764666122; darn=akh.com.qa;
+        h=mime-version:date:content-transfer-encoding:message-id:subject
+         :references:in-reply-to:to:from:from:to:cc:subject:date:message-id
+         :reply-to;        bh=xNMpUjxDrFHSh7bXWWURCldR339orxrT+lb4lnOZ3+8=;
+        b=T2KHpXwEv/boKyrXOnGvn+5UY+RoGjjcqfX/nI43+5Bmy1WsKfzGiDf3I2q3odW1df
+         Ysjz3RslXSifk2vG+fVdV88S/v+ZIhq9gxoAfN6+SvoVt55at8kApJL2zcshDDExBOk3
+         aRu8OJYYdv1qIQ73O7K/H2dWGY3zJMWKYD4axXwXxKvy7t1kgqvtTdXdGhFsVLbMyyaP
+         2s7n1JM+0OqqTqJfiQ7bTYcsX9unVIdYDg5Iux4s6KsYqW3iOx4981p4rqJHH+dTO8CT
+         uflEBJQcFHmwmQ5iJ3ZzlH3C/+2VK8k1JhkRffcT818HU6eorFpHYTaJLYCduFefI8+8
+         1DJg==
+X-Google-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764061322; x=1764666122;
+        h=mime-version:date:content-transfer-encoding:message-id:subject
+         :references:in-reply-to:to:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xNMpUjxDrFHSh7bXWWURCldR339orxrT+lb4lnOZ3+8=;
+        b=njMpNOvq337QysaZrvYhf/QUAXVfCGBWWUolSItiiKQ//mpPkd5CCtEjI3Dahlh0KD
+         xncuCVeKzoMBLQ8ZIPEo29ndahcSuNPKoWTNipyGNw43AMKpqCur9kq74oDKa7XNb4Vq
+         tzdp5Am1tQ9dGdJyDUp97ysC9Hvrp15y19/m842rnLCbRV2O+aM2NBTcYJYkwLFSH1j/
+         qpCOV69RfoIMaRbDGMAkKlL1INAyab1PV2BMzrazjlpvJT60C61/6HJe/VSxP7bagGXG
+         6u5xJf2lYQ2p3kdNVdYO8P0C0a4uBHfUvk1XrSR4dEan4r0WuYTklO2R935oPLm8wOP9
+         CHYg==
+X-Gm-Message-State:
+ AOJu0YwygOIUlkQlbLzNDKtD5F514gxeMI+tfz4Qo7S1HgzNBs7dZmwc
+	WE7BOyQrCOJ/f6HTsydBX/pWGhWYe6WUsvRKv/6YCu7t3MGwi6by3gBWBV5L+AhECdPyZeYaJW4
+	BAj1D
+X-Gm-Gg:
+ ASbGncv6+FJj4p82JHJWf1LMl0BZtNwnfItO2M+RyuNoEK371yjMW1a6gku5hcpZL5y
+	rqGU6et9xYDHW4Da5i0ZpgLWyVcSFo45bUZrBMKBent3I6FNxAeRsaTIrMpkFcPpKRwQm/DMr+K
+	aS5b1BePB6+wX6I0Fmh35R+E6ooB9HwidKEdbeSVXittNZ9feG0Ar4BqyfQs0xSX8+cCFr4nJXA
+	qx488SZbiQcuM8zJtF4VJO0mgZJoSWFIGQTDUsWllrqhJbamJaeA8366ySMRCqDynlP5W4q35dy
+	7dhNmIseXHU5urOxS/UHB2AupwWSF6oy+gGX9KtFGqapVv6tUeAebrCKjC1GHZ2CGunsCL+zjDh
+	FMjnf0Pky5hRSqtVS0t/bh7m7qTV7FkewsbbqFsMIs+HiSFCoDXVq8ku7ZtE+Puyus5Fp01pd2D
+	OttTI4vveud7pzeRA9UvihvyYbCMg4Cb8u/52VGFJkIAIHb4lVtxt+SSTB3xsu1Gcm1sE/7t3M5
+	pKqf5i1/sgXoUgX7iIvMARLyw5fSE43zwu9fs2zpLhXI0F/bjyrO9/TBbXBo2s7eQ==
+X-Google-Smtp-Source:
+ AGHT+IFhe7+Ihx80qySWEgcI934+m6N26rSdFZdP40SId0M1Eb375nNaMOjoGuJPmRnrBfxvvgEeqQ==
+X-Received: by 2002:a05:6214:62e:b0:7ff:7b64:840a with SMTP id
+ 6a1803df08f44-8847c525aacmr257528256d6.33.1764061321533;        Tue, 25
+ Nov 2025 01:02:01 -0800 (PST)
+From: Abhishek AC <abhishek.ac@gupshup-solutions.com>
+To: Ahmad Ali Zareei <azareei@akh.com.qa>
+In-Reply-To:
+ <3c7184f6-6705-sl96-41f3-8546-76ccb009119e@gupshup-solutions.com>
+References:
+ <49a2aadd-fc8d-sl95-4d39-92af-d51b1b92f695@gupshup-solutions.com>
+ <d4a25ca9-27dc-sl19-4ae2-8227-5533f9b7e609@gupshup-solutions.com>
+ <3c7184f6-6705-sl96-41f3-8546-76ccb009119e@gupshup-solutions.com>
+Subject: =?UTF-8?B?RVhURVJOQUw6IFJFOiBBc3BpcmUgS2F0YXJhIEhvc3BpdGFsaXR5?=
+ =?UTF-8?B?PD4gR3Vwc2h1cA==?=
+Message-Id:
+ <4bd29d1c-a86a-sl83-4e76-8dfa-60cc1b54baaf@gupshup-solutions.com>
+Content-Transfer-Encoding: 7bit
+Date: Tue, 25 Nov 2025 09:02:00 +0000
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="----sinikael-?=_1-17640696432950.5946603393610163"
+X-Tm-Received-Spf: Pass (domain of abhishek.ac@gupshup-solutions.com
+ 	designates 209.85.219.54 as permitted sender) client-ip=209.85.219.54;
+ 	envelope-from=abhishek.ac@gupshup-solutions.com;
+ 	helo=mail-qv1-f54.google.com
+X-Tm-Authentication-Results: spf=pass (sender IP address: 209.85.219.54)
+ 	smtp.mailfrom=gupshup-solutions.com; dkim=none (no processed signatures)
+ 	header.d=none; dmarc=pass action=reject
+ header.from=gupshup-solutions.com; 	arc=none
+X-Tm-As-Ers: 209.85.219.54-127.9.11.1
+X-Tmase-Version: StarCloud-1.3-9.2.1005-29596.006
+X-Tmase-Result: 10--0.601500-10.000000
+X-Tmase-Matchedrid:
+ JntwZIbuf0Db9FS28tHdcXpTDL8Gyjsbi69wqkZIM+nNYvSo5L/RdawS
+	1cXTjslv/SXhJx9FXpH75scSsadEQIy6eRzzta4SOVGzQOp+hQUxstRwGoHJ3ivC8vN7zcoCBDF
+	rm/yftUdZz/xdoRU2o0Q1F6scRj/U2hxqTVhRa5QHIMOIJtanU4tD3e5khD5knd+l7YfAnG4s/b
+	O6FQU/1sp4yOM2dFxVvO6ifpw7N3V3Sm/IOidgj5UmgncILDpwBCCXp2hcnxGbf+behM3Iid0Dv
+	9cZfwCI3DJPYBNSQacphiMDWApKO2PhjXmWNSUnCOsUvsY+PpKJXeoHaUjxA3Uk5DFnYX9Gv8Bn
+	vd9gZSDJQIZNsaBza6pO9NvBgpq/maig3fcmVY7PEeDcxvUDjCETMbLt19LQlU7JPy1hNLNZNTY
+	IvEU9YTEEhITdTvwE6B8ztMTnISrotZZFLzrVX2sCVKm5hjwdqvJX/aNGr9cSCDdzAMeX/Vx30j
+	fvWyoEA/lH/MvdoiYZNmx/p9DKJ6DB8pdEcZQI10xXx8PLNMEmkrgX3CciJmLK5A5md0r95o4up
+	6otKKzr7DiTjVdNzGXFkEeSp+dzAJrb2hunYUHdiUBd4czhAVPg5iEtbTkD
+X-Tmase-Xgencloud: 708a6abe-6038-45f9-a935-fdb9e0c313c2-0-0-200-0
+X-Tmase-Snap-Result: 1.821001.0001-0-1-22:0,28:1,33:0,34:0-0
+X-Tm-Riskai-Ptn-Version: 1.22.0+20251125.4fbebe0
+X-Tm-Riskai-Matchedfid:
+ WyJGSUwwMzMiLCAiRklMMDM2IiwgIkZJTDAzNyIsICJGSUwwNDAi
+	LCAiRklMMDQxIiwgIkZJTDA0MiIsICJGSUwwNTYiLCAiRklMMDc3IiwgIkZJTDA3OCIsICJGSUw
+	wODFOIiwgIkZJTDA4NSIsICJGSUwwODciLCAiRklMMDk3IiwgIkZJTDA5OCIsICJGSUwxMDAiLC
+	AiRklMMTY5IiwgIkZJTDE5NiIsICJGSUwxOTciLCAiRklMMTk4IiwgIkZJTDI1MyJd
+X-Tm-Deliver-Signature: 30806890B8559EB0F9CAE56D4350C9C4
+X-Tm-Addin-Auth:
+ Wu71Oh9oHjPJla8o+epTG+ojBbvLViLiVoTiEMc5Vsp2i0Ult0NgS6G73xN
+	yWIolr4r039Ry9134aX6fDrHUCmjz3BT+roG+uOGJv2J6ywx2XnD2rQKQLhElA67OQmtjVRJsL9
+	NRr56lBPpZLWg8QhlNMPUD2+XoOmoJZdzFxnxi3Bhc3GIrToQfv5o4FTqZbfr51PPgghmjPw7GR
+	6O8dJrnQKEtP92J9Sm97rN/ZfZXx879t23LmyBcYb4/t6C19dWpKXaJNP01rfysKtUHbe+n2q5z
+	AdZyz5vIdJmM62KW3sq9/KYcjm4J8twRGX3u.xTRdiIGSVkudqKpMBkKkwJuJQrq54mjwdQ4z3s
+	vQW4+3aEm/tLArg9LHt9bBqvDJIvumI4XtlrQu4G5mDoZBWpdpS+0LluHxxzlKDIi+O4dfo3yHp
+	r8gOmhfKqSNBQiMTHaQR3KL7bwTvBOhoQ6m2e7wPdV1YMqzza6WarcDsKIOKgh0u3u+Cp7fB6Vi
+	WM3oJpKE5EgfIPaYWtsJu7KI3yuqL9tyQwqhQq1X/2f0s6OI5NaP7kyNyU9Y+e2J3ic5IB4mrtG
+	HYo3omlIoDincXcczNRj88tsNNVtkdK/yi5VwGX2Om/EqwK0BWH7e0UQ8c8P50nGBLfMkam9l1F
+	2WoA==
+X-Tm-Addin-Productcode: EMS
+Return-Path: abhishek.ac@gupshup-solutions.com
+X-Ms-Exchange-Organization-Expirationstarttime: 25 Nov 2025 09:03:31.2643
+ (UTC)
+X-Ms-Exchange-Organization-Expirationstarttimereason: OriginalSubmit
+X-Ms-Exchange-Organization-Expirationinterval: 1:00:00:00.0000000
+X-Ms-Exchange-Organization-Expirationintervalreason: OriginalSubmit
+X-Ms-Exchange-Organization-Network-Message-Id:
+ 23cda629-0e19-4a3a-492e-08de2c018183
+X-Eopattributedmessage: 0
+X-Eoptenantattributedmessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-Ms-Exchange-Organization-Messagedirectionality: Incoming
+X-Ms-Publictraffictype: Email
+X-Ms-Traffictypediagnostic:
+ DB5PEPF00014B9C:EE_|DO2P289MB0171:EE_|DO3P289MB0286:EE_
+X-Ms-Exchange-Organization-Authsource:
+ DB5PEPF00014B9C.eurprd02.prod.outlook.com
+X-Ms-Exchange-Organization-Authas: Anonymous
+X-Ms-Office365-Filtering-Correlation-Id:
+ 23cda629-0e19-4a3a-492e-08de2c018183
+X-Ms-Exchange-Atpmessageproperties: SA|SL
+X-Ms-Exchange-Organization-Scl: -1
+X-Microsoft-Antispam:
+ BCL:0;ARA:13230040|27102699006|43022699015|82310400026|94036028;
+X-Forefront-Antispam-Report:
+ CIP:18.185.115.105;CTRY:DE;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:inpost.tmes.trendmicro.eu;PTR:inpost.tmes.trendmicro.eu;CAT:NONE;SFS:(13230040)(27102699006)(43022699015)(82310400026)(94036028);DIR:INB;
+X-Ms-Exchange-Crosstenant-Originalarrivaltime: 25 Nov 2025 09:03:30.8116
+ (UTC)
+X-Ms-Exchange-Crosstenant-Network-Message-Id:
+ 23cda629-0e19-4a3a-492e-08de2c018183
+X-Ms-Exchange-Crosstenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-Ms-Exchange-Crosstenant-Authsource:
+ DB5PEPF00014B9C.eurprd02.prod.outlook.com
+X-Ms-Exchange-Crosstenant-Authas: Anonymous
+X-Ms-Exchange-Crosstenant-Fromentityheader: Internet
+X-Ms-Exchange-Transport-Crosstenantheadersstamped: DO2P289MB0171
+X-Ms-Exchange-Transport-Endtoendlatency: 00:00:03.7245096
+X-Ms-Exchange-Processed-By-Bccfoldering: 15.20.9343.011
+X-Ms-Exchange-Externalinoutlookresult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery:
+ ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4717077)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info:
+ 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
+
+------sinikael-?=_1-17640696432950.5946603393610163
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+CAUTION: This email originated from an external entity outside of Aspire =
+Zone Foundation. Do not click on links or open attachments unless you =
+recognize the sender and know that the content is safe.
+
+Hi Ahmad,
+
+Circling back=E2=80=94just wanted to close the loop unless this is =
+something you're actively exploring.
+
+We help teams:
+=E2=86=92 Qualify leads instantly on WhatsApp or Web
+=E2=86=92 Guide buyers to the right sales channel
+=E2=86=92 Handle CX + follow-ups using Voice AI
+
+Would you prefer I check in another time, or should we set up 20 mins this =
+week?
+
+
+
+--
+Thanks,
+Abhishek AC
+Demand Generation
++91 9008791258
+
+
+
+On Mon, Nov 24, 2025 at 06:05 AM UTC Abhishek AC <abhishek.=
+ac@gupshup-solutions.com> wrote:
+
+
+> Hi Ahmad,
+>
+> Thought I=E2=80=99d share what brands are building with Gupshup:
+> =E2=80=93 AI Agents on WhatsApp that guide buyers from ad click to site =
+visit.
+> =E2=80=93 Smart assistants on websites to pre-qualify & route users in =
+real-time.
+> =E2=80=93 Voice AI that handles complex queries in English, Arabic, and =
+more.
+>
+> All tightly integrated with CRMs, campaign tools, and analytics. =
+We=E2=80=99re not replacing your sales team=E2=80=94just making them faster=
+.
+>
+> Is a short demo this week worth exploring?
+>
+>
+>
+>
+> --
+> Thanks,
+> Abhishek AC
+> Demand Generation
+> +91 9008791258
+>
+>
+>
+> On Wed, Nov 19, 2025 at 09:57 AM UTC Abhishek AC <abhishek.=
+ac@gupshup-solutions.com> wrote:
+>
+>
+> > Hi Ahmad,
+> >
+> > Just a quick follow-up. Gupshup helps enterprise teams deploy =
+AI-powered chatbots that:
+> >
+> > - Qualify leads from Meta, TikTok, Google Ads
+> > - Offer sales & support across WhatsApp, Web, SMS, and Voice
+> > - Drive real engagement =E2=80=94 even post-sale
+> >
+> >
+> > No apps. No wait times. Just fast, automated conversations where your =
+users already are.
+> >
+> > Would you be open to a quick 20-min call this week?
+> >
+> >
+> >
+> > --
+> > Thanks,
+> > Abhishek AC
+> > Demand Generation
+> > +91 9008791258
+> >
+> >
+> >
+> > On Mon, Nov 17, 2025 at 07:25 AM UTC Abhishek AC <abhishek.=
+ac@gupshup-solutions.com> wrote:
+> >
+> >
+> > > Hi Ahmad,
+> > >
+> > > I=E2=80=99m from Gupshup, the conversational engagement platform =
+trusted by Emaar, Danube, Petromin, and brands across GCC.
+> > >
+> > > We help enterprises automate everything from lead gen to post-sale =
+support using:
+> > > =E2=80=93 AI Agents on WhatsApp & Web
+> > > =E2=80=93 Voice AI Agents with natural, multilingual conversations
+> > > =E2=80=93 Full-stack messaging (WhatsApp + SMS + fallback)
+> > >
+> > > Think: fewer missed leads, more qualified conversations, and faster =
+resolution=E2=80=94without adding to headcount. All of this, fully =
+integrated with your CRM.
+> > >
+> > > Would a 20-min intro this week make sense? Happy to walk you through =
+what this looks like.
+> > >
+> > >
+> > >
+> > > --
+> > > Thanks,
+> > > Abhishek AC
+> > > Demand Generation
+> > > +91 9008791258
+
+------sinikael-?=_1-17640696432950.5946603393610163--

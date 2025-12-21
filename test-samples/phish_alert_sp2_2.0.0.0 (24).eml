@@ -1,0 +1,906 @@
+Received: from AM2PEPF0001C712.eurprd05.prod.outlook.com
+ (2603:10a6:20b:5de:cafe::60) by AS4P190CA0005.outlook.office365.com
+ (2603:10a6:20b:5de::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.15 via Frontend Transport; Tue,
+ 11 Nov 2025 07:02:12 +0000
+Received: from AS4P190CA0005.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:5de::17)
+ by DO3P289MB0212.QATP289.PROD.OUTLOOK.COM (2603:1096:790:17::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.16; Tue, 11 Nov
+ 2025 07:02:13 +0000
+Received: from inpost.tmes.trendmicro.eu (18.185.115.102) by
+ AM2PEPF0001C712.mail.protection.outlook.com (10.167.16.182) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.13
+ via Frontend Transport; Tue, 11 Nov 2025 07:02:12 +0000
+Received: from m249c.cventrsvp.com (unknown [216.230.14.249])
+	by inpre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id 8200010004D6B
+	for <anna.quismundo@aspirezone.qa>; Tue, 11 Nov 2025 07:00:33 +0000 (UTC)
+Received: from 216.230.14.249_.trendmicro.com (unknown [172.21.193.100])
+	by inpost.tmes.trendmicro.eu (Postfix) with SMTP id 7A8AE100005E4
+	for <anna.quismundo@aspirezone.qa>; Tue, 11 Nov 2025 07:02:12 +0000 (UTC)
+Received: from DO3P289MB0212.QATP289.PROD.OUTLOOK.COM (2603:1096:790:17::13)
+ by DO2P289MB0270.QATP289.PROD.OUTLOOK.COM with HTTPS; Tue, 11 Nov 2025
+ 07:02:16 +0000
+Reply-To: <webinars@cventevents.com>
+From: "Cvent Webinars" <webinars@cventevents.com>
+To: "Anna Quismundo" <Anna.Quismundo@aspirezone.qa>
+Subject: EXTERNAL: Measure what matters most: how to evaluate event ROI
+Date: Tue, 11 Nov 2025 10:00:32 +0300
+Message-ID: <p2-w4bdxgdxvvcg4r-l5lgg6k4-a01-tx7z-000000000000000000@cventrsvp.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0000_01DC530E.28031350"
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHcUtkdGhO5/rM3iU+QhzEz4RzpfA==
+Authentication-Results: spf=softfail (sender IP is 18.185.115.102)
+ smtp.mailfrom=cventrsvp.com; dkim=pass (signature was verified)
+ header.d=cventevents.com;dkim=pass (signature was verified)
+ header.d=cventrsvp.com;dmarc=pass action=none
+ header.from=cventevents.com;compauth=pass reason=100
+X-TM-MAIL-RECEIVED-TIME: 1762844433.532000
+X-TM-MAIL-UUID: 7b85a1ce-55ce-43ae-97cb-6c9a89350399
+X-ASID: a01-tx7z-000000000000000000-cvp2
+X-VMTA: a01-12539151002cv
+X-Job: a01-tx7z-000000000000000000;;p2-w4bdxgdxvvcg4r
+X-CMID: p2-w4bdxgdxvvcg4r-l5lgg6k4-a01-tx7z-000000000000000000
+X-TM-Received-SPF: Pass (domain of 
+	bounce-p2-w4bdxgdxvvcg4r-l5lgg6k4-a01-tx7z-000000000000000000@cventrsvp.com
+	 designates 216.230.14.249 as permitted sender) client-ip=216.230.14.249; 
+	envelope-from=bounce-p2-w4bdxgdxvvcg4r-l5lgg6k4-a01-tx7z-000000000000000000
+	@cventrsvp.com; helo=m249c.cventrsvp.com
+X-TM-Authentication-Results: spf=pass (sender IP address: 216.230.14.249) 
+	smtp.mailfrom=cventrsvp.com; dkim=pass (signatures verified) 
+	header.d=cventevents.com; dmarc=pass action=none 
+	header.from=cventevents.com; arc=none
+X-TM-AS-ERS: 216.230.14.249-127.5.250.21
+X-TMASE-Version: StarCloud-1.3-9.2.1005-29568.005
+X-TMASE-Result: 10--13.739600-10.000000
+X-TMASE-MatchedRID: Ho8J/lGVQjNsia8QaseTQgrN8TTGJsc0+OGYj5iHoQTO+fWBGjxWhBYM
+	1+XsozaZr6SrYCKdCPR/YCJ/pk9oKRCW+YBMZfZILHIYgt1COYKgIr6cb2yWfztx6KaVOwM21Sd
+	gaoaoqPSNCIS0X65tKJBD+ne2mxnILcYJNPbvg6kwoEy+KKX0sjC402g4LjYvc4yzZOQ1TRHJ8D
+	+Tww98xk/xORGQRC0fdw/HqeZ/HZQX5nzTnlFKV16DU+Iu8f+3bE8Q+jFYTajjcW78RDAvP7+kd
+	7as/rBKY8m3LkJbAAfKiy17ziCZ1XiXIXWXK9StnlXupbJmPxH9fsjZBWN6mhMDCE04c2BUXAr4
+	kp/tAu4VHvWI7yGl+Bqa0vPuaEaJivcu/eXmFU7VLrJfyVWkTYz/g3ly3EKoy14xk9UBTO11InA
+	SQlPUcs+/Y33Q0csPLcvvpNVyimr3vtfEQLhtkwhFWKVFTFrrcon4ddel/27a3nNNVukcLRuqoI
+	lXGQ4TISsWZ1KU9mSNZLSQT6fg0AGYjCus6WrVpsDc6mB9h3xFW2G63ADnUZuKC9HSGWzjIyf7v
+	v3KVZAy7l7iHhann+zk1rL46bfmcXr9R0jWNsBBf5EtzC/DmHQpViMKHjU3m0kdySvnL14kY3Ts
+	2q8wQyD1pJL+PeHay7RvoYJmTBFSstAOg7UJV+FXxZW77vgkC2hFDR4DDwXKzwCMJdcs48mMp9c
+	DRaw8fvO0C2f/BCeJaeSvAM/2EW8KQnKr5IkaWkxarUapj2MyZd5PbxUCvNe8+WZ8qqsk70JIhI
+	VEDhkZObYU2SP5CJd/OEZx0Ho1yFDv7apmZyu3BJFtyO5uJMcTkZweorVX6KEJO7SR6XgkvJFrs
+	Dh0h8KjGRQnQ81h4ftEeSASkbIDHYdiK+osNdXTxhTcPXBka1P8Ik1zBcW4hQkw8hg8fXmToVeJ
+	TfB5o
+	MHyl0RxlAjr8CodbTsrvJ4JIhdqE/5UB73xunbyKrrrWo4Q9LYgOrNASageTL17lExlQIQ
+	eRG0=
+X-TMASE-XGENCLOUD: a831242d-9815-40df-855a-dd06b03d5239-0-0-200-0
+X-TM-Addin-Auth: zsY2JQZILX+MtfhGIk13V4hw38TqHU+Yrtphuu1stQ+M8kOUi9ehlZdkxsI
+	XdQzzWUBRr8vExQBJi1+dvbhtEZLunjaK/g2g1Wg8oDN6MCBdu5N51A3ujeu6EMpQ9WqdZYnly9
+	KLs4ZaZ/dTmzeygX1CcbHMAtzxpr99Yticp6eUAN7kBBfEXeLu01zNIemnWbNmvrHz4zlW9dt+m
+	9h0Z8axX7+06juCqs5VjUefeh2buexCJG9XaZJMHGbCHy5P+JZAnk4LJuKC5+mqjIj8ngutyxYN
+	rmzU2iBKaz765vqDmdbYu6IHE2GJupIl+FAaD63iPfWpUnR8O70MFOdnyw==.prFI4eFsx7odWu
+	ra8zWF2zoXdnr1h1Gmp1Shk2mLRS+S/PXYs5joOznuXx95rQlY4csCPw7c+8tNuB5d1MlX83s1g
+	eNdmAAY1iEkr7scxmFLX0PJLbRUPLv8xKzf9YOF9Pd4BmxavneGKssGUdzOBjzS6vueykRGVvmU
+	R4gTJDhLZY14wCXNC+AjmEgEBM6Z/35nj+ibQR+biMtYuEZViXgkqZ7amjyTeROAvU4BEYJrvj5
+	SFr6Q/2kyJAWhI6SJAU5/haK0I4/k1sOfWtpb9xLbKgb4niAB15e49uIxrOSc60+88d0BDb9KGV
+	LOX230TaU4aKhPHRmG63tG6JSJVg==
+X-TM-Addin-ProductCode: EMS
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-1:1,22:0,28:1,33:0,34:0,42:1-0
+X-TM-RISKAI-PTN-VERSION: 1.22.0+20251111.6ff2782
+X-TM-RISKAI-MATCHEDFID: WyJGSUwwMzMiLCAiRklMMDQwIiwgIkZJTDA0MiIsICJGSUwwNzgi
+	LCAiRklMMDgwIiwgIkZJTDA4MU4iLCAiRklMMDg1IiwgIkZJTDA4NyIsICJGSUwwOTYiLCAiRkl
+	MMDk3IiwgIkZJTDA5OCIsICJGSUwxMjEiLCAiRklMMTM3IiwgIkZJTDE1MCIsICJGSUwxNzIiLC
+	AiRklMMTk3IiwgIkZJTDE5OCIsICJGSUwxOTkiLCAiRklMMjAwIiwgIkZJTDIyOSIsICJGSUwyM
+	zIiLCAiRklMMjg0Il0=
+X-TM-Deliver-Signature: ED9B046C73CF31041FA1EB5AE17DB5CD
+X-MS-Exchange-Organization-ExpirationStartTime: 11 Nov 2025 07:02:12.6822
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id: c1225dd6-1464-4e77-4d65-08de20f03d5b
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM2PEPF0001C712:EE_|DO3P289MB0212:EE_|DO2P289MB0270:EE_
+X-MS-Exchange-Organization-AuthSource: AM2PEPF0001C712.eurprd05.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id: c1225dd6-1464-4e77-4d65-08de20f03d5b
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-MS-Exchange-Organization-SCL: -1
+X-Microsoft-Antispam: BCL:6;ARA:13230040|4123199012|82310400026|1032899013|5073199012|5063199012|2092899012|3092899012|3072899012|5062899012|4022899009|12012899012|27102699006|69100299015|2066899003|8096899003|13003099007;
+X-Forefront-Antispam-Report: CIP:18.185.115.102;CTRY:DE;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:inpost.tmes.trendmicro.eu;PTR:inpost.tmes.trendmicro.eu;CAT:NONE;SFS:(13230040)(4123199012)(82310400026)(1032899013)(5073199012)(5063199012)(2092899012)(3092899012)(3072899012)(5062899012)(4022899009)(12012899012)(27102699006)(69100299015)(2066899003)(8096899003)(13003099007);DIR:INB;
+X-MS-Exchange-ABP-GUID: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2025 07:02:12.6158
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1225dd6-1464-4e77-4d65-08de20f03d5b
+X-MS-Exchange-CrossTenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-MS-Exchange-CrossTenant-AuthSource: AM2PEPF0001C712.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DO3P289MB0212
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:04.2353018
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.9298.012
+X-MS-Exchange-ExternalInOutlookResult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery: ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4717077)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?hRLKvJP0JLTLitLNX2vdsQxFVhSA/bhhEzXXZNbmDZD0txM0Tfrw6SCG8IuY?=
+ =?us-ascii?Q?viCNSBNgbVSOK/IGyrFs8dhfo4LmPaOXM4rn+JgKj8xqhvqS/KSBpkIkjngm?=
+ =?us-ascii?Q?sBtbAVsOdgIS7jhx3dOTbwlJS2/hknxbA5yUl2QmQ4zd7yenDuxohU0JLtqm?=
+ =?us-ascii?Q?9CykL7L3c++Buz1SgECRw4Cdx10T3cgNI+uWdj/bsoiitVLOv++IpkhjE8iY?=
+ =?us-ascii?Q?N4X/mm6bZsjIgR/OJKoS26VDGlznLrfV6p1IENXP5H1wCW4rnaq+756aP43p?=
+ =?us-ascii?Q?lbo85MY3pDW5z4YUdck6sJ/s5Z/pHSVZ9xJW0mE3/1S18WGfcQp35ErqluVD?=
+ =?us-ascii?Q?AF6QJ1HhyZOTE6inxeIQ1mqk8NNL238YrC+3iOZk/pT6boTIv1p3ZJec+PMY?=
+ =?us-ascii?Q?E3UcyO/L1VrWYo6iqLkom03bwm43gPK5CcNShlJF0q+O/WsEbwnxgvqlSuFj?=
+ =?us-ascii?Q?oGI/657mlpgTgbXwjl/sXieepLATzYK14PhCBlnPIGUOd+PtmFGSpD3HtG9f?=
+ =?us-ascii?Q?wyaOF1JP9fx5cOsJJ27/585tS2/YLWXsOv0RYKP9d1P3LbpgAYuMTER0Hj1a?=
+ =?us-ascii?Q?q0mvDDkiIRoNNTy3nCIEmnMP9fhwGVFKl2ZkVu/Sgbv3m/UpXj6zxWQIUNcy?=
+ =?us-ascii?Q?m6Sf7j0++mkggB99vYQDKnxbsF1UeCOdA2EgsI2KbBQW09VEuVn+Q3FuCReh?=
+ =?us-ascii?Q?egNODdLJyWRz7ZCa8uq+NGEtIDHz/lLtJN6ke102J5Pi+wySSWA
+	MI5KcxOgk?=
+ =?us-ascii?Q?QkmsjLTEfzQIU5cU1fsLWEaVoosrVwfPOJ7JOYEf5G60xE8dHcSE+mKVVjxZ?=
+ =?us-ascii?Q?m+dcwZE9zG6xifFnOciw9H+naMFDSFIz4iKBNsgtMkvb/I/6YIHYNdpOoeOc?=
+ =?us-ascii?Q?rkAhShQ2956+5J169MTfYFCzmVLXM3KJ5nGSdkIlTV/TqDE48NF3o3SaWRj9?=
+ =?us-ascii?Q?hxHaIPgKpfxurlNF2BbbEB4y5H9lUoutORLsl4jwsWwfnqKNNH2bgLOTOZzl?=
+ =?us-ascii?Q?hVaSvZ7tu0L5Fi+BMjdxilw6t/dEaTHxKKUpFK+GOqBK51K3Ilqf55qd/EFE?=
+ =?us-ascii?Q?BYFsu9qQRYrOm5M9clq5PH7d+V1kwCtGGk7oL4PxvKSiJV3NdjCmoDXu37wf?=
+ =?us-ascii?Q?334yKYsm8nt6xFl+rHGDdrj5ihK8Yed8cTpjcnlbhGSj19fRpVdoDycKVzOT?=
+ =?us-ascii?Q?O5O02zwsGTt9cs8yKKqfvWAaEO0sKyBMq6mPiehHRa+ZmOv+kv9ahBo4Ln/d?=
+ =?us-ascii?Q?fs4dPM26a1HQNsYNrTziFHLjUpXxFKWthi520lUVQh4c4aZg8dfnXe1o0AwE?=
+ =?us-ascii?Q?HPkXBvcy4swGAxHcvtkQ/XWLPfaUeN+e3xQG5vnIKN62hPCUwZthOpLL3U+S?=
+ =?us-ascii?Q?uYeahZNaCuxsRzAJhrmBZ51DcyGqaZc83fgJ5QGqLuwwQvKRWjwohzNkdma9?=
+ =?us-ascii?Q?8+EhMmSeBuGn1CqHwbx2UjbOT0ob6Gl5bKQxT95XsqbQReLm9PXTWLqDmiqB?=
+ =?us-ascii?Q?oz7VMMWqaXkmyU1qAjOOhCDXThRdO3WXE2VKW
+	9MBhUu5Y12+Ouh40s97PJ1x?=
+ =?us-ascii?Q?UH/bVHbZBCgEs5nVIRneuPWMr5qM5D6hnTgIFRtbBWpS9JfVR6nmEDuOAxQt?=
+ =?us-ascii?Q?3vxjf/GskG60jH0EynW2Zn40aQzpsOqF9tyTB3e4j987bdg9SQTBt5Gd1pSX?=
+ =?us-ascii?Q?tgWPIL0gMGI0uSIYdJVKHMRphFGMxEQpFswNrbYYHBr5xZlnLHDULXu106wk?=
+ =?us-ascii?Q?EiRqGuI8QFX/7daBGOEzqDLNGegSNm7pq28VP0YdB/19l6BSD9Az2FWGyGjJ?=
+ =?us-ascii?Q?0zzvWOhlhQjAKOYsdX1sEafrLrbAu0yYjpuhMaBt1easWVdf9R+ajn0Gz0+E?=
+ =?us-ascii?Q?qJxXSmgI6qbqglTMOOQSRIA+h5u3ztSeBhtrHCZsldpXA89H7MUajBTf35UI?=
+ =?us-ascii?Q?tlEMoHzKkeP3c1baSkxJ8s/7SF7g9iM8sq2ieyHhZ5YbRgM4dJbyBlGU8BLh?=
+ =?us-ascii?Q?9KzmxZrC1vRinrMUJXSeHt74DQsk/qqcUbz8NqOjOMAuQR1DES8RJrbueEiG?=
+ =?us-ascii?Q?WukuZ0IShhE9nXiAKKbJ98l4BoF8cT+vmbh1biGpFSTXrchPWiRXrleyJrRj?=
+ =?us-ascii?Q?5/u8/DsHdITHRJEHNpLZVQMWITIHSvxsVt3tNemPv32DXybt6/t7jj400DTb?=
+ =?us-ascii?Q?u0EgUq2z0paRpZPBktJDEihaCs5z6inwuWqpdXS8Xwfv+6ufD1ef1sNYY38R?=
+ =?us-ascii?Q?SDDGivWqFa8Y4Ral3/9X0zxxUvtQ91BxSHcANLxodSutS+RZG7uTIfrCfdKz?=
+ =?us-ascii?Q?E8BtLZQpW4+qlihNykZ5D/o
+	jTF4Zj4DNq6QGNEINMbPeg8D81yezYCgU8zr4?=
+ =?us-ascii?Q?QwHzjdQchz8SN8LYFVP0ENRnysng6CjpWhxNVkdxIYaIk3rSFs+4X9ZBacZG?=
+ =?us-ascii?Q?0r8yjQDoXINKYycKjAyV46vefzLIYFNnGWvJGXujgtSi5JIeN5um9RgWMb4k?=
+ =?us-ascii?Q?lUxXqmV6CEDA4xVN6Gc6qqqwujn6kCfTw4CDibObflhiWhGqeCs+1azMEpnR?=
+ =?us-ascii?Q?ssbDNXfIsIJCVMt2dQLaOGh52BMUXzoAAGbn2DnkDAhuCDLf/hV179/7URBL?=
+ =?us-ascii?Q?tCNQ8EPzTh994fyZNYQI3af+6hWhoZ0Qsacgof5S+X/r32vXs4bqkJeXhKGD?=
+ =?us-ascii?Q?L/TLOFnI50fdy6SkJuiVo5FsxN6xgjdCrys0yeXbInkHuVv2nzIVDe+06TKI?=
+ =?us-ascii?Q?MUOHx5TQC08B/4luCJnmUQyfq8OvAzlixS2sFCjGrmVBKOWZ6Him/ItcSxzh?=
+ =?us-ascii?Q?Q4D3FqyLLR0BMNFF3Bx3NbrKiF2xYj70MWYMdsqNQyrliHCcRQMq58P/VNws?=
+ =?us-ascii?Q?CcAMwZzYGJ6OQwobxTqob4m7X+5ZCvZ52Jx3zsK5kKg/eapm26zqjIuonyc2?=
+ =?us-ascii?Q?nEVhiBU4JcqdaBZ7OVjoz4NUwvAhGpXP8aPvmVa1yajbxLmaeWJPVz6uVVFR?=
+ =?us-ascii?Q?wwzA+Qw2mNBVcapN12yJ11y+UvWcpbtZ7bkgMF0cgNHPjJtFOzhbgxkbHqvU?=
+ =?us-ascii?Q?GBTiTeu+Q509Fncf+3GMcFnmzHQu/5RqfkNW2uyp2agAKy7ev26OMBTphY8E?=
+ =?us-ascii?Q?64vuidTo7
+	/o0YZKpXeSTSom72EQ7Yg+Ys40pQxk5OoTOkRs80TmxHUnpfucg?=
+ =?us-ascii?Q?Xjtu6IgIhQNL7+n/9KjiLsnjJz26GWFOCFbW68lyRgkzvbFe6zZ6KciFLEPL?=
+ =?us-ascii?Q?JiskLybKeg+UWoi4PJJCcLIR1ileCakOqNXNjMqqxrqFMKJIqKnmu3akzHBr?=
+ =?us-ascii?Q?hy6YVKWFjwClxGo8A/e0XzBjVkb3Gehs4oISV89x5ejc1w=3D=3D?=
+List-Unsubscribe: <https://www.cvent.com/api/email/dispatch/v1/list_unsubscribe/w4bdxgdxvvcg4r/l5lgg6k4>
+Content-Language: en-us
+x-ms-exchange-organization-originalserveripaddress: 10.167.16.182
+x-ms-exchange-organization-originalclientipaddress: 18.185.115.102
+received-spf: SoftFail (protection.outlook.com: domain of transitioning cventrsvp.com discourages use of 18.185.115.102 as permitted sender)
+dkim-signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=cv-usprod-2; d=cventrsvp.com; h=Date:From:Reply-To:To:Message-ID:Subject:MIME-Version:Content-Type: List-Unsubscribe-Post:List-Unsubscribe; bh=8fRwgKwPcXTFB5exXbpZI4wWJCgGyXPh4WbznJdL2Ps=; b=hLMQWJrwtX5YLgMkBqoWOkVD6mnzWelmq7EI2R6vVinvNN+tHPrRhIiiGuSOU20fWQDvmpRhH9hg   mYTP/2ylAlegP5CER0FkcKp9+i5fuUroraqq4VRgBqgh5eiAs0mz0/kIxO0NX3F7k1c5XcqKEdq2   M3aXLUPvCdiKvJbQ6d4=
+arc-seal: i=1; a=rsa-sha256; d=tmes.trendmicro.com; s=tm-arc-20210909;	t=1762844532; cv=none; b=E6ecAAv6sTzhH5CsLW8wc/FVUth5Ofc5zFwEO0CGomQGWdLiQxLJOL24s//VgiE5YENDbKUfRbDgzmTY8JnGpOnlo5Xf0oE6fyN6nyWmfJFTB3f01DyByUjC6whw3pY3LhLkHUwFDm1qIF2BbsXQVmAw1mmnmSFr7SumyuCG0jKQGGC3p8kFEEGdjGW1IXsOKSR5S7zrq2faSWJZAeql8ukWlE9gTNELCSBjAjpPyYHDXa1Ti7xgYbvxO/GIByd7HeIRFOvQUGM0HI2gg1qi8y006P8f4/fsA8AaLs1UDq6lR9RltJ9C2cRyHrIwtma/SeiWze5qnCf4PW05BUzrFg==
+arc-message-signature: i=1; a=rsa-sha256; d=tmes.trendmicro.com;	s=tm-arc-20210909; t=1762844532; c=relaxed/relaxed;	bh=8fRwgKwPcXTFB5exXbpZI4wWJCgGyXPh4WbznJdL2Ps=; h=From; b=QV/+AGfGiR9/4Y2sqgwTzKzlLlz/LC+j6ujWxq5nPvNrCG9drRJ9dUoGdoRIHTi02RdLOIAkexBOvXaX97F+7ILwAfXI05v2cy14rN15ZnNah7Pcy1wWpAhzHdppllEPNXr4SorsyIWmQ2AwMBbTF/mcdhhQuwmjSCPffqC0LnHR/YFdsUGgPLv4KjMWtlAyMvKOpwH8DjcZ++IiIiilvThoW2gU/t0TytsKdnyPO08XBxtVTX4xse052mZzWXcfRDqv4stgRRWY1uXVvMS656Et4+M/vko7eo3AezchKXuUi4v1C1zsA3m4B9u9tHaqGgp/zuDwrunSoY887EjSqQ==
+arc-authentication-results: i=1; tmes.trendmicro.com; spf=pass (sender IP address: 216.230.14.249) smtp.mailfrom=cventrsvp.com; dkim=pass (signatures verified) header.d=cventevents.com; dmarc=pass action=none header.from=cventevents.com; arc=none
+
+This is a multipart message in MIME format.
+
+------=_NextPart_000_0000_01DC530E.28031350
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+	CAUTION: This email originated from an external entity outside of =
+Aspire Zone Foundation. Do not click on links or open attachments unless =
+you recognize the sender and know that the content is safe.	=20
+
+
+
+
+
+
+
+ =
+<https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/l5lgg6k=
+4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGJmlCVThON3pKTmxCSmxjUU9KaHkySzJ=
+FZXhxZSUyRiUyQnlhOFNyVUlmWldvVks0JTNEJg> =20
+
+
+
+
+=20
+
+
+
+
+
+
+Hi Anna, =09
+Is your event reporting telling the full story? If you're ready to move =
+beyond attendance numbers and prove the real business impact of your =
+events, this webinar is for you.	=20
+Join us for "Measuring What Matters: How to Evaluate Event ROI." =
+We=E2=80=99ll share the essential metrics and frameworks you need to =
+directly connect your event data to pipeline and revenue goals.	=20
+In this webinar, you=E2=80=99ll discover:	=20
+
+
+*	The metrics that move the needle and reveal real business impact.
+*	How to successfully connect event data directly to your broader =
+business goals (e.g., pipeline, revenue).
+*	Where AI and automation can transform your reporting and accelerate =
+your insight.
+
+
+
+
+Register in seconds	=20
+ =20
+
+
+
+
+Can=E2=80=99t make this one? Don=E2=80=99t worry. We=E2=80=99ll make the =
+recording available to all registrants.	=20
+
+
+
+
+
+
+ =
+<https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/l5lgg6k=
+4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGJmlCVThON3pKTmxCSmxjUU9KaHkySzJ=
+FZXhxZSUyRiUyQnlhOFNyVUlmWldvVks0JTNEJg>=20
+=C2=A9 2025 Cvent, Inc.
+Unit 109 Floor 1, Building 04, Dubai Media City, Dubai, United Arab =
+Emirates
+
+
+
+ =
+<https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/l5lgg6k=
+4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGc3Vic2NyaXB0aW9ubWFuYWdlbWVudCU=
+yRiUzRm0lM0RwMi13NGJkeGdkeHZ2Y2c0ci1sNWxnZzZrNC1hdnYtdHg3eiZtak1JWE1tNENo=
+M1NxRTBDNWg1T0NNSjQ3cjB3ZWdERFpndEdZT2ZwS2NjJTNEJk1hbmFnZStFbWFpbCtQcmVmZ=
+XJlbmNlcytvcitVbnN1YnNjcmliZQ> Manage Email Preferences or Unsubscribe | =
+ =
+<https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/l5lgg6k=
+4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGZW4lMkZwcml2YWN5LXBvbGljeSZaMW9=
+Tc3hWSUV4T3E3bG5VZXUlMkZhSiUyRkclMkIlMkY2TkxFQ24wbHhGVjFnTjRQeWMlM0QmUHJp=
+dmFjeStQb2xpY3k> Privacy Policy
+
+  =
+<https://www.cvent.com/api/email/dispatch/v1/open/w4bdxgdxvvcg4r/l5lgg6k4=
+/transparent.gif>=20
+
+------=_NextPart_000_0000_01DC530E.28031350
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" =
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html =
+xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office"><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dutf-8">
+<title></title>
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, =
+initial-scale=3D1.0">
+<meta name=3D"format-detection" content=3D"telephone=3Dno">
+<style type=3D"text/css">/* CLIENT-SPECIFIC STYLES ------------------- =
+*/#outlook a {  padding: 0; /* Force Outlook to provide a "view in =
+browser" message */}.ReadMsgBody {  width: 100%; /* Force Hotmail to =
+display emails at full width */}.ExternalClass {  width:100%; /* Force =
+Hotmail to display emails at full width */}.ExternalClass, =
+.ExternalClass p, .ExternalClass span, .ExternalClass font, =
+.ExternalClass td, .ExternalClass div {  line-height: 100%; /* Force =
+Hotmail to display normal line spacing */}body, table, td, a { /* =
+Prevent WebKit and Windows mobile changing default text sizes */  =
+-webkit-text-size-adjust: 100%;  -ms-text-size-adjust: 100%;}table, td, =
+li { /* Remove spacing between tables in Outlook 2007 and up */  =
+mso-table-lspace: 0pt;  mso-table-rspace: 0pt;  mso-line-height-rule: =
+at-least;  border-spacing: 0;  mso-margin-bottom-alt: 0;  =
+mso-margin-top-alt: 0;}img { /* Allow smoother rendering of resized =
+image in Internet Explorer */  -ms-interpolation-mode: bicubic;}/* RESET =
+STYLES --------------------------- */body {  height: 100% !important;  =
+margin: 0;  padding: 0;  width: 100% !important;}img {  border: 0;  =
+height: auto;  line-height: 100%;  outline: none;  text-decoration: =
+none;}table {  border-collapse: collapse !important;}a {  color: =
+#0099E0;}h1, h2, h3, h4, h5, h6, p { /* Override user agent styles for =
+these elements */  margin-block-start: 0px;  margin-block-end: 0px;  =
+margin-top: 0px;  margin-bottom: 0px;}/* Override Gmail Blue Links */u + =
+#body a {  color: #0099E0;}/* iOS BLUE LINKS */.apple-links a {  color: =
+#999999;  text-decoration: none;}/* MOBILE STYLES =
+------------------------ *//* Media Queries  480px matches @small(20em) =
+in nucleus-core/less/MediaQuery.less*/@media screen and (max-width: =
+480px) {  .responsive-table,  .wrapper,  .column,  .img-max {    width: =
+100% !important;  }  .mobile-button {    width: 100% !important;    =
+box-sizing: border-box;  }}</style><!--[if gte mso 9]>                =
+<xml>                  <o:OfficeDocumentSettings>                    =
+<o:AllowPNG/>                    <o:PixelsPerInch>96</o:PixelsPerInch>   =
+               </o:OfficeDocumentSettings>                </xml>         =
+     <![endif]--><style type=3D"text/css"> @media screen { @font-face { =
+font-display: swap; font-family: Open Sans; font-style: normal; =
+font-weight: 400; src: =
+url('https://www.cvent-assets.com/event-email-editor/assets/https://www.c=
+vent-assets.com/@cvent/fonts/assets/open-sans-v17-latin-ext_latin-regular=
+.woff') format('woff'); }} @media screen { @font-face { font-display: =
+swap; font-family: Open Sans; font-style: normal; font-weight: 700; src: =
+url('https://www.cvent-assets.com/event-email-editor/assets/https://www.c=
+vent-assets.com/@cvent/fonts/assets/open-sans-v17-latin-ext_latin-700.wof=
+f') format('woff'); }}</style>
+</head>
+<body style=3D"margin:0;padding:0" id=3D"body">
+<table class=3D"MsoTableGrid" border=3D"1" cellspacing=3D"0" =
+cellpadding=3D"0" width=3D"100%" =
+style=3D"width:100%;border-collapse:collapse;border:none;mso-border-alt:s=
+olid #212121 0; mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in">
+<tbody>
+<tr =
+style=3D"mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes">
+<td width=3D"5" valign=3D"top" style=3D"border:solid #212121 1pt; =
+mso-border-alt:solid #212121 1pt;background:#8A3640;padding:0in 0in 0in =
+0in">
+</td>
+<td valign=3D"top" style=3D"border:solid #212121 1pt; =
+border-left:none;mso-border-left-alt:solid #212121 .5pt;mso-border-alt: =
+solid #212121 1pt;background:#FDF2F4;padding: 7px 5px 7px 15px;">
+<span style=3D"font-size:9pt;font-family:'Segoe UI',sans-serif; =
+color:#212121;">CAUTION: This email originated from an external entity =
+outside of Aspire Zone Foundation. Do not click on links or open =
+attachments unless you recognize the sender and know that the
+ content is safe.</span></td>
+</tr>
+</tbody>
+</table>
+<div>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" style=3D"table-layout:fixed">
+<tbody>
+<tr>
+<td align=3D"center" bgcolor=3D"#EFF0F2" =
+style=3D"background-color:#EFF0F2"><!--[if gte mso 9]>            <table =
+role=3D"presentation" align=3D"center" border=3D"0" cellspacing=3D"0" =
+cellpadding=3D"0"              width=3D"600" style=3D"width:600px;">     =
+         <tr>                <td align=3D"center" valign=3D"top" =
+width=3D"600" style=3D"width:600px;">          <![endif]-->
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" style=3D"width:600px" =
+class=3D"wrapper">
+<tbody>
+<tr>
+<td align=3D"center"><!--[if gte mso 9]>            <table =
+role=3D"presentation" align=3D"center" border=3D"0" cellspacing=3D"0" =
+cellpadding=3D"0"              width=3D"600" style=3D"width:600px;">     =
+         <tr>                <td align=3D"center" valign=3D"top" =
+width=3D"600" style=3D"width:600px;">          <![endif]-->
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;background=
+-color:#FFFFFF;width:600px" class=3D"wrapper" =
+data-color-style-scheme=3D"content1-background">
+<tbody>
+<tr>
+<td =
+style=3D"padding-top:0;padding-bottom:0;padding-left:0;padding-right:0">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" style=3D"float:left" align=3D"center" =
+class=3D"column">
+<tbody>
+<tr>
+<td valign=3D"top">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"float:left;display:inline-table" align=3D"left" =
+class=3D"column">
+<tbody>
+<tr>
+<td>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;table-layo=
+ut:fixed" =
+data-cvent-id=3D"widget-NucleusImage-widget:e9d56c74-405c-4ce3-bffe-ba1b3=
+bc7aeda">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"padding-top:0;padding-bottom:0;padding-left:0;padding-right:0;ba=
+ckground-color:transparent;text-align:center">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td>
+<center><a =
+href=3D"https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/=
+l5lgg6k4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGJmlCVThON3pKTmxCSmxjUU9K=
+aHkySzJFZXhxZSUyRiUyQnlhOFNyVUlmWldvVks0JTNEJg" target=3D"_blank"><img =
+src=3D"https://custom.cvent.com/F4AC897AD5654C279D43BD6023E2A90A/pix/f922=
+2961644640b8a40b4b5b7e2cb473.png?d=3D600" alt=3D"Cvent" title=3D"Cvent" =
+border=3D"0" width=3D"600" align=3D"center" =
+style=3D"width:600px;display:block" class=3D"img-max"></a>
+</center>
+</td>
+</tr>
+</tbody>
+</table>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td valign=3D"top">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"float:left;display:inline-table" align=3D"left" =
+class=3D"column">
+<tbody>
+<tr>
+<td>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;table-layo=
+ut:fixed" =
+data-cvent-id=3D"widget-NucleusImage-widget:e2936486-1dfe-4b46-b594-9be3a=
+f5dfdac">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"padding-top:0;padding-bottom:0;padding-left:0;padding-right:0;ba=
+ckground-color:transparent;text-align:center">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td>
+<center><a =
+href=3D"https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/=
+l5lgg6k4/aHR0cHMlM0ElMkYlMkZjdmVudC5tZSUyRjBFMG1lWiUzRnV0bV9jYW1wYWlnbiUz=
+RE1rdGctR2VuLS1XYnItLWhvd190b19ldmFsdWF0ZV9ldmVudF9yb2klMjZ1dG1fbWVkaXVtJ=
+TNEbWFya2V0aW5nX2VtYWlsJTI2dXRtX3NvdXJjZSUzRGludGVybmFsJTI2dXRtX3Rlcm0lM0=
+RDdmVudC1NSE5TUFFWWDJaUSUyNnV0bV9jb250ZW50JTNERUNfUHJvc3BlY3RfQ3VzdG9tZXJ=
+fVE9GVV9NS1RHX0V2YWx1YXRlX0V2ZW50X1JPSV9BUEFDX0lNRUFfUTQyNV9JTlZfTUVBX1BF=
+Ul9IZWFkZXIlMjZ1dG1fcHJvZCUzREVBTEwlMjZ1dG1fcmVnJTNESU1FQUZBU0ElMjZ1dG1fY=
+XVkJTNEQUxMJTI2dXRtX2VuZyUzREFMTCUyNnV0bV92ZXIlM0RBTExFQyUyNnV0bV9wZXIlM0=
+RBTEwlMjZ1dG1fcHR5cGUlM0RERy1UT0ZVJTI2dXRtX2J1cyUzRE1NRU5UVFBQJTI2dXRtX2N=
+1c3RvbSUzRElOVl9NRUFfUEVSX0hlYWRlciZySm92bDRIYXdWaWtGZ2M2TFhpTnNFVWNNU3hF=
+VVJXRjViMEl3REpmME1FJTNEJg" target=3D"_blank"><img =
+src=3D"https://custom.cvent.com/F4AC897AD5654C279D43BD6023E2A90A/pix/31b5=
+d273018643b8b9bb43890a08bf4e.png?d=3D600" alt=3D"Measuring What Matters: =
+How to Evaluate Event ROI (IMEA)" title=3D"Measuring What Matters: How =
+to Evaluate Event ROI (IMEA)" border=3D"0" width=3D"600" =
+align=3D"center" style=3D"width:600px;display:block" =
+class=3D"img-max"></a>
+</center>
+</td>
+</tr>
+</tbody>
+</table>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<!--[if gte mso 9]>                </td>              </tr>            =
+</table>            <![endif]--></td>
+</tr>
+<tr>
+<td align=3D"center"><!--[if gte mso 9]>            <table =
+role=3D"presentation" align=3D"center" border=3D"0" cellspacing=3D"0" =
+cellpadding=3D"0"              width=3D"600" style=3D"width:600px;">     =
+         <tr>                <td align=3D"center" valign=3D"top" =
+width=3D"600" style=3D"width:600px;">          <![endif]-->
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;background=
+-color:#FFFFFF;width:600px" class=3D"wrapper" =
+data-color-style-scheme=3D"content1-background">
+<tbody>
+<tr>
+<td =
+style=3D"padding-top:0;padding-bottom:0;padding-left:0;padding-right:0">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" style=3D"float:left" align=3D"center" =
+class=3D"column">
+<tbody>
+<tr>
+<td valign=3D"top">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"float:left;display:inline-table" align=3D"left" =
+class=3D"column">
+<tbody>
+<tr>
+<td>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;table-layo=
+ut:fixed" =
+data-cvent-id=3D"widget-NucleusText-widget:33c4b33a-b300-41b9-b393-6a17a9=
+95471f">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"padding-top:15px;padding-bottom:0;padding-left:25px;padding-righ=
+t:15px;background-color:transparent">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"border-width:0;border-color:#FFFFFF;border-style:none;padding-bo=
+ttom:2px;padding-top:0;padding-left:0;padding-right:0;font-size:14px;line=
+-height:18px;font-family:Open Sans, Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent">
+<div class=3D"css-vsf5of"></div>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td style=3D"font-size:14px;line-height:18px;font-family:Open Sans, =
+Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent; word-break: break-word; padding: 5px =
+0;text-align:left;">
+<span style=3D"color: rgb(0,0,0);">Hi Anna, </span></td>
+</tr>
+<tr>
+<td style=3D"font-size:14px;line-height:18px;font-family:Open Sans, =
+Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent; word-break: break-word; padding: 5px =
+0;text-align:left;">
+<span style=3D"color: rgb(0,0,0);">Is your event reporting telling the =
+full story? If you're ready to move beyond attendance numbers and prove =
+the real business impact of your events, this webinar is for =
+you.</span></td>
+</tr>
+<tr>
+<td style=3D"font-size:14px;line-height:18px;font-family:Open Sans, =
+Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent; word-break: break-word; padding: 5px =
+0;text-align:left;">
+<span style=3D"color: rgb(0,0,0);">Join us for <span =
+style=3D"font-weight: bold;">&quot;Measuring What Matters: How to =
+Evaluate Event ROI.&quot;</span> We=E2=80=99ll share the essential =
+metrics and frameworks you need to directly connect your event data to =
+pipeline and revenue goals.</span></td>
+</tr>
+<tr>
+<td style=3D"font-size:14px;line-height:18px;font-family:Open Sans, =
+Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent; word-break: break-word; padding: 5px =
+0;text-align:left;">
+<span style=3D"color: rgb(0,0,0);">In this webinar, you=E2=80=99ll =
+discover:</span></td>
+</tr>
+<tr>
+<td style=3D"font-size:14px;line-height:18px;font-family:Open Sans, =
+Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent; word-break: break-word; padding: 5px =
+0;">
+<ul style=3D"margin-top: 0; margin-bottom: 0; padding: 0 0 0 21px;">
+<li style=3D"text-align:left; padding: 3px 0;"><span style=3D"color: =
+rgb(0,0,0);">The metrics that move the needle and reveal
+<span style=3D"font-weight: bold;">real business =
+impact</span>.</span></li><li style=3D"text-align:left; padding: 3px =
+0;"><span style=3D"color: rgb(0,0,0);">How to successfully connect event =
+data directly to your broader<span style=3D"font-weight: bold;"> =
+business goals</span> (e.g., pipeline, revenue).</span></li><li =
+style=3D"text-align:left; padding: 3px 0;"><span style=3D"color: =
+rgb(0,0,0);">Where
+<span style=3D"font-weight: bold;">AI and automation</span> can =
+transform your reporting and accelerate your insight.</span></li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td valign=3D"top">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"float:left;display:inline-table" align=3D"left" =
+class=3D"column">
+<tbody>
+<tr>
+<td>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;table-layo=
+ut:fixed" =
+data-cvent-id=3D"widget-NucleusLinkButton-widget:7f82085a-c609-4b9a-a444-=
+0d4448e16297">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"padding-top:15px;padding-bottom:15px;padding-left:20px;padding-r=
+ight:20px;background-color:transparent;text-align:center">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"auto" =
+style=3D"text-align:center;background-color:#006AE1;border-radius:5px;bor=
+der-width:5px;border-color:#006AE1;border-style:solid;border-collapse:sep=
+arate !important;margin-left:none" align=3D"center" bgcolor=3D"#006AE1" =
+class=3D"responsive-table">
+<tbody>
+<tr>
+<td =
+style=3D"text-align:center;padding-top:4px;padding-bottom:4px;padding-lef=
+t:20px;padding-right:20px" align=3D"center">
+<a =
+href=3D"https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/=
+l5lgg6k4/aHR0cHMlM0ElMkYlMkZjdmVudC5tZSUyRjBFMG1lWiUzRnV0bV9jYW1wYWlnbiUz=
+RE1rdGctR2VuLS1XYnItLWhvd190b19ldmFsdWF0ZV9ldmVudF9yb2klMjZ1dG1fbWVkaXVtJ=
+TNEbWFya2V0aW5nX2VtYWlsJTI2dXRtX3NvdXJjZSUzRGludGVybmFsJTI2dXRtX3Rlcm0lM0=
+RDdmVudC1NSE5TUFFWWDJaUSUyNnV0bV9jb250ZW50JTNERUNfUHJvc3BlY3RfQ3VzdG9tZXJ=
+fVE9GVV9NS1RHX0V2YWx1YXRlX0V2ZW50X1JPSV9BUEFDX0lNRUFfUTQyNV9JTlZfTUVBX1BF=
+UiUyNnV0bV9wcm9kJTNERUFMTCUyNnV0bV9yZWclM0RJTUVBRkFTQSUyNnV0bV9hdWQlM0RBT=
+EwlMjZ1dG1fZW5nJTNEQUxMJTI2dXRtX3ZlciUzREFMTEVDJTI2dXRtX3BlciUzREFMTCUyNn=
+V0bV9wdHlwZSUzRERHLVRPRlUlMjZ1dG1fYnVzJTNETU1FTlRUUFAlMjZ1dG1fY3VzdG9tJTN=
+ESU5WX01FQV9QRVImazFCVEFSSVVNbVdvTG1GMDZWNXZGM0c2WVFnVFoxWHdQa3NJOVFqdjZQ=
+dyUzRCZSZWdpc3RlcitpbitzZWNvbmRz" target=3D"_blank" =
+style=3D"font-style:normal;font-family:Open Sans, Helvetica, Arial, =
+sans-serif;font-weight:700;font-size:14px;color:#FFFFFF;display:block;tex=
+t-decoration:none;line-height:18.2px;text-align:center" =
+class=3D"mobile-button">Register
+ in seconds</a></td>
+</tr>
+</tbody>
+</table>
+<span =
+style=3D"line-height:0;font-size:0;display:block">&nbsp;</span></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td valign=3D"top">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"float:left;display:inline-table" align=3D"left" =
+class=3D"column">
+<tbody>
+<tr>
+<td>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;table-layo=
+ut:fixed" =
+data-cvent-id=3D"widget-NucleusText-widget:de57adc1-9874-44f2-a4a9-072d97=
+60a00b">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"padding-top:10px;padding-bottom:20px;padding-left:25px;padding-r=
+ight:15px;background-color:transparent">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"border-width:0;border-color:#FFFFFF;border-style:none;padding-bo=
+ttom:0;padding-top:0;padding-left:0;padding-right:0;font-size:14px;line-h=
+eight:18px;font-family:Open Sans, Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent">
+<div class=3D"css-vsf5of"></div>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td style=3D"font-size:14px;line-height:18px;font-family:Open Sans, =
+Helvetica, Arial, =
+sans-serif;color:#000000;font-style:normal;font-weight:400;text-align:cen=
+ter;background-color:transparent; word-break: break-word; padding: 5px =
+0;text-align:left;">
+Can=E2=80=99t make this one? Don=E2=80=99t worry. We=E2=80=99ll make the =
+recording available to all registrants.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<!--[if gte mso 9]>                </td>              </tr>            =
+</table>            <![endif]--></td>
+</tr>
+<tr>
+<td align=3D"center"><!--[if gte mso 9]>            <table =
+role=3D"presentation" align=3D"center" border=3D"0" cellspacing=3D"0" =
+cellpadding=3D"0"              width=3D"600" style=3D"width:600px;">     =
+         <tr>                <td align=3D"center" valign=3D"top" =
+width=3D"600" style=3D"width:600px;">          <![endif]-->
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;background=
+-color:#DDE2E6;width:600px" class=3D"wrapper" =
+data-color-style-scheme=3D"content1-background">
+<tbody>
+<tr>
+<td =
+style=3D"padding-top:0;padding-bottom:0;padding-left:0;padding-right:0">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" style=3D"float:left" align=3D"center" =
+class=3D"column">
+<tbody>
+<tr>
+<td valign=3D"top">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"float:left;display:inline-table" align=3D"left" =
+class=3D"column">
+<tbody>
+<tr>
+<td>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" =
+style=3D"border-color:#FFFFFF;border-style:none;border-width:0;table-layo=
+ut:fixed" =
+data-cvent-id=3D"widget-NucleusText-widget:0c476370-f7fe-4d8f-84fb-c9ae38=
+4f9151">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"padding-top:15px;padding-bottom:15px;padding-left:15px;padding-r=
+ight:15px;background-color:transparent">
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td bgcolor=3D"transparent" =
+style=3D"border-width:0;border-color:#FFFFFF;border-style:none;padding-bo=
+ttom:0;padding-top:0;padding-left:0;padding-right:0;font-size:12px;line-h=
+eight:15px;font-family:Arial,Helvetica,sans-serif;color:#000000;font-styl=
+e:normal;font-weight:400;text-align:center;background-color:transparent">=
+
+<div class=3D"css-vsf5of"></div>
+<table role=3D"presentation" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td =
+style=3D"font-size:12px;line-height:15px;font-family:Arial,Helvetica,sans=
+-serif;color:#000000;font-style:normal;font-weight:400;text-align:center;=
+background-color:transparent; word-break: break-word; padding: 4px 0;">
+<span style=3D"color: rgb(29,28,29);"><a =
+href=3D"https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/=
+l5lgg6k4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGJmlCVThON3pKTmxCSmxjUU9K=
+aHkySzJFZXhxZSUyRiUyQnlhOFNyVUlmWldvVks0JTNEJg" target=3D"_blank"><img =
+src=3D"https://custom.cvent.com/F4AC897AD5654C279D43BD6023E2A90A/pix/ba8f=
+6516a3b943d4a14ae13ae709c9ef.png" alt=3D"Cvent" width=3D"100" =
+height=3D"30"></a><br>
+=C2=A9 2025 Cvent, Inc.<br>
+Unit 109 Floor 1, Building 04, Dubai Media City, Dubai, United Arab =
+Emirates</span><br>
+<p style=3D"margin: 0px 0px 10px;"><a =
+href=3D"https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/=
+l5lgg6k4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGc3Vic2NyaXB0aW9ubWFuYWdl=
+bWVudCUyRiUzRm0lM0RwMi13NGJkeGdkeHZ2Y2c0ci1sNWxnZzZrNC1hdnYtdHg3eiZtak1JW=
+E1tNENoM1NxRTBDNWg1T0NNSjQ3cjB3ZWdERFpndEdZT2ZwS2NjJTNEJk1hbmFnZStFbWFpbC=
+tQcmVmZXJlbmNlcytvcitVbnN1YnNjcmliZQ" style=3D"text-decoration: =
+underline; font-weight: 400;"><span style=3D"color: 006ae1;">Manage
+ Email Preferences or Unsubscribe</span></a>&nbsp;|&nbsp;<a =
+href=3D"https://www.cvent.com/api/email/dispatch/v1/click/w4bdxgdxvvcg4r/=
+l5lgg6k4/aHR0cHMlM0ElMkYlMkZ3d3cuY3ZlbnQuY29tJTJGZW4lMkZwcml2YWN5LXBvbGlj=
+eSZaMW9Tc3hWSUV4T3E3bG5VZXUlMkZhSiUyRkclMkIlMkY2TkxFQ24wbHhGVjFnTjRQeWMlM=
+0QmUHJpdmFjeStQb2xpY3k" target=3D"_blank" style=3D"text-decoration: =
+underline; font-weight: 200;"><span style=3D"color: 006ae1;">Privacy
+ Policy</span></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<!--[if gte mso 9]>                </td>              </tr>            =
+</table>            <![endif]--></td>
+</tr>
+</tbody>
+</table>
+<!--[if gte mso 9]>                </td>              </tr>            =
+</table>            <![endif]--></td>
+</tr>
+</tbody>
+</table>
+<img =
+src=3D"https://www.cvent.com/api/email/dispatch/v1/open/w4bdxgdxvvcg4r/l5=
+lgg6k4/transparent.gif" alt=3D""></div>
+</body>
+</html>
+
+------=_NextPart_000_0000_01DC530E.28031350--

@@ -1,0 +1,200 @@
+Received: from inpost.tmes.trendmicro.eu (18.185.115.105) by
+ AM3PEPF00009B9D.mail.protection.outlook.com (10.167.16.22) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.13
+ via Frontend Transport; Sun, 9 Nov 2025 01:38:25 +0000
+Received: from AM3PEPF00009B9D.eurprd04.prod.outlook.com
+ (2603:10a6:20b:28d:cafe::6b) by AM0PR02CA0160.outlook.office365.com
+ (2603:10a6:20b:28d::27) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9298.13 via Frontend Transport; Sun,
+ 9 Nov 2025 01:38:26 +0000
+Received: from 38.102.84.214_.trendmicro.com (unknown [172.21.181.177])
+	by inpost.tmes.trendmicro.eu (Postfix) with SMTP id 74C0510000300
+	for <fabio.francioni@aspire.qa>; Sun, 09 Nov 2025 01:38:25 +0000 (UTC)
+Received: from webmail.b5.npgnpg.com (localhost.localdomain [IPv6:::1])
+	by mail.b5.npgnpg.com (Postfix) with ESMTPSA id 10CA5A3B78;
+	Sun,  9 Nov 2025 01:36:54 +0000 (UTC)
+Received: from mail.b5.npgnpg.com (unknown [38.102.84.214])
+	by inpre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id 36C4A10000FE4
+	for <fabio.francioni@aspire.qa>; Sun, 09 Nov 2025 01:38:23 +0000 (UTC)
+Received: from AM0PR02CA0160.eurprd02.prod.outlook.com (2603:10a6:20b:28d::27)
+ by DO2P289MB0223.QATP289.PROD.OUTLOOK.COM (2603:1096:790:31::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.16; Sun, 9 Nov
+ 2025 01:38:27 +0000
+Received: from DO2P289MB0223.QATP289.PROD.OUTLOOK.COM (2603:1096:790:31::13)
+ by DO0P289MB0440.QATP289.PROD.OUTLOOK.COM with HTTPS; Sun, 9 Nov 2025
+ 01:38:31 +0000
+Reply-To: <info.clark@uncca.online>
+From: "UNCC" <consultant@b5.npgnpg.com>
+To: "UNCC" <consultant@b5.npgnpg.com>
+Subject: =?utf-8?Q?EXTERNAL:_cont=C3=A1ctenos_para_obten?=
+	=?utf-8?Q?er_m=C3=A1s_detalles.?=
+Date: Sun, 9 Nov 2025 04:36:52 +0300
+Message-ID: <e7c343efec6c16c102f46d25ba79cd5c@b5.npgnpg.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHcURmNpIlr1jhkeU2umEdW8K5Qcg==
+Authentication-Results: spf=fail (sender IP is 18.185.115.105)
+ smtp.mailfrom=b5.npgnpg.com; dkim=pass (signature was verified)
+ header.d=b5.npgnpg.com;dmarc=pass action=none
+ header.from=b5.npgnpg.com;compauth=pass reason=100
+X-TM-MAIL-RECEIVED-TIME: 1762652304.224000
+X-TM-MAIL-UUID: 3d9ce259-b98a-413d-bdf6-d2d11e63e8da
+X-Sender: consultant@b5.npgnpg.com
+X-TM-Received-SPF: Pass (domain of consultant@b5.npgnpg.com designates 
+	38.102.84.214 as permitted sender) client-ip=38.102.84.214; 
+	envelope-from=consultant@b5.npgnpg.com; helo=mail.b5.npgnpg.com
+X-TM-Authentication-Results: spf=pass (sender IP address: 38.102.84.214) 
+	smtp.mailfrom=b5.npgnpg.com; dkim=pass (signatures verified) 
+	header.d=b5.npgnpg.com; dmarc=pass action=quarantine 
+	header.from=b5.npgnpg.com; arc=none
+X-TM-AS-ERS: 38.102.84.214-127.9.0.1
+X-TMASE-Version: StarCloud-1.3-9.2.1005-29564.004
+X-TMASE-Result: 10--3.523300-10.000000
+X-TMASE-MatchedRID: ZkQ0kAPtyYxkyJIo0+s3FYTHN2l/jR/Qk3FO9d/uvAZUgY7fmCjiiBF1
+	l7ubEU/bHzHSyS0k7FvNm7Ero+3aGWuALGNzrZac44yG0dNx/+/AKouXksv3WQG0e+F29Jpl2JT
+	JZU8yip8G20nUEocWsi0SWsZkNieIT7oQooBEJEb0qtpdff9C+A5cxWuzoA/eBaOIPMObwWQrQ+
+	BrWlQm3mKYOikEQxefBBd0cIox/irwaMIXsaQmMKqJbIe5fXLQrW1sSVLMnnpsyE/x51q3zK+eC
+	SMeOiOkfZ9uentPYeajN/EWsnqVVxx0c51YMDnz2CuXW7MUFPximmowi1sSA9cMrQjiXMl398z2
+	HEPVB4wl2+/QJHIkv4VYCL65tMjzLRtwOjyP9FeiWLhmiI4dPxF13aifoiBP408+ubdSCRSPXI7
+	NnClsytujUMibV7aNt1uz3jSQsFTWSFHEiS6pXg==
+X-TMASE-XGENCLOUD: e6546b9e-95e4-4679-81b1-99fba6557e45-0-0-200-0
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,30:1,33:0,34:0-0
+X-TM-RISKAI-PTN-VERSION: 1.22.0+20251108.ca22c64
+X-TM-RISKAI-MATCHEDFID: WyJGSUwwMjkiLCAiRklMMDMzIiwgIkZJTDAzNyIsICJGSUwwNDEi
+	LCAiRklMMDQzIiwgIkZJTDA0NSIsICJGSUwwNTYiLCAiRklMMDc0IiwgIkZJTDA3NiIsICJGSUw
+	wNzciLCAiRklMMDc4IiwgIkZJTDA3OSIsICJGSUwwODAiLCAiRklMMDgxTiIsICJGSUwwODciLC
+	AiRklMMDk3IiwgIkZJTDA5OCIsICJGSUwxMzciLCAiRklMMTk2IiwgIkZJTDE5NyIsICJGSUwxO
+	TgiLCAiRklMMTk5IiwgIkZJTDI4NCJd
+X-TM-Deliver-Signature: 1A8452358DC2AEF25E8ACCB991CA221D
+X-TM-Addin-Auth: jdee0uHs/jnAmCRML/Ao4F5mDm1iKkIAgfSwrYa5rOAHcx9W5ONMOPUAEcs
+	tCXl4lnbSsElcCvIQfAHPHuchSpqF7qOd/HpPpQHJXLpoiPg3GJL0ef2oIMvvBV2NoVP0Ez6d9j
+	EeIUevKe91PJtEhHoXkMMv6z9O/+CtbwTrabFusHsv/ETZAJu+o7OLPRFGi1H35M9tCb1xW5+1f
+	g/UuYtbCwmoiVUXw8Vt45Cfx6P7Kst/kOwmK8iMd3KkYJNDQyg6vTM54EUTlKKpF4nlHsnbLe2j
+	WKBst/rrsG8lslo=.BrV7e1q1xd2wLVOiQKDxNU+rVJe4qpPag+aAQa50ZZo880BXlc9Ug0q+oV
+	UF2HmV8DQTywLfl9TC+uh5GtlA4QynLtmcg1Eq8+hX0SZ5mlE6GWpkPjME8fnobg6u8UyTBQcxL
+	U8LuolKn9mO5tH7WwcuLa6g9kgnqmih+PEStuFBS64qJs2gZfEti30hWhpStENXOKxHk1Ohp2NU
+	FiMQlhJRKZcqDfmlTvaN8ObyffFg+1Q+gcF35reAEZcn1WPcsJ5iMP3VUTsJ10RLEb2ToQ8Ji88
+	5tUswrwyJDyJU1K/uxahKpoa7sC+TSD+sh0EAjUOz0/Xmu1E/YLpvmSOKkw==
+X-TM-Addin-ProductCode: EMS
+X-MS-Exchange-Organization-ExpirationStartTime: 09 Nov 2025 01:38:26.0985
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id: a5caa008-9c86-44b3-6074-08de1f30ad62
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM3PEPF00009B9D:EE_|DO2P289MB0223:EE_|DO0P289MB0440:EE_
+X-MS-Exchange-Organization-AuthSource: AM3PEPF00009B9D.eurprd04.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id: a5caa008-9c86-44b3-6074-08de1f30ad62
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-MS-Exchange-Organization-SCL: -1
+X-Microsoft-Antispam: BCL:0;ARA:13230040|82310400026|12012899012|27102699006|2092899012|3072899012;
+X-Forefront-Antispam-Report: CIP:18.185.115.105;CTRY:DE;LANG:es;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:inpost.tmes.trendmicro.eu;PTR:inpost.tmes.trendmicro.eu;CAT:NONE;SFS:(13230040)(82310400026)(12012899012)(27102699006)(2092899012)(3072899012);DIR:INB;
+X-MS-Exchange-ABP-GUID: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2025 01:38:25.6352
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5caa008-9c86-44b3-6074-08de1f30ad62
+X-MS-Exchange-CrossTenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-MS-Exchange-CrossTenant-AuthSource: AM3PEPF00009B9D.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DO2P289MB0223
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:05.4929729
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.9298.012
+X-MS-Exchange-ExternalInOutlookResult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery: ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4717077)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?iwpaeyr0azzKGU05f3QA+IBNEhYWRWYqmCOUzfUsVkYghtFdVY2i7qCgvEK+?=
+ =?us-ascii?Q?0gHBrkjY37K0cenDtTwgqfh574Gdre0zA3R6kn1xCjhRwG5h8LFCyuG9hHBz?=
+ =?us-ascii?Q?LGf+5ZvTCZYxhi0FXQwhUW3P5OU+H3N8iqU71fy6TT4JNqdOP5N9z9FivajG?=
+ =?us-ascii?Q?yrZMsfmvCpJgmBlYC7+mLobrQauzGi+oH6JHdTO5dmTWM2lS8H1oM+vKQ5Tx?=
+ =?us-ascii?Q?kLLZ/oixTaZq9aExVj2rLOFptCHukCzDbzVw8BWepyi3Mc4VbTU6duOsNnyi?=
+ =?us-ascii?Q?Meazt3yJG9vs7kRz9nueNBBCJgT2g/jKiSGVgPzWtA6gAjB5YlnpTkVwPA3Z?=
+ =?us-ascii?Q?TC5Ok8Oow3zSiiv29pDKOWXPiYxTLkbwDUqY4Lwc8+MkuN2pPYO4PP1WbNUD?=
+ =?us-ascii?Q?qKXFtMipntJ1TAtbVeBXqLsoyWmCEJvXsJEYMsHGsiF6HQ+FFu3iVhHMNT7K?=
+ =?us-ascii?Q?gQmylfOL1XfXIH1y2Ncenv05fb9nwruX//iyK21Dthsxrle3lIvVByzdZj+7?=
+ =?us-ascii?Q?7gm3250rGNoejfD2nxBcM+P6T05lBfPfnG1ecLX0BczZqvJWR/bkgaEuG44X?=
+ =?us-ascii?Q?Ex7B+pzTozqxwdSElA+fuWqzwS78u5CuOAohvWjMlTTxQxv9Z/YMdd9VOxXT?=
+ =?us-ascii?Q?Yb01ekRRJOUG4SFGrV4uRDaHxQwwRPDxF3uZvOZ0xnSNjLUvKJAl0FTPnzla?=
+ =?us-ascii?Q?I6ZTuTqZtni/7KMGpoNO4MM1IK9whDVEtrcZMAR0Ym//c10Tgsr
+	rnjhWB+Zy?=
+ =?us-ascii?Q?PYdAEMfmzM3rw5f6ZOJ12iYZnDB6UMItl/0TBWXFGr7aBwC9m+JXCfWPLT9+?=
+ =?us-ascii?Q?zFMtE7HOtDgvXRRFQP1kz1GDdAhK1qOveGny5c1Bbm2sT72k5rNWoi+yrzZz?=
+ =?us-ascii?Q?jTaJuvqIKTE2oYrBcGebbm/eyIhqlGb3rZmqc7YVtxR0ZmyiUftxXQT9fXIN?=
+ =?us-ascii?Q?4Hp6XVTJo2L5dOKt+cCSg4BcsstmYd+d9ZslExK+R1QfK9zjHz3FEfIbeb1F?=
+ =?us-ascii?Q?wxMjL4nqT4VNUUu7GAM20+M1BCkz00/oQ/eJ3qH6L7Xr6uBZFvVp/Dcws852?=
+ =?us-ascii?Q?nA+hZmy1rPE4hDkhAU/+9DaAEa6W8IpspnHRcXyP7Z+otqKtRZfP0PUF7Ccp?=
+ =?us-ascii?Q?WnhekG2rtXV2VYpghetT9s+odMOMkDFPVGVReLrY62awZB/TLnDyZbh8cHyj?=
+ =?us-ascii?Q?0IQc9aDBwxjJ49nVlCwj1PoR/3kWdfTX4DBNL7nGwBVPm5MmTiWVM4jb3G1K?=
+ =?us-ascii?Q?iMUe4kb97oI6aa88cHcfhgRA0sB8ZFl5kc0XBSpWft7rrbqmmiF+xcN1R88J?=
+ =?us-ascii?Q?vMay3NlTxC6GrrHkysjXTXJsv8+hpQZj6NqbpFNWpANBLY9nJbCz9mkSf1/W?=
+ =?us-ascii?Q?U38z5kRcKXoU8QY/+cGkbx0a+Thv/xis7ZlyuTJdthg/0+jHhLcnvfv8ZY7I?=
+ =?us-ascii?Q?Ho6QdQkQeeVLlxPq3Z/sNUc4XhIv65ahtxOZ9+4mOtA9qGqLGFDSxyahGM8h?=
+ =?us-ascii?Q?++RR5sJXyEl+qw0O6zpmQ5LcK7wIn151RTExM
+	aB4+JlHKmDQnXAcN+hs6VT2?=
+ =?us-ascii?Q?0QaK+fAXlXWh74VYFMNHuCczQmv2d26B4fhjgAiZ7AeSBjIQjnMn4NJW5uhH?=
+ =?us-ascii?Q?z3P5Yff5oQDJak1L2JeMxGYvVm0A1/HB07ZBl85HIztB+pRfDJpb20BhbuGV?=
+ =?us-ascii?Q?KBxVb/I3RsisAKdr8VoEDBuz+AF8xVP8VS5PUXPi7HRg/eBHdgZVPXIPMoH4?=
+ =?us-ascii?Q?UkPY5tj1cFW+RQmk7gep9rYsygH9+29TQ716pHMWEozL5PIvsY/NivRDyEe7?=
+ =?us-ascii?Q?T0L8yXFR/qVL6uWVaOSslktiqHONjOJlOzZnyEN64fJjSatkoumqGGJULqpY?=
+ =?us-ascii?Q?5V+mvJKh+Ho62vRxC31PiAdnP8rtQAWgWn9KZWOJ+XPFNf8VAREpze2Huvs1?=
+ =?us-ascii?Q?enPz749GTWykjhicN3iaYw+ZvkojbCiO4jWnztcStmcGVgSapjWdR9AI8NU9?=
+ =?us-ascii?Q?C9vGdAD9VtdhO/Z/AF6WFoMF0frpjO211S0cbfupfNomBuBEk4kLmHnuBoU4?=
+ =?us-ascii?Q?vrQ2bZSxtGJb11s/sfNgGxjB40q3AmYLr9m18Lw3QqX+kfU3rCkUYUp4z/0V?=
+ =?us-ascii?Q?bQ69cIcXIwdmvx59vJ5VpUXpZ1am7yfjwxWXKGaFd4QXqJoN+iycUZ9LC0pc?=
+ =?us-ascii?Q?goApBuAL55x5dR+12cEUpggq5EfMZXvJ7l3R4GIIA8TRgJyUOGvXG5xXBcXd?=
+ =?us-ascii?Q?/FK0My+x1UATEqAXTYbCtYeT++REk22/cD2mnDWY6Dy9z3lKLlnoJQZO/gEw?=
+ =?us-ascii?Q?se69Cf0zWQRlxRwBZ6jk8tC
+	7gHwKyyaFOuUgeSuOoCRt/dugdnnOHg4auPo9?=
+ =?us-ascii?Q?zMoipk1p8APyVi4YapzjqkAtTq+3Go4HQIF7ocfZ66leNAZfzwxprDOUvire?=
+ =?us-ascii?Q?6XZLiMTCR7wVgRGwNeVfVj/naPWbx2JkhNWMdVMJzfyalMfADnA0iYVQGjco?=
+ =?us-ascii?Q?c0RXjezMiwORMoPWOJW46jKdXVU0lMQSzKIYwHKB7l5jUtgZHMiR/yI8s2SR?=
+ =?us-ascii?Q?H9w+GARlyBKq1kLfTZrp2LgKjLRICh+9roUsLGNnEDMqXbHTjwdzZRyARUph?=
+ =?us-ascii?Q?U8iadRRkMMsX1Vt3+Kbv4Vey0pIAeLc2LRWExTiWsoJSjcRVPbbgrxTD8Akv?=
+ =?us-ascii?Q?ZZtkGysGSms2Rqo2FbY6fL2DFGl51uEl6Iwh/3moriL6MghhP1vP2d9O5szT?=
+ =?us-ascii?Q?7tnNpVKkijPoSLJUBdNQxYmRy9SSmyt51myRxPHhJh6602Q1BK4XPiJ3o1bq?=
+ =?us-ascii?Q?qC3xwutiyH8bGOOCfUpzK1rGwqqbY8Br4x93Gg9U9FOdHSLRX+txP9K/airx?=
+ =?us-ascii?Q?80c8M35kRMITdm5kMNSHPaBaGgELo2FBpvgwAZiqwG9/+WtaBqjKm2GrNVGl?=
+ =?us-ascii?Q?35q+kpyV1DcSnWuqxCHfh1bV/dR+C/FxuqczG9RW42QXmXzgoSJlgOP00NvX?=
+ =?us-ascii?Q?j9G7oo2LsP0oJ/Nspcv+LBFZ3ZOYzzTc0iyozSp8e8SXnNLVpmEisdxhw1Ez?=
+ =?us-ascii?Q?rzEmtiMaFB1tqti43mEd9+u+++j4CSlhCJkIbC4tNP+8ppTqKgmmH8E+R0G/?=
+ =?us-ascii?Q?qPQh+PZbF
+	j8idH+ydrGrZmkRcuJx6k8dNHzyRLE8RZn7YJY5sCyqQDwBJBtu?=
+ =?us-ascii?Q?mQSMho9WHlPCog99bw1FyJXAp62nS70RvLYYuYWKDZuqiY3bqEKQktj/mHsy?=
+ =?us-ascii?Q?2asr+hDWXUrixc28q000jiaSL5J+zRV5fam+k6b74DTN339KsPoX5CHCmSFJ?=
+ =?us-ascii?Q?cU74mQt2MVfaxrSHYzohCaejuPzDLx6EAuDcGR9tzfRgYQZwKThRxgNGLOdi?=
+ =?us-ascii?Q?OvA0GjzXuDBWYzaQotrTXf3I66A/zmDzzYjjbw79L6xFleRk0LSQ/M92CMDm?=
+ =?us-ascii?Q?O4CiJefuTmVqdeqaFzFky/QROsMZt8ar04z4UxQN0EtHlSIGHawYFqcTsdQg?=
+ =?us-ascii?Q?o0Y60JpYCESs3FwVWbH1rihlTdSUfTMkaqHjBFduXLA5WjHizYj0pLqcQPi2?=
+ =?us-ascii?Q?iOsLoUVLd08+oZEJ4g9MqFg+ui28qiomahfwBkegZLtai0dr/IiREui42ND5?=
+ =?us-ascii?Q?J3ts1VMnXhyRoabXeZin1SSBiA/QNI5QtwDyp6YSofUJ5M7tCHai4BIne/7A?=
+ =?us-ascii?Q?NWV5NdRNcHPg6AlUsfDXrEXes5w=3D?=
+Content-Language: en-us
+x-ms-exchange-organization-originalclientipaddress: 18.185.115.105
+x-ms-exchange-organization-originalserveripaddress: 10.167.16.22
+received-spf: pass (mail.b5.npgnpg.com: connection is authenticated)
+
+CAUTION: This email originated from an external entity outside of Aspire =
+Zone Foundation. Do not click on links or open attachments unless you =
+recognize the sender and know that the content is safe.
+
+Atenci=C3=B3n:
+
+Esta es la segunda vez que env=C3=ADo esta importante carta a esta =
+direcci=C3=B3n
+de correo electr=C3=B3nico. Dado que a=C3=BAn no ha respondido, le =
+informo que
+hemos recibido su direcci=C3=B3n de correo electr=C3=B3nico para =
+ponernos en
+contacto con usted. Tras nuestra reuni=C3=B3n con los beneficiarios de =
+la
+Comisi=C3=B3n de Compensaci=C3=B3n de las Naciones Unidas,
+
+cont=C3=A1ctenos para obtener m=C3=A1s detalles.

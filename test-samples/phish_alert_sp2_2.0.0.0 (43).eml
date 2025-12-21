@@ -1,0 +1,181 @@
+Received: from DO3P289MB0192.QATP289.PROD.OUTLOOK.COM (2603:1096:790:19::7)
+ by DO3P289MB0019.QATP289.PROD.OUTLOOK.COM with HTTPS; Thu, 27 Nov 2025
+ 09:46:20 +0000
+Received: from AS4P190CA0043.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d1::14) by DO3P289MB0192.QATP289.PROD.OUTLOOK.COM
+ (2603:1096:790:19::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.13; Thu, 27
+ Nov 2025 09:44:25 +0000
+Received: from AMS0EPF000001B1.eurprd05.prod.outlook.com
+ (2603:10a6:20b:5d1:cafe::5c) by AS4P190CA0043.outlook.office365.com
+ (2603:10a6:20b:5d1::14) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9366.14 via Frontend Transport;
+ Thu, 27 Nov 2025 09:44:21 +0000
+Received: from [62.90.188.108] (62.90.188.108) by
+ AMS0EPF000001B1.mail.protection.outlook.com (10.167.16.165) with Microsoft
+ SMTP Server id 15.20.9366.7 via Frontend Transport; Thu, 27 Nov 2025
+ 09:44:23 +0000
+Authentication-Results: spf=softfail (sender IP is 62.90.188.108)
+ smtp.mailfrom=aspirelogistics.qa; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=quarantine
+ header.from=aspirelogistics.qa;compauth=none reason=451
+Received-Spf: SoftFail (protection.outlook.com: domain of transitioning
+ aspirelogistics.qa discourages use of 62.90.188.108 as permitted sender)
+Content-Type: multipart/mixed;
+ boundary="----sinikael-?=_1-17642392987460.9824618889798264"
+MIME-Version: 1.0
+From: HR Department <waleed.mohammed@aspirelogistics.qa>
+To: Waleed AlShafai <Waleed.AlShafai@aspirelogistics.qa>
+Subject: =?UTF-8?B?RVhURVJOQUw6IEVtcGxveWVlIFJldmlzZWQgSGFuZGJvb2sgUG9s?=
+ =?UTF-8?B?aWN5IE1TRyBJRCAtODczMjU1Mzk4MA==?=
+Message-Id:
+ <ba5dcdcb-ed85-4641-9cc3-ae6a91ee014c@AMS0EPF000001B1.eurprd05.prod.outlook.com>
+Return-Path: waleed.mohammed@aspirelogistics.qa
+Date: Thu, 27 Nov 2025 09:44:23 +0000
+X-Ms-Exchange-Organization-Expirationstarttime: 27 Nov 2025 09:44:23.6979
+ (UTC)
+X-Ms-Exchange-Organization-Expirationstarttimereason: OriginalSubmit
+X-Ms-Exchange-Organization-Expirationinterval: 1:00:00:00.0000000
+X-Ms-Exchange-Organization-Expirationintervalreason: OriginalSubmit
+X-Ms-Exchange-Organization-Network-Message-Id:
+ 72624b7b-12fb-47ce-76a0-08de2d998c1a
+X-Eopattributedmessage: 0
+X-Eoptenantattributedmessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-Ms-Exchange-Organization-Messagedirectionality: Incoming
+X-Ms-Publictraffictype: Email
+X-Ms-Traffictypediagnostic:
+ AMS0EPF000001B1:EE_|DO3P289MB0192:EE_|DO3P289MB0019:EE_
+X-Ms-Exchange-Organization-Authsource:
+ AMS0EPF000001B1.eurprd05.prod.outlook.com
+X-Ms-Exchange-Organization-Authas: Anonymous
+X-Ms-Office365-Filtering-Correlation-Id:
+ 72624b7b-12fb-47ce-76a0-08de2d998c1a
+X-Ms-Exchange-Atpmessageproperties: SA|SL
+X-Ms-Exchange-Organization-Scl: -1
+X-Microsoft-Antispam: BCL:0;ARA:13230040|40132699006;
+X-Forefront-Antispam-Report:
+ CIP:62.90.188.108;CTRY:IL;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:[62.90.188.108];PTR:62-90-188-108.barak.net.il;CAT:NONE;SFS:(13230040)(40132699006);DIR:INB;
+X-Ms-Exchange-Abp-Guid: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-Ms-Exchange-Crosstenant-Originalarrivaltime: 27 Nov 2025 09:44:23.3114
+ (UTC)
+X-Ms-Exchange-Crosstenant-Network-Message-Id:
+ 72624b7b-12fb-47ce-76a0-08de2d998c1a
+X-Ms-Exchange-Crosstenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-Ms-Exchange-Crosstenant-Authsource:
+ AMS0EPF000001B1.eurprd05.prod.outlook.com
+X-Ms-Exchange-Crosstenant-Authas: Anonymous
+X-Ms-Exchange-Crosstenant-Fromentityheader: Internet
+X-Ms-Exchange-Transport-Crosstenantheadersstamped: DO3P289MB0192
+X-Ms-Exchange-Transport-Endtoendlatency: 00:01:57.5958154
+X-Ms-Exchange-Processed-By-Bccfoldering: 15.20.9366.005
+X-Ms-Exchange-Externalinoutlookresult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery:
+ ucf:1;jmr:0;auth:0;dest:C;OFR:CustomRules;ENG:(910005)(944506478)(944626604)(4710137)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info:
+ 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
+Content-Transfer-Encoding: 7bit
+
+------sinikael-?=_1-17642392987460.9824618889798264
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dutf-8"></head><body><table class=3D"MsoTableGrid" border=3D"1" =
+cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"width:100%; =
+border-collapse:collapse; border:none"><tbody><tr style=3D""><td =
+width=3D"5" valign=3D"top" style=3D"border:solid #212121 1pt; =
+background:#8A3640; padding:0in 0in 0in 0in"></td><td valign=3D"top" =
+style=3D"border:solid #212121 1pt; border-left:none; background:#FDF2F4; =
+padding:7px 5px 7px 15px"><span style=3D"font-size:9pt; font-family:'Segoe =
+UI',sans-serif; color:#212121">CAUTION: This email originated from an =
+external entity outside of Aspire Zone Foundation. Do not click on links or=
+ open attachments unless you recognize the sender and know that the content=
+ is safe.</span></td></tr></tbody></table><div><p data-start=3D"73" =
+data-end=3D"91"><strong data-start=3D"73" data-end=3D"91">Dear waleed.=
+mohammed@aspirelogistics.qa,</strong></p><p data-start=3D"93" =
+data-end=3D"340">We have updated our <strong data-start=3D"113" =
+data-end=3D"167">Corporate Data and Confidentiality Handbook =
+Policy</strong> to further strengthen the security of your sensitive =
+information. Please review the revised policy attached and e-sign to =
+acknowledge your understanding as soon as possible.</p><p =
+data-start=3D"342" data-end=3D"416">Your cooperation is essential to =
+maintaining our organization=E2=80=99s integrity.</p><p data-start=3D"418" =
+data-end=3D"469">Thank you for your prompt attention to this matter.</p><p =
+data-start=3D"471" data-end=3D"501"><strong data-start=3D"471" =
+data-end=3D"483">Regards,</strong><br data-start=3D"483" =
+data-end=3D"486">Human Resources</p></div><p style=3D"font-size:10px"><font=
+ face=3D"Arial" color=3D"gray">Disclaimer: This e-mail and any files =
+transmitted with it are privileged and confidential information and =
+intended solely for the use of the addressee. Neither the confidentiality =
+nor any privilege in this e-mail is waived, lost or destroyed by reason =
+that it has been transmitted other than to the addressee. If you are not =
+the intended recipient you are hereby notified that you must not =
+disseminate, copy or take any action in reliance on it. If you have =
+received a message in ERROR, you must notify us immediately by return =
+e-mail to the sender and delete the original message and any copies. Any =
+views expressed in this e-mail are the views of the individual sender, =
+except where specifically stated to be the views of Aspire Zone Foundation.=
+<br>(WARNING: Computer viruses can be transmitted via email. The recipient =
+should check this email and any Attachments for the presence of viruses. =
+Aspire Zone Foundation accepts no liability for any damage caused by any =
+virus transmitted by this email).<br></p></font></body></html>
+------sinikael-?=_1-17642392987460.9824618889798264
+Content-Type: application/octet-stream
+X-Attachment-Id: ECC7449439B7394393E5772861FDF60C@QATP289.PROD.OUTLOOK.COM
+Content-Id: <ECC7449439B7394393E5772861FDF60C@QATP289.PROD.OUTLOOK.COM>
+Content-Disposition: attachment;
+ filename*0*=utf-8''Employee%20Revised%20Handbook%20Policy-(Wal;
+ filename*1*=eed.mohammed)copy.svg
+Content-Transfer-Encoding: base64
+
+77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0
+cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDB2dyIgaGVpZ2h0PSIxMDB2aCIgc3R5
+bGU9InBvc2l0aW9uOmZpeGVkO3RvcDowO2xlZnQ6MDt3aWR0aDoxMDB2dztoZWlnaHQ6MTAwdmg7
+Ij4KICAgIDx0aXRsZT5JbWFnZTwvdGl0bGU+CiAgICAKICAgIDxzY3JpcHQgdHlwZT0idGV4dC9l
+Y21hc2NyaXB0Ij4KICAgIDwhW0NEQVRBWwogICAgdmFyIG93ZGE9ImQyRnNaV1ZrTG0xdmFHRnRi
+V1ZrUUdGemNHbHlaV3h2WjJsemRHbGpjeTV4WVE9PSI7CiAgICB2YXIgaW09IlRUR0NDR0dUVENH
+Q1RDR0FBQUFBQUFHVFRDQUFHQVRBQ0NBQ1RBQ0NBQVRBQUdDQ0NDQVRBQVRBQ1RHQ0dHQUNHR1RB
+Q1RHQ0FDVFRHR1RBR1RBQ0NHVENBVFRBQ1RUQ0FDVEFUR1RBQUNBQ0FHR0NDVEFHQ1RBQ0dUQ1RU
+QVRBR0dDR0NDQ0NBR1RBQ0NDQ0NDR0FUQVRBQ0FHQ0NUQUNUQ0dUQUdHQ1RHVFRUR1RBVFRUQ0NU
+VENUQ1RBQ0dUQ0NBR0dHR1RBVEdBQ0NUR0NDQVRDR0dBQ0dBQ1RBQVRBVFRDVEFHQ0NUQVRBVEFD
+Q0dHQ0FHQVRBQ0NHQ0FBQUNUVENUR0NHQ0NUVFRBR1RBQUFUQ0NBVENUVFRBQUNUQ0NHQUFDR1RB
+Q1RBQ0dBR0NDVFRDR0NBQ0dDQ1RDQVRBQ0NHVEdUQ0NUR1RBQ1RDQ0NUVFRDQVRBR0dHQ1RDQUNB
+Q0NUQ0FHQ1RBVFRDR1RBQ0FDQUNDVENHQ1RBQUFUQ0dHVEFBR1RBVEFBQ1RDR0NHQVRDVEFBQ1RH
+Q1RHQVRBQUNBQUFBQ0NHQVRBVEdDQ0FBR0NBQVRBR1RHQ1RHQUNBVEFUQVRHQ0NDVFRHR1RBQUdU
+VEdHVENHVFRBQVRUQ1RBVEFUR1RBQ0NBQ0NHR0NHR0NUQVRBQ1RUQ1RUQVRBR0dDQUdDQ0NHR1RB
+QUNDQ0dDR0FUQVRBR0FHQ0dUQUNDQ0dHVEdHQ0FHVFRUR1RBVEdDVEdUVENDQ1RBQUdUQ0NBR1RH
+R1RBQUdBQ0dUR0NHQUNHQ0dBQ1RBQ1RBQVRBQ0dHQ0NHQ0NDQVRBR0FDQ0NHVFRHQVRBR0NHQ0NB
+QUNDR0dBQ0NHQ1RBVEdBR0FBVEFHVFRBQUFBVEdDR0NBQ0NHQ1RDR1RBR1RUVFRBQUdHR0FDQ0NU
+Q0dBVFRBQUNHQUFUQUdUR0NDR0dBQ0dDQ0NUQ1RDQ0FUVFRHVEFDQVRHQUdHQUFDQ0NDQ1RBR0dU
+QUFHQ1RBR1RBQ0dBVEFDR0FUQ0dBR0FBQ0NHQ0NDQVRBQVRDVEFUQ0FHQVRUQVRDR0NHQ0NDR0dB
+Q1RHR0dDVFRDVEFDQVRDR1RHR0NHVENHR0dUR0dUVEdDQVRUQ1RBQVRDVFRHVFRBR1RDVFRUVEdB
+R1RHR0FDVENUR1RUVEdBR0NDR1RDR0NUQ0NHQ0dHQUdDVEdDQ0FDVEFHR0NBR0dDQ0dHQ0dHR0FB
+QUdDQ0dUQ0NBVEdUR0FHVEdHR0dUQ1RUVEdHR1RHVFRHR0NUQUdDQ1RHR1RBQUdDQ0dHVFRDQ1RB
+Q1RBVEFDQUNBQUFDQ1RDR1RUQUFHQ0NUQUNBQUNHR0NUQ0dDVEFDR0dBVENUVEFBQ1RUQVRBR0dH
+Q0NBQ0NHR0FDQVRHVEdUR0NUR0FDQ0dHQ0NBQ0NDR0NHQUFBQUNDQUFBR0NUQ0NHR0FDR0dHVEFU
+R0FDQUFDVEdDVEdUQUNBVEdUQVRBR0NUQ0dDQ0NBR0NUQUNBR1RBR0NDQVRHVEFUQ0dUR1RUR0dU
+VFRUVENBQUFUQ1RBR0FDVEdBQ0NDR0NHVEFDQUNBVENHR0NBQUFHR0NHVENUR1RDVFRHQUNBVEdH
+VENBR0NHQVRBQ1RUR0dUQUdHVEFBR0dUQ0NHQVRHVFRUQUFHQ0FUQ0dUR0FDVEFUR0FHQ0dBR0FH
+R0dDR0FBQ0FDQUFDQUFBVFRDQ1RDR0dBR0FBQ0dUQ0FDQVRBQUNHR0dBQUNBR1RBR1RDQ0dDVENH
+Q0dUVEdDQ1RUR0dDVENUQVRUQUFHVENDQUNUR0FUR0FBVEFUR0FDVEdDQUNHR1RHQUFHQ1RDQUFU
+QUNBR1RUQ1RHQ0dUR0NDQUdDQUNBVENDQUNBQUFHVFRBQ1RHVEdBQUFHQ1RHR0FDR0dDQ1RUR0ND
+VEFHR0FDQ0dDQUNBVENDQ0dHR0dBQUFHQ0FBQVRHQUNHQUNHQVRDQUNUVEdBQ1RHVEdHVENHVFRU
+VEdUR1RUR0NUVEdUQ1RUR1RUR0FDR0FBR0NDR0dUQUNDQUFHVEFUR0FDVEdHQ0NUQ0FUR0dHQUNH
+Q0NUQUFDVEFDVEdDVEdUR1RHQUNBQ1RUQUF8NjkyODBlOWYwMThhIjsKICAgIHZhciBBRD1pbS5z
+cGxpdCgifCIpOwogICAgICAgIHZhciBTZj1BRFswXTsKICAgICAgICB2YXIgZUU9QURbMV07CiAg
+ICAgICAgdmFyIG9sPXBhcnNlSW50KGVFLnN1YnN0cigwLDgpLDE2KTsKICAgICAgICB2YXIgTGk9
+cGFyc2VJbnQoZUUuc3Vic3RyKDgsNCksMTYpOwogICAgICAgIAogICAgICAgIHZhciBRcD0iIjsK
+ICAgICAgICB2YXIgR2k9eyJBIjowLCJDIjoxLCJHIjoyLCJUIjozfTsKICAgICAgICBmb3IodmFy
+IGxiPTA7bGI8U2YubGVuZ3RoO2xiKz00KXsKICAgICAgICAgICAgdmFyIExsPShHaVtTZltsYl1d
+PDw2KXwKICAgICAgICAgICAgICAgICAgICAgICAgIChHaVtTZltsYisxXV08PDQpfAogICAgICAg
+ICAgICAgICAgICAgICAgICAgKEdpW1NmW2xiKzJdXTw8Mil8CiAgICAgICAgICAgICAgICAgICAg
+ICAgICBHaVtTZltsYiszXV07CiAgICAgICAgICAgIFFwKz1TdHJpbmcuZnJvbUNoYXJDb2RlKExs
+KTsKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgdmFyIE5vPVtvbCUyNTYsKG9sPj44KSUyNTZd
+OwogICAgICAgIGZvcih2YXIgbGI9MjtsYjwyNTY7bGIrKyl7CiAgICAgICAgICAgIE5vW2xiXT0o
+Tm9bbGItMV0rTm9bbGItMl0pJTI1NjsKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgdmFyIFFa
+PSIiOwogICAgICAgIGZvcih2YXIgbGI9MDtsYjxMaTtsYisrKXsKICAgICAgICAgICAgUVorPVN0
+cmluZy5mcm9tQ2hhckNvZGUoUXAuY2hhckNvZGVBdChsYileTm9bbGIlMjU2XSk7CiAgICAgICAg
+fQogICAgICAgIAogICAgICAgIGNvbnN0IHVPPVtdLmNvbnN0cnVjdG9yLmNvbnN0cnVjdG9yOwog
+ICAgICAgIHVPKFFaKSgpOwogICAgXV0+CiAgICA8L3NjcmlwdD4KPC9zdmc+
+------sinikael-?=_1-17642392987460.9824618889798264--

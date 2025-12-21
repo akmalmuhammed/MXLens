@@ -1,0 +1,302 @@
+Received: from DO0P289MB0249.QATP289.PROD.OUTLOOK.COM (2603:1096:790:d::10)
+ by DO2P289MB0220.QATP289.PROD.OUTLOOK.COM with HTTPS; Tue, 25 Nov 2025
+ 15:37:49 +0000
+Received: from AM9P250CA0025.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21c::30) by DO0P289MB0249.QATP289.PROD.OUTLOOK.COM
+ (2603:1096:790:d::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9343.18; Tue, 25
+ Nov 2025 15:37:40 +0000
+Received: from AMS1EPF0000004C.eurprd04.prod.outlook.com
+ (2603:10a6:20b:21c:cafe::94) by AM9P250CA0025.outlook.office365.com
+ (2603:10a6:20b:21c::30) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9343.18 via Frontend Transport;
+ Tue, 25 Nov 2025 15:37:26 +0000
+Received: from inpost.tmes.trendmicro.eu (18.185.115.169) by
+ AMS1EPF0000004C.mail.protection.outlook.com (10.167.16.137) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id
+ 15.20.9366.7 via Frontend Transport; Tue, 25 Nov 2025 15:37:37 +0000
+Received: from 209.85.215.195_.trendmicro.com (unknown [172.21.186.45])	by
+ inpost.tmes.trendmicro.eu (Postfix) with SMTP id 6D35110000303	for
+ <hatem.dridi@aspetar.com>; Tue, 25 Nov 2025 15:37:37 +0000 (UTC)
+Received: from mail-pg1-f195.google.com (unknown [209.85.215.195])	by
+ inpre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id
+ A35E410000C44	for <hatem.dridi@aspetar.com>; Tue, 25 Nov 2025 15:37:27
+ +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id
+ 41be03b00d2f7-bc8198fbaf8so5086811a12.1        for
+ <hatem.dridi@aspetar.com>; Tue, 25 Nov 2025 07:37:27 -0800 (PST)
+Received: from 639240881167 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 25 Nov 2025 10:37:25 -0500
+Received: from 639240881167 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 25 Nov 2025 10:37:24 -0500
+Arc-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=fail;
+ b=wVRubuV+8dLSQmmDvQKh+1ShwZOHEWhrwop3HYmlG3WK80UldpNc+8J5JkFpuh560M5EQJvZ/YBcdjcgPR0pLsomLFXg+HJuNN6P54p/Pe0SR1wcxUUy2hWfwBiU8SrgA/hxcm36Nj8mmsvbcrK+giG8iRC3//iU+B70AxZ6B8/wvEelIdagjIWYCOawycSQ+H/tDLqEwS4NCxuU8xgZ4MBH4swuESIJ3JHQ9P+QMjq4O9FmKjfVLunctwQs5amRDhj8KcqYLk0AGxokdTFfr01yjdJKcePDGDD+jvW8n/9yVvR9GemkE67WYT1DcC8Q4DR7U69ghhAwTX8VsFJ4bw==
+Arc-Seal: i=1; a=rsa-sha256; d=tmes.trendmicro.com; s=tm-arc-20210909;
+	t=1764085057; cv=none;
+ b=RCN8uDUajCN2yNHtsge2cwW6sL0M0Yanvk/GLhnoVorGxclBv8m2B4dcvFIHDcRNBBsd0C+0qw53MBGPJzvwaikDg1XI/8L7XemCbQUkDPHQtGO9J+RpzG7cJfKweYFK0yjoDszO6z8SX5CKn8OBJDvAN8Pyy9wS3LCnXYvVFdg/35j6lBmzTHGGuJeKnAI/iIhf0wrkHLMA6InMRun08fDnlsuj7ULOF3mh3Te8Ga7fT1sILqmXsOGH/PTD6V26pLjX9SYuVfCz1uQ0WV5m09eAxXY6tMzcSTcRAgKPf8kLZAyHc8VyPbyOvEZ8ISAdCfDtT0Y6Una1fXD6RHA5MA==
+Arc-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed;
+ d=microsoft.com; s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W1qCfIROPehEevcmowsiLpIPaSpqXvqFdgPIBwa/uh4=;
+ b=HPYhSgbqobcHwLiQCit6vntVbYYFGdozsRO+uyDebUPZYbstuqArNMMeGbN02i6vN0+aRc4U1exfCDasY+BjoNHAmcGcFg3R5naO1eBJvu2gzCTw/hwQixdRFkyHoAK2lLXxQlZFmp1N+QMKdl2aQicWbevTNw8ugBO1ozd8xZOm1acjwmw6WONpfu8rp8iFbaon7gM6UF44Rp2vRw1ND7toQzWFh5L/tNr7lQvuWh9oRjAgvUQriXXyHneylt4qm9YBkIsKuBoQRzqSaDDJ1av2iMSbluIrp/DChqOOzErZG73M+9cWgYQGuQKPZ78D7UXLaw5Q7UFn8d7Z8YO7sw==
+Arc-Message-Signature: i=1; a=rsa-sha256; d=tmes.trendmicro.com;
+	s=tm-arc-20210909; t=1764085057; c=relaxed/relaxed;
+	bh=W1qCfIROPehEevcmowsiLpIPaSpqXvqFdgPIBwa/uh4=; h=From;
+ b=aRL4M/fUlm8TOlTxA3EUZjevbtswY6ZXNtwK6ou8heTok2ChHTBL74z8B63oiYzRPw9b9St/m5vla1A+DV1rdrjlZG7pH/Vec9Od5pfjYuZkcKhEONkef2khqXUm/AYZ1W2EexoN8c9iFQHOgDNY8dr8THEpyijxgGj0yV2zTPXOuIGD9dNsEACCEK+Sg9HybNQOaEpPqa2N/uJQl3h05gPMScnBqYsvybCD1USsNZXT96cmDbUJf99/8Y9jL1li0n7pe5xkA6aj54+ofec+1ZgY0OTlE2iel/NNJn99HE3KlvphDtn2qqSvpladG1po+8kMRsAiClOtXP9JwoWprw==
+Arc-Authentication-Results: i=2; mx.microsoft.com 1; spf=fail (sender ip is
+ 18.185.115.169) smtp.rcpttodomain=aspetar.com smtp.mailfrom=bkkthon.ac.th;
+ dmarc=none action=none header.from=bkkthon.ac.th; dkim=pass (signature was
+ verified) header.d=bkkthon-ac-th.20230601.gappssmtp.com; arc=fail (35)
+Arc-Authentication-Results: i=1; tmes.trendmicro.com; spf=pass (sender IP
+ address: 209.85.215.195) smtp.mailfrom=bkkthon.ac.th; dkim=none (no
+ processed signatures) header.d=none; dmarc=pass action=no records
+ header.from=bkkthon.ac.th; arc=none
+Authentication-Results: spf=fail (sender IP is 18.185.115.169)
+ smtp.mailfrom=bkkthon.ac.th; dkim=pass (signature was verified)
+ header.d=bkkthon-ac-th.20230601.gappssmtp.com;dmarc=none action=none
+ header.from=bkkthon.ac.th;compauth=pass reason=106
+Received-Spf: Fail (protection.outlook.com: domain of bkkthon.ac.th does
+ not designate 18.185.115.169 as permitted sender)
+ receiver=protection.outlook.com; client-ip=18.185.115.169;
+ helo=inpost.tmes.trendmicro.eu;
+X-Tm-Mail-Received-Time: 1764085051.668000
+X-Tm-Mail-Uuid: b13e7df9-e76d-400f-833a-2590c66c6a78
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bkkthon-ac-th.20230601.gappssmtp.com; s=20230601; t=1764085046;
+ x=1764689846; darn=aspetar.com;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=W1qCfIROPehEevcmowsiLpIPaSpqXvqFdgPIBwa/uh4=;
+        b=l6/4Gjw9DDXSdU1suB5XyxkuAsBhY+XTLbhyhvT/cVMIRK5FE+r7BGj/lgQerAUQ7b
+         xxlNiMGy64agjksGfv/ZHQbUqOAIxZLsAjR41IKhc+/odP3/W6wi2L3LFoybM3WdQ5QB
+         9lNqq5FJ6utUIQVR7sktEkVYs2pbpneUQVkCNz4lbdzQ7teRhZcJi68G3DMdadhJmm1r
+         cx9sZ604vDpVfb+XC+QxKr+VF7iVt4t7uXsHg91drXgBcWr5tyz9r1GaUP4DUGzY1E9k
+         V5y/rgh/vw3ImZRNLrANsjdXbsyTpDJEBb9Us7VJk45cvXO2VGDtfgdJlKmbshPYPVzY
+         7ZPA==
+X-Google-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764085046; x=1764689846;
+        h=to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=W1qCfIROPehEevcmowsiLpIPaSpqXvqFdgPIBwa/uh4=;
+        b=TD3zojaAzpjY0r6jAi10YS358JZyHuatyPR5mE2+Uzcfxwkdo1v3WdSgtfGBibCzgn
+         PEstwbYwmVoylKovQY6DHEtRvIEqc2ItLfZ36MaoDCdhzulPdSRp3+XYyR7Do2fg1apA
+         rt6xCGmrKzE3dEzFlXLlTKpoMaqkR29xnio/dm4vZ6vr/xAcHtsvKqni9MrwMcvFU3SU
+         1oAGgTvKglXxA6+8/R1YFZP6OI1O/U0iZJKS/7GGE28vHprU7gA4hX3Lx7JBuWSdQecL
+         bd1iCMeLvXDRfZBtMVhBqIl/5DRgKbk3xOuIZrZkwlyqcv1NMLHoVqBtcAjAm7SUt5bg
+         3Avw==
+X-Forwarded-Encrypted: i=1;
+ AJvYcCV/hktbXVBH5pDg1RH11TAqZaSdksIgzeNmQbKPyHfL0UyVUFqCJpXLqvNHt29ricvCx8/9m0zE1p22/w==@aspetar.com
+X-Gm-Message-State:
+ AOJu0Yw+DilFuIMofxN9NuXQMN9/XrCQSAyx33WhNdlfBNKfD6TEgH+G
+	rxLHOqrwCHk+X6Uu6OV9MJby6C9o7tD2ukwhZgh7SUI69jRAy+Xr4YCcKkBeGA5VRfEvUoCe2Qh
+	zL3Ogh+0T03ECxsyv2WHQKE2LBfrefUT+SIZ8otw2Ew==
+X-Gm-Gg:
+ ASbGncu5TqYaJpcQ0bXc4EQ+5G33CGSvrMj67v4/pPUuWkbEHQhhvf46aJoOOTPUPCv
+	qMxD6SkNoju1jLMw2VpW8odiI/dWUf9b8/PqxwkJAeW0RDW3z6ay04jdY3z/enbb7GKT7BNhilx
+	FeeZbvamFkT1uwwIqJ8ej6H76lpW9kgd5fIPB9SCDEj9qAPojuqOjwRF+9mqPOf+kHSnyYbjUqT
+	mRJPh+FHhFHAgM3FzH06YAWyReB++meHm1wxGrss5nWIOOW1zOgbgy+9B6hL6GIRqZm0b7kKZqP
+	tyv21gOYqB6PnkL5AEETUBoOfullPtmz
+X-Google-Smtp-Source:
+ AGHT+IFcCu/Gj8staKnDhCT7/caPZOz6zaXHrnBaedzQl9bxepYhw/W0jWne7m2p87SZSqn1Is4/RRe74a0cAEvV5T4=
+X-Received: by 2002:a05:693c:821b:b0:2a4:3593:9684 with SMTP id
+ 5a478bee46e88-2a719073a2dmr7101342eec.1.1764085045862; Tue, 25 Nov 2025
+ 07:37:25 -0800 (PST)
+MIME-Version: 1.0
+From: Tina Johnson <6414110501@bkkthon.ac.th>
+Date: Tue, 25 Nov 2025 10:37:24 -0500
+X-Gm-Features:
+ AWmQ_bnOagijCg8RR2NV2dgLsXzGaeiZdYcsQfDW_2JooGiOGqn0kXRzraD6u-w
+Message-Id:
+ <CAFL_QB5VM+WHLALA0JRngzhpL_LRWBvx5h-_p2jbCh_YydbPtA@mail.gmail.com>
+Subject: =?UTF-8?B?RVhURVJOQUw6IFlvdXIgaG9tZSBhdCA1ODE0IEphbWVzIFJvYWQg?=
+ =?UTF-8?B?QXB0LiA3MzEsIExha2UgQW15LCBOViAxOTU4OSBpcyBkdWUgZm9y?=
+ =?UTF-8?B?IGEgY2hlY2stdXAh?=
+To: lilycrtz@aol.com
+Content-Type: multipart/mixed;
+ boundary="----sinikael-?=_1-17640851654380.4703531076672163"
+X-Tm-Received-Spf: Pass (domain of 6414110501@bkkthon.ac.th designates
+ 	209.85.215.195 as permitted sender) client-ip=209.85.215.195;
+ 	envelope-from=6414110501@bkkthon.ac.th; helo=mail-pg1-f195.google.com
+X-Tm-Authentication-Results: spf=pass (sender IP address: 209.85.215.195)
+ 	smtp.mailfrom=bkkthon.ac.th; dkim=none (no processed signatures)
+ 	header.d=none; dmarc=pass action=no records header.from=bkkthon.ac.th;
+ 	arc=none
+X-Tm-As-Ers: 209.85.215.195-127.9.11.1
+X-Tmase-Version: StarCloud-1.3-9.2.1005-29598.000
+X-Tmase-Result: 10--18.073700-10.000000
+X-Tmase-Matchedrid:
+ R/MEtT40xDnaOGCbnfFtOZXL9FToUxLrxJsUBaZNw2OGzYEuvDNm9Z/j
+	pLysXh0dr8lhJ6OZAvzTRdk2RV5UUgGDE7AlFjkp2WVp0/Lr/XwuUG7W3gah4cZbBgOnk0hSHYs
+	sNNYxowA0plAsEGWDDSD1pJL+PeHaCO/23LJkyCqxfhoVgAwhgw2z7GNUfmXHvr2LTnLarYZ7mA
+	udtk7IFuxPHH0fZdxYlfwRGtUQCJZQhFfLSS9FzrCZC4u8mtRMBYMJMvHbk5xdN3IfNQFTspdcU
+	F1i8Vi3XVqqL8pV0STg0I8K3NSDhSkDJepNPbg/WucEZobOeTTn0oaU6WM++5j9+fwGICRYpte0
+	LofeOgrqUElLNuv9M+H9m7FIEps2VVp6ijs2qSJIhbHCNJtZqO69B8ARPsQdjYOmfKMkD7ZoKr/
+	i+NYUX2rQQL9WwbaWQzMun19jKHU7UbEaZaBz1w5Xwh0UtqV8MtqLW6iaAWrmkTvVg45eIXtk+j
+	j+5Esp/AFj0fBJksiuUHn1uz9LFxUDr95gWj1CYzClpEj0Y6WnoPoIHxP6DioriYCHWFbiddrXk
+	lDed6b1YRF6WtLe9RUIqUMvqg34vtmnCrX3ZgG4Sdqt7kY2sNwd7UoSaSPtUjM8d6pdmEPjnWT9
+	ae/5MD6qNO7F2Gh6bc/+5IWtIZuT5d9QepMu6VvIId8M26gT+sMesHlgpMtimmowi1sSA8pBTBT
+	sEdzf7VUMlOpyZeRnVQuxmoyijHGDuy8y1qkuImxnQvgkai0tvwNaKrpmVFf0czs/wYTp
+X-Tmase-Xgencloud: 4814f6aa-225a-499c-8bb9-d6ae6e10f812-0-0-200-0
+X-Tmase-Snap-Result: 1.821001.0001-0-1-5:1,22:0,28:1,33:0,34:0,42:1-0
+X-Tm-Riskai-Ptn-Version: 1.22.0+20251125.4fbebe0
+X-Tm-Riskai-Matchedfid:
+ WyJGSUwwMDIiLCAiRklMMDI5IiwgIkZJTDAzMyIsICJGSUwwMzYi
+	LCAiRklMMDM3IiwgIkZJTDA0MCIsICJGSUwwNDIiLCAiRklMMDc2IiwgIkZJTDA3NyIsICJGSUw
+	wNzgiLCAiRklMMDgwIiwgIkZJTDA4MU4iLCAiRklMMDg1IiwgIkZJTDA4NyIsICJGSUwwOTciLC
+	AiRklMMDk4IiwgIkZJTDEwMCIsICJGSUwxMDUiLCAiRklMMTM3IiwgIkZJTDE4NCIsICJGSUwxO
+	TciLCAiRklMMTk4IiwgIkZJTDI1MyIsICJGSUwyOTMiXQ==
+X-Tm-Deliver-Signature: BF2C12373900D3E62DFF286A918E1EE0
+X-Tm-Addin-Auth:
+ mx5vJ9FBIA9+EALwF3KmPoVCLj0ZZHnkQB/owv0HsptCIqC6XgOpBG2ZNig
+	dJecl/NAQ43OX0d5fH8XFxDp598RALwD0qGmWzyHT34HM1VMgAqgAqkh8YymHipXNvt/YjnVKP7
+	AJXhqVWWLXrqZx7bKZwQuR6NxCv0V1PVJiytcwlM0Pm7iTE7garfV+eKtbJbrFUnD00+Xc/qrxJ
+	SXL94p0lZ2VUtqcEGA24LeG6Ws2GakSzEqr/WU6Q/KpplR3vb0oj2jGLaCA/CJCPE8gIz8zbVXJ
+	N2L2pF+MVG6PE1sZaztz76GXnkgxTjPea87Ks6SPDbENChc2MFP5fXhDUw==.suHIZhsUsLXqXr
+	7C82TFdzeNJQMBV4PtUkl/WwWN7yWKKKb1HIMJPTAp5fWd4sXqfXSqANaQKLFIMhQ3XApgm2qMz
+	PXT9SDs7vU2P4oz0Y7S68ubAcgSIG0wP1Eh2/fA8eFpHPByv9+fMGrbeGcachnLIcFDVBs9xs+K
+	QdqTyXWBVkhV5vclf3OPVR+3YvTyBtqHDjmwMxHVFstxER7imtKuerNY82ymzWzQ5+fKLq0k7OX
+	863biby0+iJxpFsjXf67a40H7zyWK1s46qaPzuXEaFjxvXrznUJb3R0ClQIMOiSEORNhs6kbUKj
+	RoDXGPJk62Eb6ec4WZsEjrKQb66w==
+X-Tm-Addin-Productcode: EMS
+Return-Path: 6414110501@bkkthon.ac.th
+X-Ms-Exchange-Organization-Expirationstarttime: 25 Nov 2025 15:37:38.0059
+ (UTC)
+X-Ms-Exchange-Organization-Expirationstarttimereason: OriginalSubmit
+X-Ms-Exchange-Organization-Expirationinterval: 1:00:00:00.0000000
+X-Ms-Exchange-Organization-Expirationintervalreason: OriginalSubmit
+X-Ms-Exchange-Organization-Network-Message-Id:
+ 2930d629-41ea-4401-b50f-08de2c389011
+X-Eopattributedmessage: 0
+X-Eoptenantattributedmessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-Ms-Exchange-Organization-Messagedirectionality: Incoming
+X-Ms-Publictraffictype: Email
+X-Ms-Traffictypediagnostic:
+ AMS1EPF0000004C:EE_|DO0P289MB0249:EE_|DO2P289MB0220:EE_
+X-Ms-Exchange-Organization-Authsource:
+ AMS1EPF0000004C.eurprd04.prod.outlook.com
+X-Ms-Exchange-Organization-Authas: Anonymous
+X-Ms-Office365-Filtering-Correlation-Id:
+ 2930d629-41ea-4401-b50f-08de2c389011
+X-Ms-Exchange-Atpmessageproperties: SA|SL
+X-Ms-Exchange-Organization-Scl: -1
+X-Microsoft-Antispam:
+ BCL:0;ARA:13230040|240411011799012|43022699015|82310400026|27102699006|8096899003;
+X-Forefront-Antispam-Report:
+ CIP:18.185.115.169;CTRY:DE;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:inpost.tmes.trendmicro.eu;PTR:inpost.tmes.trendmicro.eu;CAT:NONE;SFS:(13230040)(240411011799012)(43022699015)(82310400026)(27102699006)(8096899003);DIR:INB;
+X-Ms-Exchange-Abp-Guid: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-Ms-Exchange-Crosstenant-Originalarrivaltime: 25 Nov 2025 15:37:37.9454
+ (UTC)
+X-Ms-Exchange-Crosstenant-Network-Message-Id:
+ 2930d629-41ea-4401-b50f-08de2c389011
+X-Ms-Exchange-Crosstenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-Ms-Exchange-Crosstenant-Authsource:
+ AMS1EPF0000004C.eurprd04.prod.outlook.com
+X-Ms-Exchange-Crosstenant-Authas: Anonymous
+X-Ms-Exchange-Crosstenant-Fromentityheader: Internet
+X-Ms-Exchange-Transport-Crosstenantheadersstamped: DO0P289MB0249
+X-Ms-Exchange-Transport-Endtoendlatency: 00:00:11.9898454
+X-Ms-Exchange-Processed-By-Bccfoldering: 15.20.9366.005
+X-Ms-Exchange-Externalinoutlookresult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery:
+ ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4717077)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info:
+ 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
+Content-Transfer-Encoding: 7bit
+
+------sinikael-?=_1-17640851654380.4703531076672163
+Content-Type: text/html; format=flowed
+Content-Transfer-Encoding: 7bit
+
+<html lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta 
+name="viewport" content="width=device-width, initial-scale=1.0"><style>
+<!--
+body
+	{font-family:Arial,sans-serif;
+	margin:20px;
+	padding:0;
+	background-color:#0a0a0a}
+.container
+	{max-width:800px;
+	margin:0 auto;
+	padding:20px;
+	background-color:#fff;
+	border:1px solid #ccc;
+	line-height:1.8}
+.logo
+	{text-align:center;
+	margin-bottom:20px}
+.logo img
+	{max-width:200px}
+.divider
+	{border-top:5px solid #ccc;
+	margin:20px 0}
+.table-container
+	{background-color:#f0f8ff;
+	padding:10px;
+	border-radius:5px;
+	overflow-x:auto}
+table
+	{width:100%;
+	border-collapse:collapse}
+th, td
+	{border:1px solid #ddd;
+	padding:8px;
+	text-align:left}
+th
+	{background-color:#f2f2f2}
+.phone-button
+	{text-align:center;
+	margin-top:20px}
+.phone-button button
+	{background-color:blue;
+	color:#fff;
+	font-size:20px;
+	padding:10px 20px;
+	border:none;
+	border-radius:10px}
+.footer
+	{background-color:#f5f5f5;
+	padding:10px;
+	border-radius:5px;
+	text-align:center}
+-->
+</style></head><body><table class="MsoTableGrid" border="1" cellspacing="0" 
+cellpadding="0" width="100%" style="width:100%; border-collapse:collapse; 
+border:none"><tbody><tr style=""><td width="5" valign="top" 
+style="border:solid #212121 1pt; background:#8A3640; padding:0in 0in 0in 
+0in"></td><td valign="top" style="border:solid #212121 1pt; 
+border-left:none; background:#FDF2F4; padding:7px 5px 7px 15px"><span 
+style="font-size:9pt; font-family:'Segoe UI',sans-serif; 
+color:#212121">CAUTION: This email originated from an external entity 
+outside of Aspire Zone Foundation. Do not click on links or open 
+attachments unless you recognize the sender and know that the content is 
+safe.</span></td></tr></tbody></table><div><div class="container"><div 
+class="logo"><h1 style="margin:0; font-size:45px; line-height:25px; 
+font-weight:600; color:#1e1cb8">PayPal</h1></div><div 
+class="divider"></div><p><strong>Dear Customer</strong><br>Just a quick 
+heads up: Your subscription with McAfee is scheduled to renew today, with 
+<strong>$479.00</strong> set to be debited from your account. You'll see 
+the deducted amount on your A/C statement within the next 24 
+hours.<br><br>If this seems unauthorized or you wish to cancel the 
+subscription, please reach out to our billing department at your earliest 
+convenience.<br><br><strong>We're here to assist! <span 
+style="display:block; margin-top:10px; color:#ffe019">Warm regards, 
+</span></strong></p><div class="divider"></div><div 
+class="table-container"><table><tbody><tr><th>Order 
+Date</th><td>25-11-2025</td></tr><tr><th>Customer 
+ID</th><td>nBTePRxyYx</td></tr><tr><th>Invoice 
+NO</th><td>MSDPYY2X</td></tr><tr><th>Product 
+Code</th><td>PRD-7008</td></tr></tbody></table></div><div 
+class="divider"></div><div 
+class="table-container"><table><tbody><tr><th>Item Name</th><td>McAfee Pc 
+Protection</td></tr><tr><th>Price</th><td>$479.00</td></tr><tr><th>Quantity</th><td>01</td></tr><tr><th>Total</th><td>$479.00</td></tr></tbody></table></div><div 
+class="divider"></div><p>If you did not authorize this payment, you have a 
+24-hour window to cancel and receive an immediate refund on your annual 
+subscription. Please contact our customer support team for 
+assistance.</p><div class="divider"></div><div 
+class="phone-button"><button>Call Helpline: +1 802 200 8327</button> 
+</div><div class="footer"><p style="font-size:12px">Please do not reply to 
+this email. For further assistance, call the helpline 
+number.</p></div></div></div></body></html>
+------sinikael-?=_1-17640851654380.4703531076672163--

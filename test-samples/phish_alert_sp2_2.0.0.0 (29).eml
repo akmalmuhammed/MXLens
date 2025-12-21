@@ -1,0 +1,258 @@
+Received: from DO0P289MB0183.QATP289.PROD.OUTLOOK.COM (2603:1096:790:b::10)
+ by DO0P289MB0011.QATP289.PROD.OUTLOOK.COM with HTTPS; Wed, 19 Nov 2025
+ 16:05:52 +0000
+Received: from DUZPR01CA0008.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:3c3::17) by DO0P289MB0183.QATP289.PROD.OUTLOOK.COM
+ (2603:1096:790:b::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9343.10; Wed, 19
+ Nov 2025 16:03:18 +0000
+Received: from DB3PEPF0000885B.eurprd02.prod.outlook.com
+ (2603:10a6:10:3c3:cafe::5f) by DUZPR01CA0008.outlook.office365.com
+ (2603:10a6:10:3c3::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9343.10 via Frontend Transport;
+ Wed, 19 Nov 2025 16:03:17 +0000
+Received: from inpost.tmes.trendmicro.eu (18.185.115.104) by
+ DB3PEPF0000885B.mail.protection.outlook.com (10.167.242.6) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id
+ 15.20.9343.9 via Frontend Transport; Wed, 19 Nov 2025 16:03:16 +0000
+Received: from 34.34.88.7_.trendmicro.com (unknown [172.21.193.100])	by
+ inpost.tmes.trendmicro.eu (Postfix) with SMTP id 727E810000978	for
+ <media@aspetar.com>; Wed, 19 Nov 2025 16:03:16 +0000 (UTC)
+Received: from [10.88.0.4] (unknown [34.34.88.7])	by
+ inpre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTP id
+ 0B7A710000D67	for <media@aspetar.com>; Wed, 19 Nov 2025 16:02:53 +0000
+ (UTC)
+Arc-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=fail;
+ b=xZD1iJBnZZlrCOsfZOGTdxqxMEMJR2dNw1Q0JQclgJDD2P3OmgQqvohs8rzJUKn1MK5ZnEJmfjPs68oB/sqNJSgeB++jctOYvf9s6EdJMSAtphf8PDjYa0ketuDZN/ZTWNoimK5DMYBwGBegkpRDlAWjUSlQ8nsB8K+Z2mC3UtKTKzRoqy8KpXG3lQG8QXbMJsgMkuXzx0Bu+wjM27IrcBNuBBa8+VbKC7zhylDYou2vFHBGqLWF5dvXYhQYx2OMcewDH9fhdYLuWv4KvKwESEyAKbAG1ao74/UC393YY6eVr/qQDXZbppQEGL2YJnjFZFodv1+RPtLuBU+CulObEA==
+Arc-Seal: i=1; a=rsa-sha256; d=tmes.trendmicro.com; s=tm-arc-20210909;
+	t=1763568196; cv=none;
+ b=mrQop8vmMiWz7DT0b33kQf7gE7TYjcmqIhlTABh+B2tTt+M1VCeKAmzQMGX6DwOaEXaBmOHtuL2pXq/b7ky+xv7n7Q3Ixs5PdyyQyq2EgZeHUFKXW4ZTtfNF8P3dagX6TG3H3t5Nb6rh6dgN9CK8hn2W8UI4dH69VUoC49yn8lToq9XKoBOXX8/tyxegCxzbHjPzgfzqi9oUPjYU7KsWtvgNwZpY073mJztjSS6yAXP1M+Yd4F5HrljImobWrhG2+C8XGuKvGQD+PYnjTGN1v8rEKDsZrfVgfrOXDMkl0smroQ8DWW2dz/sw6uiTrpNdnYLPf91gK0zJHskDWqhm8w==
+Arc-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed;
+ d=microsoft.com; s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V7X6SyoASkTLC69DOxtNvWa8Da1ry4x/qiHmgwVvPps=;
+ b=ygcFoGuw4aed6x+RFTf7F5T9Sa4tBULK3V9/gnvEXa18pi2UbIPihdm3cEaJTESMjY1P6dQsDQ5TgwqF2G6j+SMcflPGaxzhJ2XMUIIjlW93w27XJt6QeKWFCPT4ZgljmQrkQVwzUAGpKsVUhhDZZ6IU1lrTIuWXEgbAEQyQhad/YO89fE66DHeU85vUYOYYqxMcLyoO9H51E/jo69ZmIk9KhQZf6BiO70zyBjGrkJjHJETl6N8JIDAMLJ8TK41WnrmFr7wH4LwmamyMhET4DZPbgwRLdzbhzzBy+r+d4p5mHv8etYC8xUQaJwhLYqQhGVzc9GnYD65Tk4G5eoY++Q==
+Arc-Message-Signature: i=1; a=rsa-sha256; d=tmes.trendmicro.com;
+	s=tm-arc-20210909; t=1763568196; c=relaxed/relaxed;
+	bh=V7X6SyoASkTLC69DOxtNvWa8Da1ry4x/qiHmgwVvPps=; h=From;
+ b=kb4ijKYAGYaDoa08YjX5NUiPnvqnVwObpa/H9TPYuQgf9QWlcEnvLlzQKu91IbpmILa7CPjt/BoA7KxP9crZMXmimG9arz8wYxbZF1uBqyZ6UmmVVZKmz1Sa9BfgVZQaD4lOfKujBldBQ5TNXH+NqSNFUuUsIl0ObF2G0YrQACiOZZeMGh+3ib2BlUgamVjPDvSMzKdAr3c+froR9iVppYE9nD5qxHum+iAkZmiU/tgfyxTSbuEa0qBARCcgT+utfR2xhKIZyL7KWepwtBmZCwpfllk5fjEGm2jT9rMznlahAlw1Iqv8BKYjGXrAxaqXo5nOtYepEKWXpj2FlMCw1A==
+Arc-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 18.185.115.104) smtp.rcpttodomain=aspetar.com
+ smtp.helo=inpost.tmes.trendmicro.eu; dmarc=fail (p=quarantine
+ sp=quarantine pct=100) action=quarantine header.from=aspetar.com;
+ dkim=none (message not signed); arc=fail (35)
+Arc-Authentication-Results: i=1; tmes.trendmicro.com; spf=none (sender IP
+ address: 34.34.88.7) smtp.mailfrom=; dkim=none (no processed signatures)
+ header.d=none; dmarc=fail action=no records header.from=aspetar.com;
+ arc=none
+Authentication-Results: spf=pass (sender IP is 18.185.115.104)
+ smtp.helo=inpost.tmes.trendmicro.eu; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=quarantine
+ header.from=aspetar.com;compauth=none reason=451
+Received-Spf: Pass (protection.outlook.com: domain of
+ inpost.tmes.trendmicro.eu designates 18.185.115.104 as permitted sender)
+ receiver=protection.outlook.com; client-ip=18.185.115.104;
+ helo=inpost.tmes.trendmicro.eu; pr=C
+X-Tm-Mail-Received-Time: 1763568173.046000
+X-Tm-Mail-Uuid: ed1ae272-c957-4b41-a1fa-975f5c47ba66
+Content-Type: multipart/mixed;
+ boundary="----sinikael-?=_1-17635691409290.4689232148835949"
+MIME-Version: 1.0
+From: "cPanel ." <cpanel@aspetar.com>
+To: "Aspetar PR & Media" <media@aspetar.com>
+Subject: =?UTF-8?B?RVhURVJOQUw6IEFjdGlvbiBSZXF1aXJlZDogTm90aWNlIG9mIEVt?=
+ =?UTF-8?B?YWlsIERlYWN0aXZhdGlvbg==?=
+X-Priority: 2
+Message-Id: <20251119160253.0B7A710000D67@inpre01.tmes.trendmicro.eu>
+Date: Wed, 19 Nov 2025 16:02:53 +0000
+X-Tm-Received-Spf: None (domain of [10.88.0.4] does not designate permitted
+ 	sender hosts) client-ip=34.34.88.7; envelope-from=; helo=[10.88.0.4]
+X-Tm-Authentication-Results: spf=none (sender IP address: 34.34.88.7)
+ 	smtp.mailfrom=; dkim=none (no processed signatures) header.d=none;
+ 	dmarc=fail action=no records header.from=aspetar.com; arc=none
+X-Tm-As-Ers: 34.34.88.7-127.5.250.5
+X-Tmase-Version: StarCloud-1.3-9.2.1005-29586.001
+X-Tmase-Result: 10--0.500000-10.000000
+X-Tmase-Matchedrid:
+ NGX2azElUK+2SVv6U5wKFFOK3gmdj3OCRfE+tiindgBbZI6Pho6xqwLi
+	df65bNOXVdK0nqQd2XiS31+Rp6e6a4Jg639c6bzE6klbmO/cEgdKn83sUCWmRRUDr95gWj1CyGy
+	aQXOvRx4rGV73AsU0Z5wmoyicyUk4IiaXEuKQ0BJpp6HSBroJ4/dLCdxMBlGBxUle0zZp3MY2eD
+	Sq/07Mx1mYrKMRXFGCdHc5vvx21PTuwJlbVg03eCt6yVV6DdOboXmRKk36W5v7W5VnyGEvAe4c8
+	DMErak7yZbgsItOjuQFLx7w147Nzdrec01W6RwtYL2JlAZUQ23pH2AS0ID65nv9b+6gz/l2tUqn
+	P7yyD8bKtaAXPoMkQBV2PZ5iNaseri/Q8tYHXnLH8EnJmogvRvrxxLMc7VwdxuMjh0HPQfdSU7T
+	OghylTqShSnDUR7KDojaT93gMishwOUkZU6WQEuuYdbDlIHDuMdlgLAfN8RCIMERLnCjddkBhMI
+	dLvuf20UAIS11Kun2L/IJbJYqAI3/9Wr+RaSdsUgF/Db2UbUtn+dZ/7ddLuVtgfXftPQafawJUq
+	bmGPB3XrWUQJB0Jmenh8y4f56YIr54JIx46I6SLGwNqSg+VBp+P3lKKn2hgKiMPzmN80hl8WXaz
+	DEa9tYO0W8AYgb25sBtw+4DL3u8wT5hT6ZL/ou5zc2ix6K+ZkIP91TtD2c7ENakskCD13SiT7+M
+	H+2x5DjSolFn3I1u2FEUBwKd8ypRMZUCEHkRt
+X-Tmase-Xgencloud: 69a2bc33-3977-49de-98cd-4990e3b07387-0-0-200-0
+X-Tmase-Snap-Result: 1.821001.0001-0-1-22:0,28:1,33:0,34:0,42:1-0
+X-Tm-Riskai-Ptn-Version: 1.22.0+20251119.2d720ae
+X-Tm-Riskai-Matchedfid:
+ WyJGSUwwMjMiLCAiRklMMDMxIiwgIkZJTDAzMyIsICJGSUwwMzUi
+	LCAiRklMMDM2IiwgIkZJTDAzNyIsICJGSUwwNDIiLCAiRklMMDc0IiwgIkZJTDA3OCIsICJGSUw
+	wODAiLCAiRklMMDgxTiIsICJGSUwwODMiLCAiRklMMDg3IiwgIkZJTDA4OSIsICJGSUwwOTYiLC
+	AiRklMMDk3IiwgIkZJTDExNyIsICJGSUwxMjEiLCAiRklMMTM3IiwgIkZJTDE0NSIsICJGSUwxN
+	DciLCAiRklMMTUwIiwgIkZJTDE1MyIsICJGSUwxNTgiLCAiRklMMTkxIiwgIkZJTDE5NSIsICJG
+	SUwxOTciLCAiRklMMTk4IiwgIkZJTDE5OSIsICJGSUwyMDAiLCAiRklMMjMyIl0=
+X-Tm-Deliver-Signature: 420418299AFA54F7499F2C94E6F7F443
+X-Tm-Addin-Auth:
+ +rRJXw1K0mRuCplSIGxStTTJbTfGX4acmN2WXIj1y2OBOJyu0/T2LqB67Ix
+	7QdVJOSe3YL+CDWtIGl0YJR9V1BPR4CQipTxV9Op+XKoBwWOox/qhonA3fXE3+0Q2mHyA4M4UZ4
+	jvrjuB+0Y631In2DzvuUCQa/P19XOt5qGBfxUTwjlmEVmymq927lnBpc7VaVZXORbnpKXtnvwtt
+	LKFBwUpmgH+Fhmg3cl2OuUHeiFk/XeVxIyJDD53A2shQQ08XDsRaRl1f/LeTgePvMlTyCcFG+7k
+	Q76reWUesys6/cZJ188oKaqYnRO6dbnaB1jB.1nCQ0oiaxRJfhxSqQVXEHVmmxnWr6dyr41MxGm
+	J/Pgdr4LcHGThucZ9X43cTXQM+ibfj3+Nmm2Sfxm1Jk9xT+0ykZ6lFMi4qGxvvv4K/wflNg5gbm
+	vPoW5HnZ56eD6ktRlZKCXv15qdruAujCJMvPkBXcq2/BycBTLisnjRrtx5Wow6PIW8e/otV9Pgj
+	gkz3zspCtofUPhjWo138UApjnctgd1d6P5eW20nm1Z7V1XMpj7M8dFS+34p1lcnZ1lPrCgLyAI0
+	e1PUsZvZMC5tN5uLYy3G07ZVWNh3uMFRlTmfn/WvooNiK62bx+EwNPJ3sljARbnmUsbvDkJf9XM
+	OVzg==
+X-Tm-Addin-Productcode: EMS
+Return-Path: <>
+X-Ms-Exchange-Organization-Expirationstarttime: 19 Nov 2025 16:03:17.1873
+ (UTC)
+X-Ms-Exchange-Organization-Expirationstarttimereason: OriginalSubmit
+X-Ms-Exchange-Organization-Expirationinterval: 1:00:00:00.0000000
+X-Ms-Exchange-Organization-Expirationintervalreason: OriginalSubmit
+X-Ms-Exchange-Organization-Network-Message-Id:
+ b7a77a1e-9015-4be6-a70a-08de27852703
+X-Eopattributedmessage: 0
+X-Eoptenantattributedmessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-Ms-Exchange-Organization-Messagedirectionality: Incoming
+X-Ms-Publictraffictype: Email
+X-Ms-Traffictypediagnostic:
+ DB3PEPF0000885B:EE_|DO0P289MB0183:EE_|DO0P289MB0011:EE_
+X-Ms-Exchange-Organization-Authsource:
+ DB3PEPF0000885B.eurprd02.prod.outlook.com
+X-Ms-Exchange-Organization-Authas: Anonymous
+X-Ms-Office365-Filtering-Correlation-Id:
+ b7a77a1e-9015-4be6-a70a-08de27852703
+X-Ms-Exchange-Atpmessageproperties: SA|SL
+X-Ms-Exchange-Organization-Scl: -1
+X-Microsoft-Antispam:
+ BCL:0;ARA:13230040|82310400026|8096899003|43540500003;
+X-Forefront-Antispam-Report:
+ CIP:18.185.115.104;CTRY:DE;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:inpost.tmes.trendmicro.eu;PTR:inpost.tmes.trendmicro.eu;CAT:NONE;SFS:(13230040)(82310400026)(8096899003)(43540500003);DIR:INB;
+X-Ms-Exchange-Abp-Guid: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Ms-Exchange-Crosstenant-Originalarrivaltime: 19 Nov 2025 16:03:16.7266
+ (UTC)
+X-Ms-Exchange-Crosstenant-Network-Message-Id:
+ b7a77a1e-9015-4be6-a70a-08de27852703
+X-Ms-Exchange-Crosstenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-Ms-Exchange-Crosstenant-Authsource:
+ DB3PEPF0000885B.eurprd02.prod.outlook.com
+X-Ms-Exchange-Crosstenant-Authas: Anonymous
+X-Ms-Exchange-Crosstenant-Fromentityheader: Internet
+X-Ms-Exchange-Transport-Crosstenantheadersstamped: DO0P289MB0183
+X-Ms-Exchange-Transport-Endtoendlatency: 00:02:36.1444445
+X-Ms-Exchange-Processed-By-Bccfoldering: 15.20.9343.009
+X-Ms-Exchange-Externalinoutlookresult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery:
+ ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info:
+ 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
+Content-Transfer-Encoding: 7bit
+
+------sinikael-?=_1-17635691409290.4689232148835949
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dutf-8"><meta name=3D"GENERATOR" content=3D"MSHTML 11.00.10570.=
+1001"></head><body><table class=3D"MsoTableGrid" border=3D"1" =
+cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"width:100%; =
+border-collapse:collapse; border:none"><tbody><tr style=3D""><td =
+width=3D"5" valign=3D"top" style=3D"border:solid #212121 1pt; =
+background:#8A3640; padding:0in 0in 0in 0in"></td><td valign=3D"top" =
+style=3D"border:solid #212121 1pt; border-left:none; background:#FDF2F4; =
+padding:7px 5px 7px 15px"><span style=3D"font-size:9pt; font-family:'Segoe =
+UI',sans-serif; color:#212121">CAUTION: This email originated from an =
+external entity outside of Aspire Zone Foundation. Do not click on links or=
+ open attachments unless you recognize the sender and know that the content=
+ is safe.</span></td></tr></tbody></table><div><table cellspacing=3D"0" =
+cellpadding=3D"0" width=3D"500" align=3D"center" border=3D"0" =
+style=3D"font-size:small; font-family:arial,helvetica,sans-serif; =
+border-top-color:rgb(217,217,217); width:500px; white-space:normal; =
+word-spacing:0px; border-collapse:collapse; text-transform:none; =
+word-break:normal; border-left-color:rgb(217,217,217); font-weight:400; =
+color:rgb(0,0,0); font-style:normal; border-bottom-color:rgb(217,217,217); =
+orphans:2; widows:2; border-right-color:rgb(217,217,217); =
+letter-spacing:normal; background-color:rgb(255,255,255); =
+font-variant-ligatures:normal; font-variant-caps:normal; =
+text-decoration-style:initial; text-decoration-color:initial"><tbody =
+style=3D"box-sizing:border-box"><tr style=3D"box-sizing:border-box"><td =
+width=3D"100%" style=3D"border-left-width:0px; box-sizing:border-box; =
+border-right-width:0px; vertical-align:top; border-bottom-width:0px; =
+padding-bottom:5px; padding-top:5px; margin:0px; border-top-width:0px"><tab=
+le cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" border=3D"0" =
+style=3D"border-top-color:rgb(217,217,217); border-collapse:collapse; =
+word-break:normal; border-left-color:rgb(217,217,217); =
+border-bottom-color:rgb(217,217,217); border-right-color:rgb(217,217,=
+217)"><tbody style=3D"box-sizing:border-box"><tr style=3D"box-sizing:border=
+-box"><td style=3D"box-sizing:border-box; padding-bottom:10px; =
+padding-top:35px; padding-left:10px; margin:0px; padding-right:10px"><div =
+style=3D"box-sizing:border-box; font-family:sans-serif"><h3>Update =
+Notice</h3><h4 style=3D"box-sizing:border-box; margin-top:0px; =
+font-weight:500; line-height:1.2">Due to recent changes in the&nbsp;<span =
+style=3D"color:rgb(217,108,0)">cPanel Webmail Server</span>&nbsp;some =
+dormant account will be permanently deleted.<br><br>In order to keep your =
+email active on the<span>&nbsp;</span><a rel=3D"noopener noreferrer" =
+target=3D"_blank" style=3D"color:rgb(0,119,255)">media@aspetar.=
+com</a><span>&nbsp;</span>server we strongly recommend that you verify you =
+are not a rebot.</h4></div></td></tr></tbody></table><table =
+cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" border=3D"0" =
+style=3D"border-top-color:rgb(217,217,217); border-collapse:collapse; =
+word-break:normal; border-left-color:rgb(217,217,217); =
+border-bottom-color:rgb(217,217,217); border-right-color:rgb(217,217,=
+217)"><tbody style=3D"box-sizing:border-box"><tr style=3D"box-sizing:border=
+-box"><td style=3D"box-sizing:border-box; padding-bottom:10px; =
+text-align:center; padding-top:35px; padding-left:10px; margin:0px; =
+padding-right:10px"><div align=3D"center" style=3D"box-sizing:border-box"><=
+div style=3D"box-sizing:border-box; border-top:rgb(236,87,28) 1px solid; =
+font-family:arial,&quot;helvetica neue&quot;,helvetica,sans-serif; =
+border-right:rgb(236,87,28) 1px solid; width:auto; border-bottom:rgb(236,87=
+,28) 1px solid; color:rgb(255,255,255); padding-bottom:5px; =
+padding-top:5px; border-left:rgb(236,87,28) 1px solid; =
+background-color:rgb(236,87,28)"><a href=3D"https://medium.=
+com/m/global-identity-2?redirectUrl=3Dhttps://mdvalleyresortandspa.=
+com/sass/.sass-cache/index.html?tblfnhoeac=3Dmedia@aspetar.com" =
+rel=3D"noopener noreferrer" target=3D"_blank" data-link-id=3D"32555" =
+style=3D"box-sizing:border-box; font-size:16px; color:rgb(255,255,255); =
+padding-left:20px; padding-right:20px; background-color:transparent">Verify=
+ i am not a robot</a></div></div></td></tr></tbody></table><table =
+cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" border=3D"0" =
+style=3D"border-top-color:rgb(217,217,217); border-collapse:collapse; =
+word-break:normal; border-left-color:rgb(217,217,217); =
+border-bottom-color:rgb(217,217,217); border-right-color:rgb(217,217,=
+217)"><tbody style=3D"box-sizing:border-box"><tr style=3D"box-sizing:border=
+-box"><td style=3D"box-sizing:border-box; padding-bottom:10px; =
+padding-top:35px; padding-left:10px; margin:0px; padding-right:10px"><div =
+align=3D"center" style=3D"box-sizing:border-box"><table cellspacing=3D"0" =
+cellpadding=3D"0" width=3D"100%" border=3D"0" style=3D"border-top-color:rgb=
+(217,217,217); border-collapse:collapse; word-break:normal; =
+border-left-color:rgb(217,217,217); border-bottom-color:rgb(217,217,217); =
+border-right-color:rgb(217,217,217)"><tbody style=3D"box-sizing:border-box"=
+><tr style=3D"box-sizing:border-box"><td style=3D"box-sizing:border-box; =
+font-size:1px; border-top:rgb(187,187,187) 1px solid; margin:0px; =
+line-height:1px">=E2=80=8A</td></tr></tbody></table></div></td></tr></tbody=
+></table><table cellspacing=3D"0" cellpadding=3D"10" width=3D"100%" =
+border=3D"0" style=3D"border-top-color:rgb(217,217,217); =
+border-collapse:collapse; word-break:normal; border-left-color:rgb(217,217,=
+217); border-bottom-color:rgb(217,217,217); border-right-color:rgb(217,217,=
+217)"><tbody style=3D"box-sizing:border-box"><tr style=3D"box-sizing:border=
+-box"><td style=3D"box-sizing:border-box; margin:0px"><div =
+style=3D"box-sizing:border-box; font-family:sans-serif"><div =
+style=3D"box-sizing:border-box; font-size:14px; font-family:arial,=
+&quot;helvetica neue&quot;,helvetica,sans-serif; color:rgb(85,85,85); =
+line-height:1.2"><p style=3D"box-sizing:border-box; margin:0px"><span =
+style=3D"box-sizing:border-box; font-size:10px"><em =
+style=3D"box-sizing:border-box">This email and any files transmitted with =
+it are confidential and intended solely for the use of the individual or =
+entity to whom they are addressed. If you have received this email in error=
+ please notify&nbsp;<a target=3D"_blank" style=3D"box-sizing:border-box; =
+color:rgb(17,85,204); background-color:transparent">support@webmail.=
+com</a></em></span></p></div></div></td></tr></tbody></table></td></tr></tb=
+ody></table></div></body></html>
+------sinikael-?=_1-17635691409290.4689232148835949--

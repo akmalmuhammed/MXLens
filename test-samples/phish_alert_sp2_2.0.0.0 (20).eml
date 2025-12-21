@@ -1,0 +1,83 @@
+Received: from DO0P289MB0157.QATP289.PROD.OUTLOOK.COM (2603:1096:790:9::6)
+ by DO2P289MB0447.QATP289.PROD.OUTLOOK.COM with HTTPS; Thu, 6 Nov 2025
+ 04:32:48 +0000
+Received: from DO0P289MB0010.QATP289.PROD.OUTLOOK.COM (2603:1096:790:25::9)
+ by DO0P289MB0157.QATP289.PROD.OUTLOOK.COM (2603:1096:790:9::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.8; Thu, 6 Nov
+ 2025 04:32:47 +0000
+Received: from DO0P289MB0010.QATP289.PROD.OUTLOOK.COM
+ ([fe80::3834:8378:c566:4f5f]) by DO0P289MB0010.QATP289.PROD.OUTLOOK.COM
+ ([fe80::3834:8378:c566:4f5f%6]) with mapi id 15.20.9298.007; Thu, 6 Nov
+ 2025 04:32:47 +0000
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=aspetar.com;
+From: Aspetar <his@aspetar.com>
+To: Abdellatif Azzaoui <Abdellatif.Azzaoui@aspetar.com>
+Date: Thu, 6 Nov 2025 07:32:46 +0300
+Subject: =?UTF-8?B?U3RvY2sgUmVxdWVzdCBUcmFuc2ZlcnJlZA==?=
+Content-Type: multipart/mixed;
+ boundary="----sinikael-?=_1-17624164938890.7117121494433861"
+Content-Transfer-Encoding: 7bit
+X-Ms-Exchange-Organization-Expirationstarttime: 06 Nov 2025 04:32:46.9434
+ (UTC)
+X-Ms-Exchange-Organization-Expirationstarttimereason: OriginalSubmit
+X-Ms-Exchange-Organization-Expirationinterval: 1:00:00:00.0000000
+X-Ms-Exchange-Organization-Expirationintervalreason: OriginalSubmit
+X-Ms-Exchange-Organization-Network-Message-Id:
+ 4a67c5bf-2c64-4826-62cb-08de1ced894b
+X-Ms-Exchange-Organization-Authsource:
+ DO0P289MB0010.QATP289.PROD.OUTLOOK.COM
+X-Ms-Exchange-Organization-Authas: Internal
+X-Ms-Exchange-Organization-Authmechanism: 06
+X-Clientproxiedby: DX1P273CA0018.AREP273.PROD.OUTLOOK.COM
+ (2603:1086:300:21::23) To DO0P289MB0010.QATP289.PROD.OUTLOOK.COM
+ (2603:1096:790:25::9)
+X-Ms-Exchange-Organization-Messagedirectionality: Originating
+Return-Path: his@aspetar.com
+Message-Id:
+ <DO0P289MB0010387F334B649CA9348870A7C2A@DO0P289MB0010.QATP289.PROD.OUTLOOK.COM>
+MIME-Version: 1.0
+X-Ms-Publictraffictype: Email
+X-Ms-Traffictypediagnostic:
+ DO0P289MB0010:EE_|DO0P289MB0157:EE_|DO2P289MB0447:EE_
+X-Ms-Office365-Filtering-Correlation-Id:
+ 4a67c5bf-2c64-4826-62cb-08de1ced894b
+X-Ms-Exchange-Atpmessageproperties: SA
+X-Ms-Exchange-Organization-Scl: 1
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|41050700001;
+X-Forefront-Antispam-Report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DO0P289MB0010.QATP289.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(41050700001);DIR:INT;
+X-Ms-Exchange-Abp-Guid: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-Ms-Exchange-Crosstenant-Network-Message-Id:
+ 4a67c5bf-2c64-4826-62cb-08de1ced894b
+X-Ms-Exchange-Crosstenant-Authsource:
+ DO0P289MB0010.QATP289.PROD.OUTLOOK.COM
+X-Ms-Exchange-Crosstenant-Authas: Internal
+X-Ms-Exchange-Crosstenant-Originalarrivaltime: 06 Nov 2025 04:32:47.0629
+ (UTC)
+X-Ms-Exchange-Crosstenant-Fromentityheader: Hosted
+X-Ms-Exchange-Crosstenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-Ms-Exchange-Crosstenant-Mailboxtype: HOSTED
+X-Ms-Exchange-Crosstenant-Userprincipalname:
+ JI1JBn04EeOYS4rWBAZzZf7IyxDpV0q5KzFLH5uQ+/501SSGkyyYvmD2G79xS0tY
+X-Ms-Exchange-Transport-Crosstenantheadersstamped: DO0P289MB0157
+X-Ms-Exchange-Transport-Endtoendlatency: 00:00:01.1730890
+X-Ms-Exchange-Processed-By-Bccfoldering: 15.20.9298.006
+X-Ms-Exchange-Externalinoutlookresult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery:
+ ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(920097)(425001)(930097)(140003);
+X-Microsoft-Antispam-Message-Info:
+ 97ZBZLx7CTXX9MzuXEfO3BzilpRDTts49QEnXIfcJsJr+YrkzE1bqw5tcb86BWjYKJfLgW08Hn3Nig7yJNYWPfV/4nGAwCEvBOeAXexwzamTapP6V5CHdB968U/u0IbWXX4HUZQLCknkOabTr+LpzO9WVvPEros5sg0HGZ0wHS2BVmcuz/5tSVmfmTUtbKpv1ALvRhGPKDKYL2b59ML/PEr/kWPvZI+BSaPmF9zbrUuRTEVQXMwgFKKmAKuxWuH2FVvqwnXHecGkUHVKSL+wGe7HrvFxz/oAdVlQck4KELGElrtlTJTtloV8zM3HepQBbczOTnWpVufrz9++j6MqKaSitmDxUBCCpE97sr4QM3VhCmaFgjRpY8P4/F5VXauxXIPdHfv2v8kmWVhVxPnKNITswgs4F+z+HCRDSTEKcHPsfna4Jr7LDKqHxBbrDzN00bFKQNS9Tu6T8U+adU4IiLReQT2matNuOII/48Z/yJEsM3NleYyNsIKERDm30/AreFUELltjghEOuvtSPsBGK6GDMhpfgoSAuF083p+i4jFZfLw3DI6mxlbie2YYxUPZrH9ERiLMYHXMl4bSJfmEPvViLjxyhUzyu3Wy0h7p3qeeZEQ2oyL/Crf1aWRoyLUeNFdUmnkwAdELkGRnPmaUcNl+ZtHWQzSYREgpnM0T24FG0jsSZ53VHgFWaF1Y7xoiGRCI3Pzf+niIlpYjkWlGIE1crJQPZ1KDURgCY1ar2gQfYOMPMwHHoBKh3pFhHOh1/R7za3R6Z9bGcy9Nd2VXCCW4upSKTwoGciSnR4G6+k4=
+
+------sinikael-?=_1-17624164938890.7117121494433861
+Content-Type: text/plain; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Dear Abdellatif Azzaoui Please be noted that a requisition request number: 
+1555 ,has been filled by Aspetar Main Stores To Store : Sporting Event 
+Store with priority of Low and Notes -consumables request for Sporting 
+Events - QOC-Islamic Solidarity-KSA-Nov 2025 for manual processing
+
+
+------sinikael-?=_1-17624164938890.7117121494433861--

@@ -1,0 +1,646 @@
+Received: from felix.zheng@astsports.cn( [10.139.44.41] ) by ajax-webmail ( [127.0.0.1] ) ; Mon, 17 Nov 2025 14:46:37 +0800 (GMT+08:00)
+Received: from AMS0EPF00000191.eurprd05.prod.outlook.com
+ (2603:10a6:20b:49a:cafe::4c) by AS9PR06CA0466.outlook.office365.com
+ (2603:10a6:20b:49a::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.22 via Frontend Transport; Mon,
+ 17 Nov 2025 06:47:03 +0000
+Received: from inpost.tmes.trendmicro.eu (18.185.115.168) by
+ AMS0EPF00000191.mail.protection.outlook.com (10.167.16.216) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9343.9
+ via Frontend Transport; Mon, 17 Nov 2025 06:46:53 +0000
+Received: from mail-m158198.netease.com (unknown [47.251.158.198])
+	by inpre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id C3EE610000F71
+	for <barry.shillabeer@aspire.qa>; Mon, 17 Nov 2025 06:46:41 +0000 (UTC)
+Received: from 47.251.158.198_.trendmicro.com (unknown [172.21.178.96])
+	by inpost.tmes.trendmicro.eu (Postfix) with SMTP id 451DA10000C0C
+	for <barry.shillabeer@aspire.qa>; Mon, 17 Nov 2025 06:46:53 +0000 (UTC)
+Received: from DO2P289MB0001.QATP289.PROD.OUTLOOK.COM (2603:1096:790:28::14)
+ by DO3P289MB0022.QATP289.PROD.OUTLOOK.COM with HTTPS; Mon, 17 Nov 2025
+ 06:49:15 +0000
+Received: from AS9PR06CA0466.eurprd06.prod.outlook.com (2603:10a6:20b:49a::26)
+ by DO2P289MB0001.QATP289.PROD.OUTLOOK.COM (2603:1096:790:28::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.21; Mon, 17 Nov
+ 2025 06:46:55 +0000
+From: "felixzheng" <felix.zheng@astsports.cn>
+To: "Barry Shillabeer" <barry.shillabeer@aspire.qa>
+Subject: EXTERNAL: Discover Premium Table Tennis Table Solutions for your company
+Date: Mon, 17 Nov 2025 09:46:37 +0300
+Message-ID: <AC6AfABCJoivE0oK7*Z0*ao9.1.1763361998099.60998.felix.zheng@astsports.cn>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0000_01DC57A8.9E47CC60"
+X-Priority: 3
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHcV45KWNs01It1BUyT2oKK2tC3fQ==
+Authentication-Results: spf=softfail (sender IP is 18.185.115.168)
+ smtp.mailfrom=astsports.cn; dkim=none (message not signed)
+ header.d=none;dmarc=temperror action=none
+ header.from=astsports.cn;compauth=none reason=405
+X-TM-MAIL-RECEIVED-TIME: 1763362001.802000
+X-TM-MAIL-UUID: f699c111-d784-42f8-8ad1-3b131814cbcd
+X-WM-Tid: 0a9a9090c048080ckunm55ed3eb478e77
+X-TM-Received-SPF: Pass (domain of felix.zheng@astsports.cn designates 
+	47.251.158.198 as permitted sender) client-ip=47.251.158.198; 
+	envelope-from=felix.zheng@astsports.cn; helo=mail-m158198.netease.com
+X-TM-Authentication-Results: spf=pass (sender IP address: 47.251.158.198) 
+	smtp.mailfrom=astsports.cn; dkim=none (no processed signatures) 
+	header.d=none; dmarc=pass action=quarantine header.from=astsports.cn; 
+	arc=none
+X-TM-AS-ERS: 47.251.158.198-127.9.0.1
+X-TMASE-Version: StarCloud-1.3-9.2.1005-29580.005
+X-TMASE-Result: 10--9.939300-10.000000
+X-TMASE-MatchedRID: Ho8J/lGVQjPMohY0+nc/ZdJSS0N+pQABCIje9JrVHEw7sXU8MkWfs5ST
+	U/w0iXYcotqAQSG5aPFQYiWnaBxItwn0lYEeFjuFh9+zSa77HBOg8erUpiProrpkCaKjeISgVAC
+	q3sKB7WoV2CbA354rvzlhQ6pcS2X6wTdD2/smmTkGwxeGnHExtADa4fgtsCa6YFCFNuQp3dcvBA
+	W/PwzzqsQ+ziniNxUoODYJ+JStMkh+2fuJEfd0lqdvafIB3Ig4NnCsB8nGnG07NUKpj3HQMqxps
+	sfW3gSjOoUqzRe1C08kSq5FqTmo9YTQ/vk8gem9wct+w4L+pQIVYhGMZlhBuwI6okKx2fPfamev
+	14ZMQ2Nu/WdU86HJLjhBzQ0efYRmwgwy2jJFJnOCySUSkW69RwCEww1DrtU4MGdzoSqvs4TJJUM
+	atA7HoHWTwdgUeXqUcC8Q61JmKnkNZdSFf38d7hnSokRTdXBP9zxz+98nLbqJDkJMX5j/GleGka
+	j5Nn4GUOWnxDIm3EK46TF9JzxhnPFgIP/jX5Ln/QwBILk37YGuO2t5R2Fsoz+z0S2PWR7Iagp3F
+	pr1Jeo12hM2lDAJfRwJ5J3wpD5Mju2XlcEx9HSN2R96lFY2PoZp06uFK1nsZgAY93KJ8S63F6IW
+	m/UvEUq8nskTW14zyvMknDVDvMlyw08Gxs3a2IX/cwOdmAlERYWwJfl8UZz7ONnTkHSP5wrL4Tm
+	nVDW4ON98aHvVl0v7zUDKeTbiT8hQ7+2qZmcrF7QXcEfc4LWh2mirnuuNCESmygi3ySDYURMylF
+	/RKtEUpbnlWZUOFk6yD1tRA9TDDlfCHRS2pXy3BJFtyO5uJMcTkZweorVX7zCk4GRk1KXkms33+
+	H4RdUjuUiscERhBXDp6qYMvm6tjc99KY0Ed8p/HFH0hyMAgEgg3cwDHl/271RGiCxJjx5Wh7C76
+	K4m7U
+	BACkDnvNPAZNmx/p9DKJ6DB8pdEcZQI6/AqHW07K7yNHXy8bb+01JBlLa6MK1y4
+X-TMASE-XGENCLOUD: 6350a61c-a9d1-4fe1-81f6-a46f83fe5ea0-0-0-200-0
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,28:1,33:0,34:0-0
+X-TM-RISKAI-PTN-VERSION: 1.22.0+20251117.4c8bb4f
+X-TM-RISKAI-MATCHEDFID: WyJGSUwwMDIiLCAiRklMMDMzIiwgIkZJTDAzNiIsICJGSUwwMzci
+	LCAiRklMMDQwIiwgIkZJTDA0MSIsICJGSUwwNDIiLCAiRklMMDU2IiwgIkZJTDA3OCIsICJGSUw
+	wODAiLCAiRklMMDgxTiIsICJGSUwwODUiLCAiRklMMDg3IiwgIkZJTDA4OSIsICJGSUwwOTYiLC
+	AiRklMMDk3IiwgIkZJTDA5OCIsICJGSUwxMDAiLCAiRklMMTIxIiwgIkZJTDEzNyIsICJGSUwxN
+	DgiLCAiRklMMTUwIiwgIkZJTDE1NiIsICJGSUwxOTYiLCAiRklMMTk3IiwgIkZJTDE5OCIsICJG
+	SUwyMDAiLCAiRklMMjMyIl0=
+X-TM-Deliver-Signature: 4AAEFE33222864099B68C83515C16A2D
+X-TM-Addin-Auth: GYDWfBLf7cKKjsMGOuTihSJicc4ieiFCsgGHoLybLWCi9E1Qh5Wx9TkECG4
+	Hybb4ScVEmMJ2mXkxDFNIHqeA8P/IXw1lh3JZlU5k369t/+uVNdb/Z8vxomAlr+gQbVCoycED1k
+	RWA1N+wvWKsbrA0vAg0MxgL0K+Bd+koXsIGaSX57bbky/OiQia4tXjv/lQSsYillUQEyhF5Uckq
+	5pkofM/C9Yv6Ujum7O30Mdl61YQuBWHJBKBFlw0smHUqI/FmcuWGVlkiwyLQ6Nqn4ozMuMuS3gm
+	6GYhe3kb1mfLTd4hJc6mWKgAEMJDMfgWEOVa4V+xHU2w/yfl6c1KQDQxUQ==.Jfwiidxq/ABg22
+	FwSALZ0uxjj7BSy1KS9mgsZDfG965W3bE/bRNJ4nXNmw7CRainserXLAIVKg4BfcUdgnGM1en9C
+	vmVKsvDp7zorWi9uS5ZrNBhXZIQpiDg/uhbMY1PPDOvvdbuvBWrFRwpg6tEsws22MV/me1UwO23
+	JCaSOH+IfUN+4tINZvT997R2N9vJ0A+ljHG2h3ZN37w49aafAAPW+KV2Hgs1mmrbvvI8VGR1iAX
+	z9mgey/v6z0SkH1nR/BDue1M49YHSYVeWsskQecUNsq4b0pWrLmAUr+INfAgSmNeeTYmcLT5N0O
+	cf6JLlWqfpNGPHH5uUWbeGo1+GOw==
+X-TM-Addin-ProductCode: EMS
+X-MS-Exchange-Organization-ExpirationStartTime: 17 Nov 2025 06:46:53.6470
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id: 9d36b2d0-9d43-404b-26fe-08de25a5180c
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 0870288e-4af8-48c9-873e-3ad9b170eb26:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMS0EPF00000191:EE_|DO2P289MB0001:EE_|DO3P289MB0022:EE_
+X-MS-Exchange-Organization-AuthSource: AMS0EPF00000191.eurprd05.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id: 9d36b2d0-9d43-404b-26fe-08de25a5180c
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-MS-Exchange-Organization-SCL: -1
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1032899013|5063199012|5073199012|82310400026|69100299015|4123199012|42112799006|2066899003|8096899003|13003099007;
+X-Forefront-Antispam-Report: CIP:18.185.115.168;CTRY:DE;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:inpost.tmes.trendmicro.eu;PTR:inpost.tmes.trendmicro.eu;CAT:NONE;SFS:(13230040)(1032899013)(5063199012)(5073199012)(82310400026)(69100299015)(4123199012)(42112799006)(2066899003)(8096899003)(13003099007);DIR:INB;
+X-MS-Exchange-ABP-GUID: 6c884ccb-43d7-4d1d-9e66-ac448a77ecb9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2025 06:46:53.4079
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d36b2d0-9d43-404b-26fe-08de25a5180c
+X-MS-Exchange-CrossTenant-Id: 0870288e-4af8-48c9-873e-3ad9b170eb26
+X-MS-Exchange-CrossTenant-AuthSource: AMS0EPF00000191.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DO2P289MB0001
+X-MS-Exchange-Transport-EndToEndLatency: 00:02:21.9167535
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.9320.017
+X-MS-Exchange-ExternalInOutlookResult: NotEnabled
+X-Microsoft-Antispam-Mailbox-Delivery: ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4717077)(4999163)(920097)(930097)(140003);
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?SDCxsIoe4pHkvBJXlZ4ouSIOO7Fdyyle28sgCDFPJ1BL76p//CaUw7yiC1r3?=
+ =?us-ascii?Q?8HrDvQOXoofJNslHkFFVSX7qEBcaQUxaQRGBNOmhvr3aQoALymEmKWShysG8?=
+ =?us-ascii?Q?Sw9JLC2CSJ+6iscbuM4mD6xbRQDBmhTNxoCexgZg+f4LVTCJnnmXU7L5NM8e?=
+ =?us-ascii?Q?wy5HadhpyB7pgq4KOgpyGUktMTEPyARCawfR1MSM7Aw3Uez/mF1ISL45cIuk?=
+ =?us-ascii?Q?eakJ407Bke9GyvnciOfP+FQolCm/X8GWV29XkBmjk1jeScyuJ+romQw1lKBM?=
+ =?us-ascii?Q?Fy5s//SArjyop9vk7ng62Qy2ho8UeDQaq9sRkmtKq8oWPwrBMGJcUxDWM/u8?=
+ =?us-ascii?Q?0Vrv7bhYrcQjnXPLAKPsag5sIS6R/3ym9LILvIohaBrLq6w8YA9zFsdEBG6F?=
+ =?us-ascii?Q?EzivLEaC8XD5hzbAWHhHb1T5NXgqUDnqLnA67JTsYxUluFdp4Ai/HcPrxRF/?=
+ =?us-ascii?Q?1awNEKTlHt0NbIVbf53/QOA4v8RGuNA7Dae/ag2GBg4RGhMPbDnwDYyVuvor?=
+ =?us-ascii?Q?UaJTqxCQfJO3HwAqVhIZTivLHYohuppgWxNY0aJMLJiv7Im/WZW/FwlSDeX8?=
+ =?us-ascii?Q?45l+hBisIQNYLCKQmWWsyDThtxxMRep0RIqvpLETIVcQaROSZKGb69KuG6Lu?=
+ =?us-ascii?Q?7AunKVOx597PkwHaXCcLNxgfmin/gdXG+009sTC8tJLXEFg07JO0G8K4MpWt?=
+ =?us-ascii?Q?4pL+bbgf7Xlr+/8nY+T4cmjXvGzhYgYkONX8ZkTxRzGAZKRK0pg
+	/HKsgjP0P?=
+ =?us-ascii?Q?kV43LB5n8lnJ0PBY8wyvkTFLbHePCGfGRfKJQzG87bmvN9OChScLNAgg6mAq?=
+ =?us-ascii?Q?aGp44yIIDtfplx6GMr2q1Z6ZyYPoQcCKD+gZA8DjNZqemu4Em5tlC8G1rY42?=
+ =?us-ascii?Q?QzqYShnEmHtVrE2RY2NgcEf61xoQxnmEZ+EuJLLZj/5+RBu40uhtKHVTDzDs?=
+ =?us-ascii?Q?ZHiLi0RnAsOYqNP5/FckjrqIeTx4y5hV1Ns/i4haopssbiG/9RHrXdaPcgKJ?=
+ =?us-ascii?Q?1xbrELfvvSXpvgPXj15kqI7kublttKwKhfpChkbN6Z+Xf+ZfTyCpDvh3qkxD?=
+ =?us-ascii?Q?VleOzkoyuJzlYi0PZMLN2RVDYk57/Q38uupyS8/WgfVgXBpe41OUX9llANBw?=
+ =?us-ascii?Q?RFI42JzwpxHEqt2It8Fl2f/QQSpvgLx3oUq+EnVmYAYTwBauu9vInKBnyjbr?=
+ =?us-ascii?Q?OzE17UFoI+QVX3Cg8g2+IQl633naLjVwvo1EbVaidfLFI769+FN9l20n67Bi?=
+ =?us-ascii?Q?/L2MpEeK90h+eyBmrUONlqviqmWyU0NjS+ixMlHP2JkPaFv/A28iUIPZfwZu?=
+ =?us-ascii?Q?FqACFDxTM8wj1l0wu/jtpyIgExJrj7DsW6vNxLW6qsdADYE9L93UycLjNKNK?=
+ =?us-ascii?Q?rBBql2LltyA0DpTh+9ojTKHmRQ7SGmxc6c35GAbJ0OnrCRROtko50XxAgdle?=
+ =?us-ascii?Q?E6cXFkbOY7fOk9H5mqlg+gj5rqwGBTY5nmuEKt5mK5UNLOTCQZbUY5ijsfjs?=
+ =?us-ascii?Q?Vy/ROQRKUXPBs6Xm11gXQWnpd4IS/zNt72UyU
+	fY4d0kPgKEjvYSn7wvEtSNY?=
+ =?us-ascii?Q?CBH1IPelVfiDAlJy9tganQPxKJaUkc3r7eDS4Udk3p+JinHw/sZQmB4NygPf?=
+ =?us-ascii?Q?TCjQpzIklRGo9oXlmZWkEj/+8tRUJOczK/9ZdRCh4YOQllqKQUTS3cAR5gIb?=
+ =?us-ascii?Q?axybtbzApPA4jGIfj6bZBNjrGqwi3Y6xIFkaBdA+XDs8fRtp3sJWuIgxyPQS?=
+ =?us-ascii?Q?o4dmn80MHbCVeysdIUA62ubpz9WIsFan1VyV3L2idKWTm9kp/5o5QlYvPgW+?=
+ =?us-ascii?Q?uLsosqDi+mJxv9ZkU0WST9pQvbA9lvD9Xgb3PcGUbhKiKBTgjzLrmVhBW6Um?=
+ =?us-ascii?Q?57fYP5IYI51ILcgzIbUJr0u+TBuvFe1CDWYwZ+bh1Q08l/befJSkwWlCPt2d?=
+ =?us-ascii?Q?iYnFKLrOsVvIfbJ4O0PaM2VchAx28R+LFSz2U3pbbDbVRc7JrM4rmQOPhY5f?=
+ =?us-ascii?Q?CpGzZtRoUtOdznrhOSisOW6pI2t2w5vvbXLem92/69NHSB9M7AoAEtUbhUJn?=
+ =?us-ascii?Q?d7yEL8tCrQlTYZo/psxU6EyqrofqnQJawFxDNiy8qXvaKf1gL0dTkze7oW94?=
+ =?us-ascii?Q?NFyGm+70FzKSWN89al6ywPORZVLO2oOkD/Q508NARfwllKxmnQZnrDj5Dqg9?=
+ =?us-ascii?Q?KGNum5ZbvJ6mREUx7ExVToE3JnsnV104dFq70ToetvrDTF0+H57zMBTTGwVN?=
+ =?us-ascii?Q?faJLQfHW1R3cXwlRSBmOIC9qHli54cxpGiLJj//V13OyxENYF5Uhjy0VqIZu?=
+ =?us-ascii?Q?5ReOTkBnmUzbP5sKMWmWLyz
+	M5larCSS44h3C3Pr6uS/FCJm3Fx79VBor7EF3?=
+ =?us-ascii?Q?GfYSVa/cCOzOac1fV3anpRBRlF6pLx4azr+8rUirTV6QRysornOBMHvGjnp+?=
+ =?us-ascii?Q?PGkwJb08I5DsNIMKjLS+OI1eTyVT9s0MA+qtBLVUtc24UMsCDjOD61GNtCY/?=
+ =?us-ascii?Q?bYOEB89GR60TgmNbPf7FIt+ynLy5QzUpKNGaYlcaY8r42W3yLwSczz/D/P7m?=
+ =?us-ascii?Q?62lxx3C4JEc9HM2G7wbpFhskm+5rWzfGRF+TUdrc8wlYjbKfuI+M6maGGC0C?=
+ =?us-ascii?Q?1aLkUVJYqI/SF+uG4FYG7Xvm7G+3naD9E1IV6JBFr+CeICrPmm8sf3fTW6H4?=
+ =?us-ascii?Q?Z1KzL1vk2ChBcSkerwzQON3pEHuZia4a+zT1/sMm0he/zmERLHENR0fZmuCH?=
+ =?us-ascii?Q?Al2CkVrrhoEOsxlNYa6UsXYYsfsnxJHl6HXxdm+ZK8RxPm3gr951KcvxTWWo?=
+ =?us-ascii?Q?TEOyAlOjZcw0DTIrzuzTs0a8xFi/ieC7RIHTZf4FxF03MIVM7J0e3lEzj7z0?=
+ =?us-ascii?Q?wf9pfJD8qBMEXQUKlHyh0c4fKpjbKLGxywwYDMfoI3SfXzL5fjbQ1eqSriVS?=
+ =?us-ascii?Q?rCqHzV7bUwl+p2Q5hp8LYkWeiwcn+KXDQ+BcpJfQsyvPxALtW7LnaaFc6TPd?=
+ =?us-ascii?Q?ATiEXZWCxiX9Yr9/NcR5Mnyv9ZueYIlm0Qq1twb4KpPmuVFc+tWBgVvyJh0k?=
+ =?us-ascii?Q?oN3xqJv9d7MOJE703vRNHZqI3iblx5ugu4B8DlcwQeWR2r4PovwToV8nD0rc?=
+ =?us-ascii?Q?CyNslrcQb
+	tD230vHfaT/LUo3zDcC4IEgNiBuhzHFGn/KgW8vRObQAaVLY7A4?=
+ =?us-ascii?Q?GmMPJ51bETu+NUrVocKVUQTYcLF+AjJ0/OMKBCjwulNZwjNnOlF1h2b6WYvD?=
+ =?us-ascii?Q?bAHSRMFawvUhH3/KtHhi1FSushjcR7PP1vd07ntQsA=3D=3D?=
+Content-Language: en-us
+x-ms-exchange-organization-originalclientipaddress: 18.185.115.168
+x-ms-exchange-organization-originalserveripaddress: 10.167.16.216
+received-spf: SoftFail (protection.outlook.com: domain of transitioning astsports.cn discourages use of 18.185.115.168 as permitted sender)
+
+This is a multipart message in MIME format.
+
+------=_NextPart_000_0000_01DC57A8.9E47CC60
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+	CAUTION: This email originated from an external entity outside of =
+Aspire Zone Foundation. Do not click on links or open attachments unless =
+you recognize the sender and know that the content is safe.	=20
+What would it mean to you if your business was able to achieve =
+[benefit]?           =20
+ =20
+
+ =
+<https://lx-capricorn-star-mail.qiye.163.com/api/j/html?e=3DV2.KXK4o8_9YI=
+7m4WtaKTTJD7d6DYLal59IZXOTeVOFAnzJjXkmbucmu94glTNrLZF7OkkBm1iTM8h20PpIbju=
+Wx97IWfjEXgYgqR_cFza8tt0NWYfgdddH6uH7VRFZnUwZhgxCw5nrmMrqjrPMJ0juplRk0Ez8=
+PYRL92JXuPhVUfiwqJoqKKpt0XXxz0hL-807tZBiXo2Dd2IMtgz27KtC3Q4NEoCdb0eP42nTb=
+xPJq-mDcdTqvzIYGDz9enCBcwkRcnUfQuoxvKV-7l8wrl4xaGJCudLKQKLoxwef553vf09MMO=
+oKsYE_7JeYXWolC92udDwN5we7urq0aw6FSW3Y19y1mwmAkwoxKK2Cq2IXMsU>=20
+  =
+<https://cowork-storage.nosdn.127.net/snapshot%2F2025%2F07%2F14%2Ff00072d=
+002c14a26a6e71d26d07d28ef.jpg?Signature=3DbB%2FVPyQOQULxtaWruOoWa5HAyd8oX=
+Kc8DiQbzPi4gyg%3D&Expires=3D3329273550&NOSAccessKeyId=3D5de274d3b56f4e17b=
+e4ba5a9a7ce4824>=20
+T35 table=20
+
+
+
+Subject: Premium Table Tennis Solutions from your company=20
+
+Dear Barry Shillabeer,=20
+As a specialized manufacturer with 38 years of expertise in table tennis =
+equipment, we enable #{wmt_crm_company_1} to deliver premium products =
+through:=20
+=E2=80=A2 Production Capacity: 40000=E3=8E=A1 facility operated by 220 =
+skilled workers=20
+=E2=80=A2 Certified Excellence: ITTF-approved manufacturing with ISO, =
+CE, REACH & TUV certifications=20
+=E2=80=A2 Strategic Logistics: 3-hour proximity to Shanghai Port for =
+efficient global distribution=20
+Our 20-year partnerships with Butterfly and Decathlon demonstrate our =
+commitment to:=20
+=E2=9C=94 Competition-grade tables & rackets=20
+=E2=9C=94 Precision-engineered blades & rubbers=20
+=E2=9C=94 Customizable equipment solutions=20
+As your product development partner, we provide:=20
+1) On-demand OEM/ODM services=20
+2) Pre-production samples within 72h=20
+3) Bulk command fulfillment at TOP-level efficiency=20
+I=E2=80=99d welcome the prospect to schedule a brief consultation at =
+your convenience. Could we connect barry.shillabeer to discuss your =
+specific requirements?=20
+Best regards,=20
+
+
+ =20
+ =20
+
+
+  =
+<https://cowork-storage.nos-jd.163yun.com/sign%2F2025%2F07%2F10%2F598f739=
+efef844d187df69572440dfb2.png?Signature=3DkIopd9R3wQpjkWTW%2F54SVP1F%2BfX=
+pNsxCYm0n5usDAlw%3D&Expires=3D4907787674&NOSAccessKeyId=3D0cd796d04a3a45d=
+ba2ef94a2f2a0c218> =09
+Felix Zheng=20
+Sales Manager=20
+Jiangsu AST Sports Group Co.,Ltd.=20
+felix.zheng@astsports.cn=20
+Mobile=EF=BC=9A+86 15705100877=20
+Wechat=EF=BC=9A15705100877=20
+Technological Table Tennis=EF=BC=8CSustainable Earth=20
+=E7=AD=BE=E5=90=8D=E7=94=B1  <https://qy.163.com/> =
+=E7=BD=91=E6=98=93=E4=BC=81=E4=B8=9A=E9=82=AE=E7=AE=B1 =
+=E5=AE=9A=E5=88=B6=20
+  =
+<https://lx-aries-star-mail.qiye.163.com/api/pub/edm/read?sign=3DV2.K7nBO=
+RP7CluXVEHSXLvfM8SJ-9nNcjsEapE0W3NOJL6vFxkKN-gL7lg0i84jv1auVF3GzPUUpn_PSC=
+TG3OEoXAMMAvieKys6sUEcPZdMhlQ>=20
+
+=E5=9C=A82025-07-21=EF=BC=8Cfelixzheng <felix.zheng@astsports.cn> =
+=E5=86=99=E9=81=93:=20
+
+-----=E5=8E=9F=E5=A7=8B=E9=82=AE=E4=BB=B6-----=20
+=E5=8F=91=E4=BB=B6=E4=BA=BA=EF=BC=9A felixzheng =
+<felix.zheng@astsports.cn>=20
+=E5=8F=91=E4=BB=B6=E6=97=B6=E9=97=B4: =
+2025=E5=B9=B407=E6=9C=8821=E6=97=A5 =E5=91=A8=E4=B8=80=20
+=E6=94=B6=E4=BB=B6=E4=BA=BA=EF=BC=9A [Barry Shillabeer =
+<barry.shillabeer@aspire.qa>]=20
+=E4=B8=BB=E9=A2=98=EF=BC=9A Explore Premium Table Tennis Factory at your =
+company=20
+
+
+Greetings [=E5=A7=93=E5=90=8D5], =20
+As a leading ping-pong table factory with 40 years of global expertise =
+in crafting premium tables, we=E2=80=99re excited to help =
+[=E5=85=AC=E5=8F=B8=E5=90=8D=E7=A7=B01] stand out. Our innovative =
+designs combine aesthetic appeal with high-level tournament performance. =
+=20
+Choose from diverse options: We offer a range of options including =
+weatherproof outdoor tables, professional indoor models, and =
+kid-friendly recreational units. Customization packages are available to =
+match your market needs.=20
+Let=E2=80=99s discuss how we can elevate your offerings. Simply reply to =
+schedule a ring or ask for samples.=20
+Best regards,=20
+
+
+
+  =
+<https://cowork-storage.nos-jd.163yun.com/sign%2F2025%2F07%2F10%2F598f739=
+efef844d187df69572440dfb2.png?Signature=3DkIopd9R3wQpjkWTW%2F54SVP1F%2BfX=
+pNsxCYm0n5usDAlw%3D&Expires=3D4907787674&NOSAccessKeyId=3D0cd796d04a3a45d=
+ba2ef94a2f2a0c218> =09
+Felix Zheng=20
+Sales Manager=20
+Jiangsu AST Sports Group Co.,Ltd.=20
+felix.zheng@astsports.cn=20
+Mobile=EF=BC=9A+86 15705100877=20
+Wechat=EF=BC=9A15705100877=20
+Technological Table Tennis=EF=BC=8CSustainable Earth=20
+=E7=AD=BE=E5=90=8D=E7=94=B1  <https://qy.163.com/> =
+=E7=BD=91=E6=98=93=E4=BC=81=E4=B8=9A=E9=82=AE=E7=AE=B1 =
+=E5=AE=9A=E5=88=B6=20
+
+  =
+<https://lx-virgo-star-mail.qiye.163.com/api/pub/edm/read?skip=3Dtrue&sig=
+n=3DV2.TDvfUxz-aZkpq-6_zzolXTNjrhh975WyIEaJ8pTfHySvFxkKN-gL7lg0i84jv1auVF=
+3GzPUUpn_PSCTG3OEoXAMMAvieKys6sUEcPZdMhlQ>=20
+
+
+
+
+
+------=_NextPart_000_0000_01DC57A8.9E47CC60
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dutf-8">
+</head>
+<body>
+<table class=3D"MsoTableGrid" border=3D"1" cellspacing=3D"0" =
+cellpadding=3D"0" width=3D"100%" =
+style=3D"width:100%;border-collapse:collapse;border:none;mso-border-alt:s=
+olid #212121 0; mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in">
+<tbody>
+<tr =
+style=3D"mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes">
+<td width=3D"5" valign=3D"top" style=3D"border:solid #212121 1pt; =
+mso-border-alt:solid #212121 1pt;background:#8A3640;padding:0in 0in 0in =
+0in">
+</td>
+<td valign=3D"top" style=3D"border:solid #212121 1pt; =
+border-left:none;mso-border-left-alt:solid #212121 .5pt;mso-border-alt: =
+solid #212121 1pt;background:#FDF2F4;padding: 7px 5px 7px 15px;">
+<span style=3D"font-size:9pt;font-family:'Segoe UI',sans-serif; =
+color:#212121;">CAUTION: This email originated from an external entity =
+outside of Aspire Zone Foundation. Do not click on links or open =
+attachments unless you recognize the sender and know that the
+ content is safe.</span></td>
+</tr>
+</tbody>
+</table>
+<div>
+<div><span id=3D"preheader-waimao" style=3D"display: none !important; =
+font-size:0; line-height:0">What would it mean to you if your business =
+was able to achieve [benefit]?&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+</span>
+<div>
+<div>&nbsp;
+<div><br>
+</div>
+</div>
+<div>
+<div class=3D"sirius-product-table">
+<div style=3D"min-width: 192px;"><a contenteditable=3D"false" =
+href=3D"https://lx-capricorn-star-mail.qiye.163.com/api/j/html?e=3DV2.KXK=
+4o8_9YI7m4WtaKTTJD7d6DYLal59IZXOTeVOFAnzJjXkmbucmu94glTNrLZF7OkkBm1iTM8h2=
+0PpIbjuWx97IWfjEXgYgqR_cFza8tt0NWYfgdddH6uH7VRFZnUwZhgxCw5nrmMrqjrPMJ0jup=
+lRk0Ez8PYRL92JXuPhVUfiwqJoqKKpt0XXxz0hL-807tZBiXo2Dd2IMtgz27KtC3Q4NEoCdb0=
+eP42nTbxPJq-mDcdTqvzIYGDz9enCBcwkRcnUfQuoxvKV-7l8wrl4xaGJCudLKQKLoxwef553=
+vf09MMOoKsYE_7JeYXWolC92udDwN5we7urq0aw6FSW3Y19y1mwmAkwoxKK2Cq2IXMsU" =
+style=3D"width: 150px; font-weight: 400; color: #232D47;display: =
+inline-block; margin: 10px; padding: 16px; border: 1px solid #EBEDF2; =
+border-radius: 4px; background-color: #fff; text-decoration: unset; =
+cursor: pointer" item-r-prop=3D"lx-capricorn-star-mail.qiye.163.com">
+<div class=3D"sirius-product-item" data-id=3D"2238629" =
+data-link=3D"https://site.ntesmail.com/sd6ef19fdbf9f40/products/2238629.h=
+tml?bid=3DyKt9XNNayY6RSE0qNd-iOW-ITnKtRMrSmlFD82EPrWTl2AEuuQNDG3I4hI1dqYv=
+XSf9sVu1aC4OB8qO77Xqqlw&amp;cid=3Dsite_jq1Xfin9Ua9N5sbLQdYXguvDn8rIH9rbOn=
+ldOtxfUjtdYw4MD5PD-wrDR4yA6XMF&amp;mid=3D27589696-7e12-4c51-8196-e2d34ee9=
+7a4f" data-siteid=3D"sd6ef19fdbf9f40">
+<img style=3D"margin-bottom:8px;object-fit:cover" width=3D"150" =
+height=3D"150" =
+src=3D"https://cowork-storage.nosdn.127.net/snapshot%2F2025%2F07%2F14%2Ff=
+00072d002c14a26a6e71d26d07d28ef.jpg?Signature=3DbB%2FVPyQOQULxtaWruOoWa5H=
+Ayd8oXKc8DiQbzPi4gyg%3D&amp;Expires=3D3329273550&amp;NOSAccessKeyId=3D5de=
+274d3b56f4e17be4ba5a9a7ce4824">
+</div>
+<div style=3D"width: 100%; display: -webkit-box; overflow: hidden; =
+text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: =
+vertical; -webkit-line-clamp: 2; color: #272e47; font-weight: 500; =
+font-size: 14px; line-height: 22px;">
+T35 table </div>
+<div style=3D"width: 100%;overflow: hidden; text-overflow: ellipsis; =
+display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: =
+2; color: #747a8c; font-weight: 400; line-height: 20px; font-size: 12px; =
+margin-top: 4px;">
+</div>
+</a></div>
+</div>
+<br>
+<br>
+<br>
+<span>Subject: Premium Table Tennis Solutions from <span =
+class=3D"mce-lx-var mceNonEditable varSpan" contenteditable=3D"false" =
+data-var=3D"your company" =
+data-var-show=3D"[=E5=85=AC=E5=8F=B8=E5=90=8D=E7=A7=B01]">
+your company</span> </span><br>
+<div>Dear Barry Shillabeer, </div>
+<div><span style=3D"font-family: inherit;" data-aiid=3D"0">As a =
+specialized manufacturer with 38 years of expertise in table tennis =
+equipment, we enable #{wmt_crm_company_1} to deliver premium products =
+through:</span>
+<br>
+=E2=80=A2 Production Capacity: 40000=E3=8E=A1 facility operated by 220 =
+skilled workers <br>
+=E2=80=A2 Certified Excellence: ITTF-approved manufacturing with ISO, =
+CE, REACH &amp; TUV certifications
+<br>
+=E2=80=A2 Strategic Logistics: 3-hour proximity to Shanghai Port for =
+efficient global distribution
+</div>
+<div><span style=3D"font-family: inherit;" data-aiid=3D"1">Our 20-year =
+partnerships with Butterfly and Decathlon demonstrate our commitment =
+to:</span>
+<br>
+=E2=9C=94 Competition-grade tables &amp; rackets <br>
+=E2=9C=94 Precision-engineered blades &amp; rubbers <br>
+=E2=9C=94 Customizable equipment solutions </div>
+<div>As your product development partner, we provide: <br>
+1) On-demand OEM/ODM services <br>
+2) Pre-production samples within 72h <br>
+3) Bulk command fulfillment at TOP-level efficiency </div>
+<div><span style=3D"font-family: inherit;" data-aiid=3D"2">I=E2=80=99d =
+welcome the prospect to schedule a brief consultation at your =
+convenience.</span>
+<span style=3D"font-family: inherit;">Could we connect barry.shillabeer =
+to discuss your specific requirements?</span>
+</div>
+<div>Best regards, </div>
+<span data-mce-type=3D"bookmark" id=3D"mce_1_start" =
+data-mce-style=3D"overflow:hidden;line-height:0px" style=3D"overflow: =
+hidden; line-height: 0px;"></span><br>
+</div>
+</div>
+<div class=3D"subscribeBr">&nbsp; </div>
+<div class=3D"subscribeBr">&nbsp; </div>
+<div></div>
+<div class=3D"mailSignatureBr"><br>
+</div>
+<div class=3D"mailSignatureBr"><br>
+</div>
+<div class=3D"mail-signature" delwhole=3D"true">
+<div class=3D"lingxi-signature-container" style=3D"font-family: =
+PingFang,Source Han Sans,sans-serif;">
+<!-- =E6=A0=B7=E5=BC=8F=E4=B8=80=EF=BC=8C=E5=AE=8C=E6=95=B4=E7=89=88 -->
+<table style=3D"border-collapse: collapse;width: =
+100%;text-size-adjust:none !important;table-layout: fixed;" =
+class=3D"mce-item-table">
+<tbody style=3D"text-size-adjust:none !important;word-wrap:break-word; =
+word-break:break-all;">
+<tr id=3D"lingxi-signature-block" style=3D"width: 100%;text-decoration: =
+none;text-underline: none;">
+<td width=3D"52" style=3D"width: 52px;padding: 16px 12px 0 =
+0;white-space: nowrap;box-sizing: border-box;" valign=3D"top">
+<img =
+src=3D"https://cowork-storage.nos-jd.163yun.com/sign%2F2025%2F07%2F10%2F5=
+98f739efef844d187df69572440dfb2.png?Signature=3DkIopd9R3wQpjkWTW%2F54SVP1=
+F%2BfXpNsxCYm0n5usDAlw%3D&amp;Expires=3D4907787674&amp;NOSAccessKeyId=3D0=
+cd796d04a3a45dba2ef94a2f2a0c218" style=3D"border-radius: 50%;object-fit: =
+cover;width: 40px;height: 40px;" itemid=3D"avatar" width=3D"40px" =
+height=3D"40px" =
+wirte-origin-src=3D"https://cowork-storage.nos-jd.163yun.com/sign%2F2025%=
+2F07%2F10%2F598f739efef844d187df69572440dfb2.png?Signature=3DkIopd9R3wQpj=
+kWTW%2F54SVP1F%2BfXpNsxCYm0n5usDAlw%3D&amp;Expires=3D4907787674&amp;NOSAc=
+cessKeyId=3D0cd796d04a3a45dba2ef94a2f2a0c218">
+</td>
+<td id=3D"lingxi-signature-content" itemid=3D"id" =
+style=3D"border-bottom: 1px solid #E1E6ED;font-size: 14px;line-height: =
+16px;color: #7A8599;padding: 16px 16px 4px 0px;word-break: break-all;" =
+itemprop=3D"9790109">
+<div style=3D"color: #232D47;border: none;margin-bottom:4px;font-size: =
+16px;line-height: 20px;text-underline: none;font-weight: bolder;" =
+itemid=3D"name">
+Felix Zheng </div>
+<div style=3D"color: #4E5A70;border: =
+none;margin-bottom:8px;text-underline: none;" itemid=3D"title">
+Sales Manager </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"company">
+Jiangsu AST Sports Group Co.,Ltd. </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"email">
+felix.zheng@astsports.cn </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"mobile">
+Mobile=EF=BC=9A+86 15705100877 </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"location">
+Wechat=EF=BC=9A15705100877 </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"email">
+Technological Table Tennis=EF=BC=8CSustainable Earth </div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- =E6=A0=B7=E5=BC=8F=E4=BA=8C=EF=BC=8C=E6=97=A0=E5=A4=B4=E5=83=8F =
+--><!--=E5=8A=9E=E5=85=AC=E5=93=81=E7=89=8C-->
+<div style=3D"padding-left:52px;color: #7A8599;font-size: =
+12px;margin-top: 12px;padding-bottom:14px;">
+=E7=AD=BE=E5=90=8D=E7=94=B1 <a href=3D"https://qy.163.com/" =
+style=3D"color:#4C6AFF;display: inline-block;text-underline: =
+none;text-decoration: none;">
+=E7=BD=91=E6=98=93=E4=BC=81=E4=B8=9A=E9=82=AE=E7=AE=B1</a> =
+=E5=AE=9A=E5=88=B6 </div>
+</div>
+</div>
+<div><span hadsubscribe=3D"1"></span></div>
+</div>
+<img width=3D"1" height=3D"1" =
+src=3D"https://lx-aries-star-mail.qiye.163.com/api/pub/edm/read?sign=3DV2=
+.K7nBORP7CluXVEHSXLvfM8SJ-9nNcjsEapE0W3NOJL6vFxkKN-gL7lg0i84jv1auVF3GzPUU=
+pn_PSCTG3OEoXAMMAvieKys6sUEcPZdMhlQ">
+<br>
+<br>
+=E5=9C=A82025-07-21=EF=BC=8Cfelixzheng &lt;felix.zheng@astsports.cn&gt; =
+=E5=86=99=E9=81=93:
+<blockquote id=3D"isReplyContent" style=3D"padding-left:1ex; margin: 0px =
+0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
+-----=E5=8E=9F=E5=A7=8B=E9=82=AE=E4=BB=B6----- <br>
+<b>=E5=8F=91=E4=BB=B6=E4=BA=BA=EF=BC=9A</b> felixzheng =
+&lt;felix.zheng@astsports.cn&gt; <br>
+<b>=E5=8F=91=E4=BB=B6=E6=97=B6=E9=97=B4:</b> =
+2025=E5=B9=B407=E6=9C=8821=E6=97=A5 =E5=91=A8=E4=B8=80 <br>
+<b>=E6=94=B6=E4=BB=B6=E4=BA=BA=EF=BC=9A</b> [Barry Shillabeer =
+&lt;barry.shillabeer@aspire.qa&gt;] <br>
+<b>=E4=B8=BB=E9=A2=98=EF=BC=9A</b> Explore Premium Table Tennis Factory =
+at your company <br>
+<br>
+<div>
+<div class=3D"mailSignatureBr">
+<div class=3D"subscribeBr">
+<div>Greetings [=E5=A7=93=E5=90=8D5],&nbsp; </div>
+<div><span style=3D"font-family: inherit;">As a leading ping-pong table =
+factory with 40 years of global expertise in crafting premium tables, =
+we=E2=80=99re excited to help [=E5=85=AC=E5=8F=B8=E5=90=8D=E7=A7=B01] =
+stand out.</span>
+<span style=3D"font-family: inherit;" data-aiid=3D"1">Our innovative =
+designs combine aesthetic appeal with high-level tournament =
+performance.</span>&nbsp;
+</div>
+<div>Choose from diverse options: <span style=3D"font-family: inherit;" =
+data-aiid=3D"2">
+We offer a range of options including weatherproof outdoor tables, =
+professional indoor models, and kid-friendly recreational units.</span>
+<span style=3D"font-family: inherit;" data-aiid=3D"3">Customization =
+packages are available to match your market needs.</span>
+</div>
+<div>Let=E2=80=99s discuss how we can elevate your offerings. Simply =
+reply to schedule a ring or ask for samples.
+</div>
+<div>Best regards, </div>
+<span data-mce-type=3D"bookmark" id=3D"mce_1_start" =
+data-mce-style=3D"overflow:hidden;line-height:0px" style=3D"overflow: =
+hidden; line-height: 0px;"></span><br>
+</div>
+</div>
+<div class=3D"mailSignatureBr"><br>
+</div>
+<div class=3D"mail-signature" delwhole=3D"true">
+<div class=3D"lingxi-signature-container" style=3D"font-family: =
+PingFang,Source Han Sans,sans-serif;">
+<table style=3D"border-collapse: collapse;width: =
+100%;text-size-adjust:none !important;table-layout: fixed;" =
+class=3D"mce-item-table">
+<tbody style=3D"text-size-adjust:none !important;word-wrap:break-word; =
+word-break:break-all;">
+<tr id=3D"lingxi-signature-block" style=3D"width: 100%;text-decoration: =
+none;text-underline: none;">
+<td width=3D"52" style=3D"width: 52px;padding: 16px 12px 0 =
+0;white-space: nowrap;box-sizing: border-box;" valign=3D"top">
+<img =
+src=3D"https://cowork-storage.nos-jd.163yun.com/sign%2F2025%2F07%2F10%2F5=
+98f739efef844d187df69572440dfb2.png?Signature=3DkIopd9R3wQpjkWTW%2F54SVP1=
+F%2BfXpNsxCYm0n5usDAlw%3D&amp;Expires=3D4907787674&amp;NOSAccessKeyId=3D0=
+cd796d04a3a45dba2ef94a2f2a0c218" style=3D"border-radius: 50%;object-fit: =
+cover;width: 40px;height: 40px;" itemid=3D"avatar" width=3D"40px" =
+height=3D"40px" =
+wirte-origin-src=3D"https://cowork-storage.nos-jd.163yun.com/sign%2F2025%=
+2F07%2F10%2F598f739efef844d187df69572440dfb2.png?Signature=3DkIopd9R3wQpj=
+kWTW%2F54SVP1F%2BfXpNsxCYm0n5usDAlw%3D&amp;Expires=3D4907787674&amp;NOSAc=
+cessKeyId=3D0cd796d04a3a45dba2ef94a2f2a0c218">
+</td>
+<td id=3D"lingxi-signature-content" itemid=3D"id" =
+style=3D"border-bottom: 1px solid #E1E6ED;font-size: 14px;line-height: =
+16px;color: #7A8599;padding: 16px 16px 4px 0px;word-break: break-all;" =
+itemprop=3D"9790109">
+<div style=3D"color: #232D47;border: none;margin-bottom:4px;font-size: =
+16px;line-height: 20px;text-underline: none;font-weight: bolder;" =
+itemid=3D"name">
+Felix Zheng </div>
+<div style=3D"color: #4E5A70;border: =
+none;margin-bottom:8px;text-underline: none;" itemid=3D"title">
+Sales Manager </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"company">
+Jiangsu AST Sports Group Co.,Ltd. </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"email">
+felix.zheng@astsports.cn </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"mobile">
+Mobile=EF=BC=9A+86 15705100877 </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"location">
+Wechat=EF=BC=9A15705100877 </div>
+<div style=3D"border: none;margin-bottom:8px;text-underline: none;" =
+itemid=3D"email">
+Technological Table Tennis=EF=BC=8CSustainable Earth </div>
+</td>
+</tr>
+</tbody>
+</table>
+<div style=3D"padding-left:52px;color: #7A8599;font-size: =
+12px;margin-top: 12px;padding-bottom:14px;">
+=E7=AD=BE=E5=90=8D=E7=94=B1 <a href=3D"https://qy.163.com/" =
+style=3D"color:#4C6AFF;display: inline-block;text-underline: =
+none;text-decoration: none;">
+=E7=BD=91=E6=98=93=E4=BC=81=E4=B8=9A=E9=82=AE=E7=AE=B1</a> =
+=E5=AE=9A=E5=88=B6 </div>
+</div>
+</div>
+<div><span hadsubscribe=3D"1"></span></div>
+</div>
+<img width=3D"1" height=3D"1" =
+src=3D"https://lx-virgo-star-mail.qiye.163.com/api/pub/edm/read?skip=3Dtr=
+ue&amp;sign=3DV2.TDvfUxz-aZkpq-6_zzolXTNjrhh975WyIEaJ8pTfHySvFxkKN-gL7lg0=
+i84jv1auVF3GzPUUpn_PSCTG3OEoXAMMAvieKys6sUEcPZdMhlQ">
+<br>
+</blockquote>
+<br>
+<br>
+</div>
+</body>
+</html>
+
+------=_NextPart_000_0000_01DC57A8.9E47CC60--

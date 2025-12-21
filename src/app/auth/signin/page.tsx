@@ -66,20 +66,16 @@ export default function SignInPage() {
                 >
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" placeholder="name@example.com" required defaultValue="demo@mxlens.com" />
+                        <Input id="email" name="email" type="email" placeholder="name@example.com" required />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="password">Password</Label>
-                        <Input id="password" name="password" type="password" required defaultValue="mxlens2025" />
+                        <Input id="password" name="password" type="password" required />
                     </div>
                     <Button type="submit" className="w-full">
                         Sign In
                     </Button>
                 </form>
-
-                <div className="mt-4 text-center text-xs text-muted-foreground">
-                    (Demo: demo@mxlens.com / mxlens2025)
-                </div>
             </div>
         </div>
     );
