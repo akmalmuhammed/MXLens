@@ -3,11 +3,14 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db as prisma } from "@/lib/db";
 
+import Google from "next-auth/providers/google";
+
 // Temporary auth config until DB is set up
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" }, // Required for Credentials provider
     providers: [
+        Google,
         Credentials({
             credentials: {
                 email: { label: "Email", type: "email" },
