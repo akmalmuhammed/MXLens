@@ -1,4 +1,4 @@
-import { AnalysisResult } from "../../HeaderParser";
+import { AnalysisResult } from "../HeaderParser";
 import { NormalizedSignals } from "../scoring/types";
 
 export interface DetectionContext {
