@@ -66,8 +66,8 @@ const TableRow = React.forwardRef<
 TableRow.displayName = "TableRow"
 
 const TableHead = React.forwardRef<
-    HTMLThElement,
-    React.ThHTMLAttributes<HTMLThElement>
+    HTMLTableHeaderCellElement,
+    React.ThHTMLAttributes<HTMLTableHeaderCellElement>
 >(({ className, ...props }, ref) => (
     <th
         ref={ref}
@@ -81,8 +81,8 @@ const TableHead = React.forwardRef<
 TableHead.displayName = "TableHead"
 
 const TableCell = React.forwardRef<
-    HTMLTdElement,
-    React.TdHTMLAttributes<HTMLTdElement>
+    HTMLTableDataCellElement,
+    React.TdHTMLAttributes<HTMLTableDataCellElement>
 >(({ className, ...props }, ref) => (
     <td
         ref={ref}
