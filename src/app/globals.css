@@ -39,7 +39,7 @@
 
   --font-sans: var(--font-inter);
   --font-heading: var(--font-inter);
-  /* Unified font family */
+  Unified font family
 --font-mono: var(--font-mono);
 
 --shadow-soft-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -59,7 +59,8 @@
 --radius-4xl: calc(var(--radius-md) + 16px);
 }
 
-*/:root {
+*/
+:root {
   /* FONT SIZES - 8pt Scale */
   --text-xs: 0.75rem;
   /* 12px */
