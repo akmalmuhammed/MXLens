@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db as prisma } from "@/lib/db";
 
 import Google from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
 
 // Temporary auth config until DB is set up
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -17,19 +18,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             authorize: async (credentials) => {
-                // Mock user for MVP Phase 1 - Database lookup will go here
-                if (credentials.email === "demo@mxlens.com" && credentials.password === "mxlens2025") {
+                if (!credentials?.email || !credentials?.password) return null;
+
+                const email = credentials.email as string;
+                const password = credentials.password as string;
+
+                const user = await prisma.user.findUnique({
+                    where: { email }
+                });
+
+                // If user exists but has no password (OAuth account), fail
+                if (!user || !user.password) return null;
+
+                const passwordsMatch = await bcrypt.compare(password, user.password);
+
+                if (passwordsMatch) {
                     return {
-                        id: "1",
-                        name: "Demo Analyst",
-                        email: "demo@mxlens.com",
-                        role: "analyst",
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        role: user.role,
                     };
                 }
-
-                // Example DB lookup (Future)
-                // const user = await prisma.user.findUnique({ where: { email: credentials.email } });
-                // if (user && bcrypt.compare(credentials.password, user.passwordHash)) return user;
 
                 return null;
             },
