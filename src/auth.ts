@@ -67,7 +67,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 if (isLoggedIn) return true;
                 return false; // Redirect unauthenticated users to login page
             } else if (isLoggedIn) {
-                // return Response.redirect(new URL('/dashboard', nextUrl));
+                const isAuthPage = nextUrl.pathname.startsWith('/auth');
+                if (isAuthPage) {
+                    return Response.redirect(new URL('/dashboard', nextUrl));
+                }
             }
             return true;
         },
