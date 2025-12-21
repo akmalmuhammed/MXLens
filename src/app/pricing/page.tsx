@@ -26,7 +26,7 @@ export default function PricingPage() {
                     <span className={`text-sm font-medium ${!isYearly ? "text-white" : "text-muted-foreground"}`}>Monthly</span>
                     <Switch
                         checked={isYearly}
-                        onCheckedChange={setIsYearly}
+                        onChange={(e) => setIsYearly(e.target.checked)}
                         className="data-[state=checked]:bg-cyan-600"
                     />
                     <span className={`text-sm font-medium ${isYearly ? "text-white" : "text-muted-foreground"}`}>
@@ -178,8 +178,8 @@ function PricingCard({
             <Link href={href} className="w-full">
                 <Button
                     className={`w-full h-12 font-semibold ${variant === 'primary'
-                            ? "bg-cyan-600 hover:bg-cyan-500 text-white"
-                            : "bg-transparent border border-input hover:bg-accent hover:text-accent-foreground"
+                        ? "bg-cyan-600 hover:bg-cyan-500 text-white"
+                        : "bg-transparent border border-input hover:bg-accent hover:text-accent-foreground"
                         }`}
                 >
                     {cta}
