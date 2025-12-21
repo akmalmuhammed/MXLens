@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { ShieldAlert, ShieldCheck, Download, Save, Share2, Printer, ChevronLeft, Flag } from "lucide-react";
 import Link from "next/link";
 
-export default function AnalysisResultPage({ params }: { params: { id: string } }) {
+export default async function AnalysisResultPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     // Mock data based on ID
     const isMalicious = params.id.startsWith('mal');
     const verdict = isMalicious ? "Malicious" : "Clean";
