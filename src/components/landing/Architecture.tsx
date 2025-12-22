@@ -22,7 +22,7 @@ export function Architecture() {
 
                 <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                     {/* The Old Way */}
-                    <div className="opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500 rounded-2xl border border-destructive/20 bg-destructive/5 p-8 relative group">
+                    <div className="opacity-80 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-500 rounded-2xl border border-destructive/20 bg-background/50 hover:bg-destructive/5 hover:border-destructive/40 p-8 relative group shadow-sm hover:shadow-md hover:shadow-destructive/10">
                         <div className="absolute top-4 right-4 text-destructive text-xs font-bold uppercase tracking-widest border border-destructive/30 px-2 py-1 rounded">
                             The Industry Standard
                         </div>
@@ -49,7 +49,7 @@ export function Architecture() {
                     </div>
 
                     {/* The MXLens Way */}
-                    <div className="rounded-2xl border border-primary/20 bg-primary/5 p-8 relative shadow-2xl shadow-primary/10 ring-1 ring-primary/20">
+                    <div className="rounded-2xl border border-primary/20 bg-card/50 backdrop-blur-sm p-8 relative shadow-2xl shadow-primary/10 ring-1 ring-primary/20 dark:shadow-[0_0_40px_-10px_rgba(6,182,212,0.3)] dark:border-cyan-500/30 dark:ring-cyan-500/20 transition-all">
                         <div className="absolute top-4 right-4 text-primary text-xs font-bold uppercase tracking-widest border border-primary/30 px-2 py-1 rounded bg-primary/10">
                             The MXLens Architecture
                         </div>
