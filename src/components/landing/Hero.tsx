@@ -14,28 +14,31 @@ export function Hero() {
 
             <div className="max-w-[1280px] mx-auto text-center relative z-10">
                 {/* Badge */}
-                <div className="mb-8 inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/20 rounded-full animate-in fade-in zoom-in duration-500">
-                    <ShieldCheck className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium text-primary">SOC 2 Type I Compliant</span>
+                {/* Badge */}
+                <div className="mb-8 inline-flex items-center gap-2 px-6 py-3 bg-green-500/10 border border-green-500/20 rounded-full animate-in fade-in zoom-in duration-500 backdrop-blur-sm">
+                    <ShieldCheck className="w-4 h-4 text-green-500" />
+                    <span className="text-sm font-medium text-green-600 dark:text-green-400">100% Client-Side Execution</span>
                 </div>
 
                 {/* Headline */}
-                <h1 className="text-6xl md:text-7xl font-bold leading-tight tracking-tight mb-8 text-foreground drop-shadow-sm animate-in slide-in-from-bottom-5 duration-700">
-                    Analyze Phishing Emails{' '}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-teal-500">Instantly</span>
+                {/* Headline */}
+                <h1 className="text-5xl md:text-7xl font-bold leading-tight tracking-tight mb-8 text-foreground drop-shadow-sm animate-in slide-in-from-bottom-5 duration-700 font-heading">
+                    Forensic Email Analysis.<br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-500">Zero Data Exfiltration.</span>
                 </h1>
 
                 {/* Subheadline */}
-                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed animate-in slide-in-from-bottom-5 duration-700 delay-150">
-                    Your emails never leave your browser. Get expert-level threat detection
-                    in 30 seconds—without uploading sensitive data to the cloud.
+                {/* Subheadline */}
+                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed animate-in slide-in-from-bottom-5 duration-700 delay-150 text-balance">
+                    The first completely client-side analysis engine. Drag, drop, and dissect
+                    suspicious emails without them ever leaving your browser. No server uploads. No logs. No risk.
                 </p>
 
                 {/* CTAs */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12 animate-in slide-in-from-bottom-5 duration-700 delay-300">
                     <Link href="/analyze">
-                        <Button size="xl" variant="primary" className="w-full sm:w-auto text-xl font-bold rounded-lg">
-                            Try Free Analysis →
+                        <Button size="xl" variant="primary" className="w-full sm:w-auto text-xl font-bold rounded-lg shadow-2xl shadow-primary/20 hover:shadow-primary/40">
+                            Start Analysis (Local Only) →
                         </Button>
                     </Link>
                     <Link href="#how-it-works" className="text-lg text-muted-foreground hover:text-primary transition-colors">
@@ -51,7 +54,7 @@ export function Hero() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Check className="w-5 h-5 text-primary" />
-                        <span>500+ SOC Analysts</span>
+                        <span>Open Source Core</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <Check className="w-5 h-5 text-primary" />

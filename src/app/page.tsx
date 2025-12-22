@@ -1,5 +1,5 @@
 import { Hero } from "@/components/landing/Hero";
-import { SocialProof } from "@/components/landing/SocialProof";
+import { Architecture } from "@/components/landing/Architecture";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Features } from "@/components/landing/Features";
 import { UseCases } from "@/components/landing/UseCases";
@@ -23,7 +23,7 @@ export default function LandingPage() {
       </div>
 
       <Hero />
-      <SocialProof />
+      <Architecture />
       <HowItWorks />
       <Features />
       <UseCases />
