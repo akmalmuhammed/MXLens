@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import NextTopLoader from 'nextjs-toploader';
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navbar } from "@/components/layout/Navbar";
 import { auth } from "@/auth";
@@ -37,6 +38,17 @@ export default async function RootLayout({
       <body
         className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
+        <NextTopLoader
+          color="#06b6d4"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={2}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow={false}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

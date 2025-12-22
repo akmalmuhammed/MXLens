@@ -4,7 +4,7 @@ import { ShieldCheck, Github, Twitter } from "lucide-react";
 export function Footer() {
     return (
         // Force dark mode styles regardless of system theme using data-theme="dark" strategy or utility overrides
-        <footer className="border-t border-white/10 bg-slate-950 text-slate-200 py-12">
+        <footer className="relative z-50 border-t border-white/10 bg-slate-950 text-slate-200 py-12">
             <div className="container mx-auto px-4 grid md:grid-cols-4 gap-8">
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 font-bold text-xl text-white">

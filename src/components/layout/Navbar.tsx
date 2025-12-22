@@ -15,7 +15,7 @@ interface NavbarProps {
 
 export function Navbar({ user }: NavbarProps) {
     return (
-        <nav className="flex items-center justify-between border-b bg-background px-4 py-3 md:px-6">
+        <nav className="sticky top-0 z-50 flex items-center justify-between border-b bg-background/80 backdrop-blur-md px-4 py-3 md:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold text-lg md:text-xl shrink-0">
                 <div className="relative h-8 w-8 bg-cyan-500 rounded-lg flex items-center justify-center text-white mr-1">
                     <span className="font-bold">MX</span>
