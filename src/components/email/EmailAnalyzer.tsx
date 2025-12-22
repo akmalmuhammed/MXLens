@@ -104,7 +104,7 @@ export function EmailAnalyzer() {
             const [headerRes, email] = await Promise.all([headerResPromise, emailPromise]);
 
             // C. Unified Analysis Engine (v3)
-            const { signals, result } = AnalysisEngine.analyze(
+            const { signals, result } = await AnalysisEngine.analyze(
                 headerRes,
                 email,
                 { checkBody: runBody, checkAttachments: runAttachments }
@@ -331,10 +331,10 @@ export function EmailAnalyzer() {
                         {/* Header Actions & Tabs */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6 border-b border-border/40">
                             <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full md:w-auto">
-                                <TabsList className="grid w-full grid-cols-3 h-10 bg-muted/40 p-1 rounded-lg">
-                                    <TabsTrigger value="analyst" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all" title="Default View">Analyst</TabsTrigger>
-                                    <TabsTrigger value="raw" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all" title="For Engineers">Raw</TabsTrigger>
-                                    <TabsTrigger value="it" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all" title="Simplified">Quick IT</TabsTrigger>
+                                <TabsList className="grid w-full grid-cols-3 h-10 bg-muted/50 p-1 rounded-xl border border-white/5">
+                                    <TabsTrigger value="analyst" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground" title="Default View">Analyst</TabsTrigger>
+                                    <TabsTrigger value="raw" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground" title="For Engineers">Raw</TabsTrigger>
+                                    <TabsTrigger value="it" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground" title="Simplified">Quick IT</TabsTrigger>
                                 </TabsList>
                             </Tabs>
                             <div className="flex gap-2 items-center w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
@@ -414,7 +414,7 @@ export function EmailAnalyzer() {
 
                                     {!analyzeBody && (
                                         <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/80 border text-sm text-muted-foreground shadow-sm">
-                                            <AlertTriangle className="w-4 h-4 text-amber-500" />
+                                            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                                             Limited visibility (Headers Only). Enable body analysis for full verdict.
                                         </div>
                                     )}
@@ -537,27 +537,57 @@ export function EmailAnalyzer() {
 
                                 {/* Right Column: Key Details & Hops */}
                                 <div className="lg:col-span-4 space-y-8">
-                                    <div className="bg-card/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 space-y-6 shadow-xl sticky top-4">
+                                    <div className="bg-card/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-6 shadow-xl sticky top-4">
                                         <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Message Headers</h3>
 
                                         <div className="space-y-1.5 group">
                                             <label className="text-[10px] uppercase font-bold text-muted-foreground/60 group-hover:text-primary/80 transition-colors">Subject</label>
-                                            <div className="font-semibold text-base leading-snug">{analysis.header.headers['Subject']}</div>
+                                            <div className="font-semibold text-base leading-snug">
+                                                {(() => {
+                                                    const subject = Object.entries(analysis.header.headers).find(([k]) => k.toLowerCase() === 'subject')?.[1];
+                                                    return Array.isArray(subject) ? subject[0] : (subject || 'N/A');
+                                                })()}
+                                            </div>
                                         </div>
 
                                         <div className="space-y-1.5 group">
                                             <label className="text-[10px] uppercase font-bold text-muted-foreground/60 group-hover:text-primary/80 transition-colors">From</label>
-                                            <div className="font-medium text-sm break-all bg-muted/30 p-2 rounded-lg border border-transparent group-hover:border-border transition-all">{analysis.header.headers['From']}</div>
+                                            <div className="font-medium text-sm break-all bg-muted/30 p-2 rounded-lg border border-transparent group-hover:border-border transition-all">
+                                                {(() => {
+                                                    const from = Object.entries(analysis.header.headers).find(([k]) => k.toLowerCase() === 'from')?.[1];
+                                                    return Array.isArray(from) ? from[0] : (from || 'N/A');
+                                                })()}
+                                            </div>
                                         </div>
 
                                         <div className="space-y-1.5 group">
                                             <label className="text-[10px] uppercase font-bold text-muted-foreground/60 group-hover:text-primary/80 transition-colors">Return-Path</label>
-                                            <div className="font-mono text-xs break-all text-muted-foreground bg-muted/20 p-2 rounded-lg">{analysis.header.headers['Return-Path'] || 'N/A'}</div>
+                                            {(() => {
+                                                const rp = Object.entries(analysis.header.headers).find(([k]) => k.toLowerCase() === 'return-path')?.[1];
+                                                const val = Array.isArray(rp) ? rp[0] : (rp || 'N/A');
+                                                const isSuspicious = analysis.header.anomalies.includes('From/Return-Path Domain Mismatch');
+
+                                                return (
+                                                    <div className={`font-mono text-xs break-all p-2 rounded-lg border ${isSuspicious ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20' : 'text-muted-foreground bg-muted/20 border-transparent'}`}>
+                                                        {val}
+                                                        {isSuspicious && (
+                                                            <div className="flex items-center gap-1 mt-1 text-[10px] font-bold uppercase tracking-wider">
+                                                                <AlertTriangle className="w-3 h-3" /> Mismatch
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
 
                                         <div className="space-y-1.5 group">
                                             <label className="text-[10px] uppercase font-bold text-muted-foreground/60 group-hover:text-primary/80 transition-colors">To</label>
-                                            <div className="font-medium text-sm break-all">{analysis.header.headers['To']}</div>
+                                            <div className="font-medium text-sm break-all">
+                                                {(() => {
+                                                    const to = Object.entries(analysis.header.headers).find(([k]) => k.toLowerCase() === 'to')?.[1];
+                                                    return Array.isArray(to) ? to[0] : (to || 'N/A');
+                                                })()}
+                                            </div>
                                         </div>
 
                                         <div className="pt-4 border-t border-white/5">
@@ -571,27 +601,27 @@ export function EmailAnalyzer() {
                         {/* --- RAW MODE --- */}
                         {mode === "raw" && (
                             <div className="space-y-4">
-                                <div className="flex gap-2 mb-4 bg-muted/30 p-1.5 rounded-lg w-fit">
-                                    <Button size="sm" variant={rawTab === 'headers' ? 'secondary' : 'ghost'} onClick={() => setRawTab('headers')}>Headers</Button>
-                                    {analyzeBody && <Button size="sm" variant={rawTab === 'body_text' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_text')}>Body (Text)</Button>}
-                                    {analyzeBody && <Button size="sm" variant={rawTab === 'body_html' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_html')}>Body (HTML)</Button>}
+                                <div className="flex gap-1 mb-4 bg-muted/40 p-1 rounded-xl border border-white/5 w-fit">
+                                    <Button size="sm" variant={rawTab === 'headers' ? 'secondary' : 'ghost'} onClick={() => setRawTab('headers')} className="rounded-lg hover:bg-background/50">Headers</Button>
+                                    {analyzeBody && <Button size="sm" variant={rawTab === 'body_text' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_text')} className="rounded-lg hover:bg-background/50">Body (Text)</Button>}
+                                    {analyzeBody && <Button size="sm" variant={rawTab === 'body_html' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_html')} className="rounded-lg hover:bg-background/50">Body (HTML)</Button>}
                                 </div>
 
                                 {rawTab === 'headers' && (
                                     <div className="relative group">
                                         <Button size="sm" variant="outline" className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm" onClick={() => navigator.clipboard.writeText(analysis.header.rawHeaders)}>Copy</Button>
-                                        <pre className="p-6 bg-gray-950 text-gray-100 rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border border-gray-800 h-[700px] overflow-y-auto leading-relaxed shadow-inner">
+                                        <pre className="scrollbar-premium p-6 bg-gray-950 text-gray-100 rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border border-gray-800 h-[700px] overflow-y-auto leading-relaxed shadow-inner">
                                             {analysis.header.rawHeaders}
                                         </pre>
                                     </div>
                                 )}
                                 {rawTab === 'body_text' && (
-                                    <pre className="p-6 bg-gray-50 dark:bg-gray-950 text-foreground rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border h-[700px] overflow-y-auto leading-relaxed shadow-inner">
+                                    <pre className="scrollbar-premium p-6 bg-gray-50 dark:bg-gray-950 text-foreground rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border h-[700px] overflow-y-auto leading-relaxed shadow-inner">
                                         {analysis.emailContent.text || "No text content found."}
                                     </pre>
                                 )}
                                 {rawTab === 'body_html' && (
-                                    <pre className="p-6 bg-gray-50 dark:bg-gray-950 text-foreground rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border h-[700px] overflow-y-auto leading-relaxed shadow-inner">
+                                    <pre className="scrollbar-premium p-6 bg-gray-50 dark:bg-gray-950 text-foreground rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border h-[700px] overflow-y-auto leading-relaxed shadow-inner">
                                         {analysis.emailContent.html || "No HTML content found."}
                                     </pre>
                                 )}

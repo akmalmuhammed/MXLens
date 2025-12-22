@@ -335,6 +335,25 @@
       transform: translateX(-50%);
     }
   }
+
+  /* Custom Scrollbar for Premium Feel */
+  .scrollbar-premium::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
+  }
 }
 
 @layer components {

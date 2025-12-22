@@ -10,11 +10,11 @@ import { DetectionPipeline } from "../detection/Pipeline";
 import { AnalysisResult } from "../HeaderParser";
 
 export class AnalysisEngine {
-    static analyze(
+    static async analyze(
         headerResult: AnalysisResult,
         emailBody: any | null,
         options: { checkBody: boolean; checkAttachments: boolean }
-    ): { signals: NormalizedSignals; result: ScoringResult } {
+    ): Promise<{ signals: NormalizedSignals; result: ScoringResult }> {
 
         // 1. Normalize
         const signals = SignalNormalizer.normalize(headerResult, emailBody, options);
@@ -27,7 +27,7 @@ export class AnalysisEngine {
 
         // 3. Run Detection Pipeline (New V2 Logic)
         const pipeline = new DetectionPipeline();
-        const { results: pipelineResults, totalPenalty: pipelinePenalty } = pipeline.run({
+        const { results: pipelineResults, totalPenalty: pipelinePenalty } = await pipeline.run({
             header: headerResult,
             signals: signals,
             emailBody: emailBody,

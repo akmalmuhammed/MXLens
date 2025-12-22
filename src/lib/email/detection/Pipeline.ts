@@ -6,6 +6,7 @@ import { ReplyToMismatchDetector } from "./rules/ReplyToMismatch";
 import { IpUrlDetector } from "./rules/IpUrlDetector";
 import { OpenRedirectDetector } from "./rules/OpenRedirect";
 import { SpellingGrammarDetector } from "./rules/SpellingGrammar"; // Disabled caused build error
+import { SemanticIntentDetector } from "./rules/SemanticIntentDetector";
 
 export class DetectionPipeline {
     private detectors: Detector[] = [];
@@ -18,16 +19,19 @@ export class DetectionPipeline {
         this.detectors.push(new ContentUrgencyDetector());
         this.detectors.push(new IpUrlDetector());
         this.detectors.push(new OpenRedirectDetector());
-        this.detectors.push(new SpellingGrammarDetector());
+        // this.detectors.push(new SpellingGrammarDetector()); // Disabled
+
+        // AI Detector (POC)
+        this.detectors.push(new SemanticIntentDetector());
     }
 
-    public run(context: DetectionContext): { results: DetectionResult[], totalPenalty: number } {
+    public async run(context: DetectionContext): Promise<{ results: DetectionResult[], totalPenalty: number }> {
         const results: DetectionResult[] = [];
         let totalPenalty = 0;
 
         for (const detector of this.detectors) {
             try {
-                const result = detector.detect(context);
+                const result = await detector.detect(context);
                 if (result && result.triggered) {
                     results.push(result);
                     totalPenalty += result.penalty;

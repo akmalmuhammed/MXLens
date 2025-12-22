@@ -22,5 +22,5 @@ export interface Detector {
     name: string;
     description: string;
     tags: ('auth' | 'content' | 'link' | 'malware' | 'identity')[];
-    detect(context: DetectionContext): DetectionResult | null;
+    detect(context: DetectionContext): Promise<DetectionResult | null> | DetectionResult | null;
 }
