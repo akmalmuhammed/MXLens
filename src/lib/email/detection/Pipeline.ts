@@ -5,8 +5,9 @@ import { ContentUrgencyDetector } from "./rules/ContentUrgency";
 import { ReplyToMismatchDetector } from "./rules/ReplyToMismatch";
 import { IpUrlDetector } from "./rules/IpUrlDetector";
 import { OpenRedirectDetector } from "./rules/OpenRedirect";
-import { SpellingGrammarDetector } from "./rules/SpellingGrammar"; // Disabled caused build error
-import { SemanticIntentDetector } from "./rules/SemanticIntentDetector";
+import { SpellingGrammarDetector } from "./rules/SpellingGrammar";
+// import { SemanticIntentDetector } from "./rules/SemanticIntentDetector";
+import { QuishingDetector } from "./rules/QuishingDetector";
 
 export class DetectionPipeline {
     private detectors: Detector[] = [];
@@ -17,12 +18,16 @@ export class DetectionPipeline {
         this.detectors.push(new DisplayNameSpoofingDetector());
         this.detectors.push(new ReplyToMismatchDetector());
         this.detectors.push(new ContentUrgencyDetector());
-        this.detectors.push(new IpUrlDetector());
-        this.detectors.push(new OpenRedirectDetector());
-        // this.detectors.push(new SpellingGrammarDetector()); // Disabled
 
-        // AI Detector (POC)
-        this.detectors.push(new SemanticIntentDetector());
+        // Advanced Phishing
+        this.detectors.push(new QuishingDetector()); // Check QR before IP/URL
+        this.detectors.push(new IpUrlDetector());
+
+        this.detectors.push(new OpenRedirectDetector());
+        this.detectors.push(new SpellingGrammarDetector());
+
+        // AI Detector (POC) - Disabled per user request
+        // this.detectors.push(new SemanticIntentDetector());
     }
 
     public async run(context: DetectionContext): Promise<{ results: DetectionResult[], totalPenalty: number }> {

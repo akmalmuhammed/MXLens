@@ -189,6 +189,8 @@ export class HeaderParser {
         }
     }
 
+
+
     private static analyzeARC(headers: any): AnalysisResult['arc'] {
         // ARC checks consist of ARC-Authentication-Results, ARC-Seal, ARC-Message-Signature
         const arcResults = headers['ARC-Authentication-Results'];
@@ -200,9 +202,11 @@ export class HeaderParser {
         let status: NonNullable<AnalysisResult['arc']>['status'] = 'none';
 
         // Check ARC-Authentication-Results (similar format to Auth-Results)
+        let arcAuthDetails = "";
         if (arcResults) {
             const val = Array.isArray(arcResults) ? arcResults[0] : arcResults;
-            details.push(`Results: ${val}`);
+            arcAuthDetails = val;
+            details.push(`Results: ${val.substring(0, 100)}...`); // Truncate for sanity
             if (val.includes('arc=pass')) status = 'pass';
             else if (val.includes('arc=fail')) status = 'fail';
         }
@@ -218,6 +222,15 @@ export class HeaderParser {
                 status = 'fail';
                 details.push("Chain Validation: Fail");
             }
+        }
+
+        // Extract Original Auth if ARC Passed
+        if (status === 'pass' && arcAuthDetails) {
+            const spfMatch = arcAuthDetails.match(/spf=([a-z]+)/i);
+            const dkimMatch = arcAuthDetails.match(/dkim=([a-z]+)/i);
+
+            if (spfMatch) details.push(`Original SPF: ${spfMatch[1]}`);
+            if (dkimMatch) details.push(`Original DKIM: ${dkimMatch[1]}`);
         }
 
         return { status, details };

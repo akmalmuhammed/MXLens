@@ -5,6 +5,7 @@ export interface DetectionContext {
     header: AnalysisResult;
     signals: NormalizedSignals;
     emailBody?: { text: string; html: string };
+    attachments?: any[]; // Raw PostalMime attachments for deep scanning
     options: { checkBody: boolean; checkAttachments: boolean };
 }
 

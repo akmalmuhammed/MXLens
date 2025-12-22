@@ -2,10 +2,15 @@ export interface AttachmentSignal {
     filename: string;
     extension: string;
     size: number;
+    sha256: string;                       // Calculated hash
+    magicType: string | null;             // Detected file type from bytes
+    isMasquerading: boolean;              // magicType !== extension
     hasDoubleExtension: boolean;          // e.g., invoice.pdf.exe
     isExecutable: boolean;                // .exe, .scr, .bat, .cmd
-    isMacroEnabled: boolean;              // .docm, .xlsm, .pptm
+    isMacroEnabled: boolean;              // .docm, .xlsm, .pptm (Extension based)
+    macroDetected: boolean;               // True if vbaProject.bin found in content
     isScript: boolean;                    // .js, .ps1, .vbs, .jar
+    dangerousFunctions: string[];         // e.g. ["eval", "WScript.Shell"]
 }
 
 export interface NormalizedSignals {
@@ -14,6 +19,8 @@ export interface NormalizedSignals {
     dmarcResult: "pass" | "fail" | "none" | "temperror" | "permerror";
     dmarcPolicy: "reject" | "quarantine" | "none" | "unknown";
     arcResult: "pass" | "fail" | "none" | "neutral" | "temperror" | "permerror";
+    arcOriginalSpf: string | null;
+    arcOriginalDkim: string | null;
 
     authenticationResultsPresent: boolean;
     multipleAuthHeaders: boolean;

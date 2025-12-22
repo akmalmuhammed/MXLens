@@ -17,7 +17,7 @@ export class AnalysisEngine {
     ): Promise<{ signals: NormalizedSignals; result: ScoringResult }> {
 
         // 1. Normalize
-        const signals = SignalNormalizer.normalize(headerResult, emailBody, options);
+        const signals = await SignalNormalizer.normalize(headerResult, emailBody, options);
 
         // 2. Score Components
         const headerScore = HeaderScorer.score(signals);
@@ -31,6 +31,7 @@ export class AnalysisEngine {
             header: headerResult,
             signals: signals,
             emailBody: emailBody,
+            attachments: emailBody?.attachments || [], // Pass raw attachments for scanning
             options: options
         });
 

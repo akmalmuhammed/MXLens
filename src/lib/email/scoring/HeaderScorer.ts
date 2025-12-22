@@ -37,7 +37,6 @@ export class HeaderScorer {
             score -= 20;
             penalties.push({ reason: "DKIM Fail", value: -20, source: 'header' as const });
         }
-
         // ARC OVERRIDE
         if (signals.arcResult === "pass") {
             const spfPenalty = penalties.find(p => p.reason.includes("SPF"));
@@ -46,8 +45,18 @@ export class HeaderScorer {
             if (spfPenalty || dkimPenalty) {
                 const refund = Math.abs((spfPenalty?.value || 0)) + Math.abs((dkimPenalty?.value || 0));
                 score += refund;
+
+                // Construct detailed reasoning
+                let overrideMsg = "ARC Override: Forwarded message validated";
+                if (signals.arcOriginalSpf || signals.arcOriginalDkim) {
+                    const parts = [];
+                    if (signals.arcOriginalSpf) parts.push(`Original SPF: ${signals.arcOriginalSpf.toUpperCase()}`);
+                    if (signals.arcOriginalDkim) parts.push(`Original DKIM: ${signals.arcOriginalDkim.toUpperCase()}`);
+                    if (parts.length > 0) overrideMsg += ` - ${parts.join(', ')}`;
+                }
+
                 penalties.push({
-                    reason: "ARC Override: Forwarded message validated",
+                    reason: overrideMsg,
                     value: refund,
                     warning: false,
                     source: 'header' as const
