@@ -1,140 +1,138 @@
+import { ScoringResult } from "@/lib/email/scoring/types";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
-import { Sparkles, ShieldCheck, ShieldAlert, AlertTriangle, Fingerprint, Lock, Globe } from "lucide-react";
+import { Sparkles, ShieldCheck, ShieldAlert, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface AIAnalysisSummaryProps {
     analysis: AnalysisResult;
+    scoring: ScoringResult; // Added this
 }
 
-export function AIAnalysisSummary({ analysis }: AIAnalysisSummaryProps) {
-    const { verdict, auth, impersonationAlert, scoreFactors } = analysis;
+export function AIAnalysisSummary({ analysis, scoring }: AIAnalysisSummaryProps) {
+    const { auth, impersonationAlert } = analysis;
+    const { verdict } = scoring;
+    const [expanded, setExpanded] = useState<string[]>(["auth", "content"]);
 
-    // --- Logic Verification Layer (Simulating AI Reasoning) ---
-    // We construct a narrative based on deterministic signals.
+    const toggle = (id: string) => {
+        setExpanded(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    }
 
-    const getNarrative = () => {
-        const points: string[] = [];
-        let headline = "";
-        let sentiment: "positive" | "caution" | "negative" = "positive";
+    // --- Logic: Evidence Collection ---
+    const findings: { id: string; title: string; items: { text: string; status: 'pass' | 'fail' | 'warn' }[] }[] = [];
 
-        // 1. Verdict & Headline
-        if (verdict === 'likely_legit') {
-            headline = "This email appears safe and authentic.";
-            sentiment = "positive";
-            points.push("The sender's identity has been verified via strong authentication (DMARC/SPF).");
-        } else if (verdict === 'high_risk') {
-            headline = "High risk detected. This email shows strong signs of phishing.";
-            sentiment = "negative";
-        } else if (verdict === 'suspicious') {
-            headline = "Exercise caution. This email has several suspicious traits.";
-            sentiment = "caution";
-        } else {
-            headline = "Analysis inconclusive. Proceed with care.";
-            sentiment = "caution";
+    // 1. Authentication Findings
+    const authItems: { text: string; status: 'pass' | 'fail' | 'warn' }[] = [];
+    if (auth.spf.status === 'pass') {
+        authItems.push({ text: `SPF Check Passed (${auth.spf.details || 'IP Authorized'})`, status: 'pass' as const });
+    } else {
+        authItems.push({ text: `SPF Check Failed (${auth.spf.status}) - Sending IP not authorized`, status: 'fail' as const });
+    }
+
+    if (auth.dkim.status === 'pass') {
+        authItems.push({ text: `DKIM Signature Valid (${auth.dkim.details || 'Signed'})`, status: 'pass' as const });
+    } else {
+        authItems.push({ text: `DKIM Check Failed (${auth.dkim.status})`, status: 'fail' as const });
+    }
+
+    if (auth.dmarc.status === 'pass') {
+        authItems.push({ text: `DMARC Alignment Verified (Policy: ${auth.dmarc.details || 'None'})`, status: 'pass' as const });
+    } else {
+        authItems.push({ text: `DMARC Check Failed (Policy: ${auth.dmarc.details})`, status: 'fail' as const });
+    }
+
+    findings.push({ id: 'auth', title: 'Authentication Verification', items: authItems });
+
+    // 2. Content & Threat Findings
+    const anomalyItems: { text: string; status: 'pass' | 'fail' | 'warn' }[] = [];
+
+    // Impersonation
+    if (impersonationAlert) {
+        anomalyItems.push({ text: `Impersonation Risk: ${impersonationAlert}`, status: 'fail' as const });
+    }
+
+    // Signals/Score Factors
+    // Fix: Use penalties from the full scoring engine (includes body/cross analysis)
+    scoring.trust.penalties.forEach(penalty => {
+        // Filter out redundant auth penalties that are already covered by the auth section
+        if (penalty.source === 'header' && (penalty.reason.includes('SPF') || penalty.reason.includes('DKIM') || penalty.reason.includes('DMARC'))) {
+            return;
         }
 
-        // 2. Auth Context
-        if (auth.dmarc.status === 'fail') {
-            points.push(`Risk: The email claims to be from "${analysis.headers['From']}" but failed DMARC validation. The domain owner did not authorize this server.`);
-        } else if (auth.spf.status === 'fail' || auth.spf.status === 'softfail') {
-            points.push(`Risk: The sending server IP is not on the allowed list for this domain (SPF ${auth.spf.status}).`);
-        }
+        const status = penalty.critical ? 'fail' : 'warn';
+        anomalyItems.push({ text: penalty.reason, status: status as 'fail' | 'warn' });
+    });
 
-        // 3. Impersonation Context
-        if (impersonationAlert) {
-            points.push(`Critical: ${impersonationAlert}`);
-        }
+    // If completely clean
+    if (anomalyItems.length === 0 && !impersonationAlert) {
+        anomalyItems.push({ text: "No content-based anomalies detected by active scanners.", status: 'pass' as const });
+    }
 
-        // 4. Positive Reinforcement
-        if (analysis.score >= 80) {
-            points.push("Trust signals are high, indicating a legitimate business communication.");
-        }
+    findings.push({ id: 'content', title: 'Content & Threat Indicators', items: anomalyItems });
 
-        // 5. Mixed Signals
-        if (verdict === 'suspicious' && auth.dmarc.status === 'pass') {
-            points.push("Although authentication passed, other content signals (like hidden text or aggressive urgency) raised flags.");
-        }
 
-        return { headline, points, sentiment };
+    // --- Status Determination ---
+    // --- Status Determination ---
+    const getStatusTheme = () => {
+        // Use scoring verdict
+        const v = verdict.verdict;
+        if (v === 'High Risk') return { color: 'border-rose-500', icon: ShieldAlert, text: 'text-rose-500' };
+        if (v === 'Suspicious') return { color: 'border-amber-500', icon: AlertTriangle, text: 'text-amber-500' };
+        return { color: 'border-emerald-500', icon: ShieldCheck, text: 'text-emerald-500' };
     };
-
-    const narrative = getNarrative();
+    const theme = getStatusTheme();
 
     return (
-        <Card className={cn(
-            "border-l-4 shadow-sm relative overflow-hidden transition-all duration-300",
-            narrative.sentiment === 'positive' ? "border-l-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/10" :
-                narrative.sentiment === 'negative' ? "border-l-rose-500 bg-rose-50/50 dark:bg-rose-950/10" :
-                    "border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/10"
-
-        )}>
-            {/* "AI" Decorative Elements */}
-            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                <Sparkles className="w-24 h-24" />
-            </div>
-
-            <CardHeader className="pb-2">
-                <div className="flex items-center gap-2 mb-1">
-                    <div className={cn("p-1.5 rounded-md",
-                        narrative.sentiment === 'positive' ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400" :
-                            narrative.sentiment === 'negative' ? "bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400" :
-                                "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400"
-                    )}>
-                        <Sparkles className="w-4 h-4" />
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">MXLens Intelligence Summary</span>
+        <Card className={cn("border-l-4 shadow-sm relative overflow-hidden", theme.color)}>
+            <CardHeader className="pb-3 border-b border-border/40 bg-muted/20">
+                <div className="flex items-center gap-2">
+                    <Sparkles className={cn("w-5 h-5", theme.text)} />
+                    <CardTitle className="text-base font-bold font-mono uppercase tracking-tight flex-1">
+                        MXLens Intelligence Summary
+                    </CardTitle>
+                    {/* Badge Removed as requested */}
                 </div>
-                <CardTitle className="text-lg font-heading leading-tight">
-                    {narrative.headline}
-                </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="space-y-3">
-                    {narrative.points.map((point, idx) => (
-                        <div key={idx} className="flex items-start gap-3 text-sm text-foreground/80">
-                            {/* Contextual Icons based on keywords */}
-                            <div className="mt-0.5 shrink-0">
-                                {point.includes("Risk") || point.includes("Critical") ? <ShieldAlert className="w-4 h-4 text-rose-500" /> :
-                                    point.includes("identity") ? <Fingerprint className="w-4 h-4 text-blue-500" /> :
-                                        point.includes("server") ? <Globe className="w-4 h-4 text-purple-500" /> :
-                                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                }
-                            </div>
-                            <p dangerouslySetInnerHTML={{ __html: highlightKeywords(point) }} />
-                        </div>
-                    ))}
-                </div>
+            <CardContent className="pt-4 space-y-4">
 
-                {/* Technical Translation */}
-                <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-2 lg:grid-cols-3 gap-2">
-                    <div className="text-xs">
-                        <span className="text-muted-foreground block text-[10px] uppercase font-bold">Identity</span>
-                        <div className="flex items-center gap-1.5 mt-1 font-medium">
-                            {auth.dmarc.status === 'pass' ? <ShieldCheck className="w-3 h-3 text-emerald-500" /> : <Lock className="w-3 h-3 text-muted-foreground" />}
-                            {auth.dmarc.status === 'pass' ? 'Verified' : 'Unverified'}
-                        </div>
+                {findings.map(section => (
+                    <div key={section.id} className="space-y-2">
+                        <button
+                            onClick={() => toggle(section.id)}
+                            className="flex items-center gap-2 w-full text-left text-xs font-bold uppercase text-muted-foreground hover:text-foreground transition-colors group"
+                        >
+                            {expanded.includes(section.id) ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                            {section.title}
+                            <div className="h-px flex-1 bg-border/50 group-hover:bg-border transition-colors" />
+                        </button>
+
+                        {expanded.includes(section.id) && (
+                            <div className="space-y-2 pl-2">
+                                {section.items.map((item, idx) => (
+                                    <div key={idx} className="flex items-start gap-2 text-sm">
+                                        <div className="mt-1">
+                                            {item.status === 'pass' && <ShieldCheck className="w-3 h-3 text-emerald-500" />}
+                                            {item.status === 'fail' && <ShieldAlert className="w-3 h-3 text-rose-500" />}
+                                            {item.status === 'warn' && <AlertTriangle className="w-3 h-3 text-amber-500" />}
+                                        </div>
+                                        <span className={cn(
+                                            "leading-tight",
+                                            item.status === 'fail' ? "text-rose-600 dark:text-rose-400 font-medium" :
+                                                item.status === 'warn' ? "text-amber-600 dark:text-amber-400" :
+                                                    "text-muted-foreground"
+                                        )}>
+                                            {item.text}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    <div className="text-xs">
-                        <span className="text-muted-foreground block text-[10px] uppercase font-bold">Path</span>
-                        <div className="flex items-center gap-1.5 mt-1 font-medium">
-                            {analysis.hops.length > 2 ? <Globe className="w-3 h-3 text-blue-500" /> : <AlertTriangle className="w-3 h-3 text-amber-500" />}
-                            {analysis.hops.length} Hops Recorded
-                        </div>
-                    </div>
-                </div>
+                ))}
+
             </CardContent>
         </Card>
     );
-}
-
-// Helper to embolden key terms
-function highlightKeywords(text: string) {
-    const keywords = ["High Risk", "DMARC", "SPF", "impersonating", "verified", "safe", "Critical", "Authentication", "Phishing"];
-    let out = text;
-    keywords.forEach(w => {
-        const reg = new RegExp(`(${w})`, 'gi');
-        out = out.replace(reg, '<span class="font-semibold text-foreground">$1</span>');
-    });
-    return out;
 }

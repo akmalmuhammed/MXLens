@@ -28,14 +28,20 @@ export class HeaderScorer {
             score -= 20;
             penalties.push({ reason: "SPF Fail", value: -20, source: 'header' as const });
         } else if (signals.spfResult === "softfail") {
-            score -= 5;
-            penalties.push({ reason: "SPF Softfail", value: -5, source: 'header' as const });
+            score -= 10;
+            penalties.push({ reason: "SPF Softfail", value: -10, source: 'header' as const });
+        } else if (signals.spfResult === "none" || signals.spfResult === "neutral") {
+            score -= 10;
+            penalties.push({ reason: "SPF Record Missing or Neutral", value: -10, source: 'header' as const });
         }
 
         // DKIM
         if (signals.dkimResult === "fail") {
             score -= 20;
             penalties.push({ reason: "DKIM Fail", value: -20, source: 'header' as const });
+        } else if (signals.dkimResult === "none") {
+            score -= 10;
+            penalties.push({ reason: "DKIM Signature Missing", value: -10, source: 'header' as const });
         }
         // ARC OVERRIDE
         if (signals.arcResult === "pass") {

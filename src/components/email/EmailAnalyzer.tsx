@@ -12,6 +12,7 @@ import { VerdictBanner } from "./VerdictBanner";
 import { AuthAlignment } from "./AuthAlignment";
 import { InteractiveHops } from "./InteractiveHops";
 import { AIAnalysisSummary } from "./AIAnalysisSummary";
+import { AnalysisRecommendations } from "./AnalysisRecommendations";
 import { ArtifactsPanel } from "./ArtifactsPanel";
 import { ShieldAlert, FileText, ShieldCheck, Download, AlertTriangle, Scan, Search } from "lucide-react";
 
@@ -558,6 +559,11 @@ export function EmailAnalyzer() {
 
                                     <div className="pt-8 border-t border-border/40">
                                         <InteractiveHops hops={analysis.header.hops} />
+
+                                        {/* NEW: SOC Recommendations (Moved Here) */}
+                                        <div className="pt-8">
+                                            <AnalysisRecommendations verdict={analysis.scoring.verdict.verdict} />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -622,7 +628,7 @@ export function EmailAnalyzer() {
                                     </div>
 
                                     {/* NEW: AI Analysis Summary (Moved Here) */}
-                                    <AIAnalysisSummary analysis={analysis.header} />
+                                    <AIAnalysisSummary analysis={analysis.header} scoring={analysis.scoring} />
 
                                 </div>
                             </div>
