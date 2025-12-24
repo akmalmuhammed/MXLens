@@ -80,7 +80,7 @@ export function AnimatedLandingClient() {
                             viewport={{ once: true }}
                             className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400"
                         >
-                            Ready to secure your inbox?
+                            Ready to investigate your inbox?
                         </motion.h2>
                         <motion.p
                             initial={{ opacity: 0, y: 10 }}
@@ -89,7 +89,7 @@ export function AnimatedLandingClient() {
                             transition={{ delay: 0.1 }}
                             className="text-xl text-slate-400 max-w-lg mx-auto"
                         >
-                            Join hundreds of SOC analysts using MXLens for instant, private forensics.
+                            Join hundreds of SOC analysts using MXLens for instant, private intelligence.
                         </motion.p>
 
                         <motion.div
@@ -102,7 +102,7 @@ export function AnimatedLandingClient() {
                             <Link href="/analyze">
                                 <Button size="lg" className="h-14 px-8 text-lg font-semibold bg-cyan-500 text-black hover:bg-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all rounded-full group">
                                     <Search className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                                    Start Analyzing Safe
+                                    Start Analysis
                                 </Button>
                             </Link>
                             <Link href="/features">

@@ -74,7 +74,7 @@ export default function PricingPage() {
                             description="For professional threat hunters requiring history and depth."
                             features={[
                                 "Unlimited Analyses",
-                                "Full Header Forensics (DKIM/SPF)",
+                                "Full Header Intelligence (DKIM/SPF)",
                                 "Screenshot & DOM Analysis",
                                 "Local History Storage",
                                 "Priority Email Support",

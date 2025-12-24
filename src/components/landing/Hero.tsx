@@ -23,7 +23,7 @@ export function Hero() {
                 {/* Headline */}
                 {/* Headline */}
                 <h1 className="text-5xl md:text-7xl font-bold leading-tight tracking-tight mb-8 text-foreground drop-shadow-sm animate-in slide-in-from-bottom-5 duration-700 font-heading">
-                    Forensic Email Analysis.<br />
+                    Email Intelligence.<br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-500">Zero Data Exfiltration.</span>
                 </h1>
 

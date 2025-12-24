@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PostalMime from 'postal-mime';
 import { HeaderParser, AnalysisResult } from "@/lib/email/HeaderParser";
 import { AnalysisEngine } from "@/lib/email/scoring/AnalysisEngine";
@@ -14,7 +14,9 @@ import { InteractiveHops } from "./InteractiveHops";
 import { AIAnalysisSummary } from "./AIAnalysisSummary";
 import { AnalysisRecommendations } from "./AnalysisRecommendations";
 import { ArtifactsPanel } from "./ArtifactsPanel";
-import { ShieldAlert, FileText, ShieldCheck, Download, AlertTriangle, Scan, Search } from "lucide-react";
+import { ShieldAlert, FileText, ShieldCheck, Download, AlertTriangle, Scan, Search, ArrowLeft } from "lucide-react";
+import { BulkProcessor, BulkFile } from "./BulkProcessor";
+import { BulkAnalysisDashboard } from "./BulkAnalysisDashboard";
 
 interface EnhancedAnalysis {
     header: AnalysisResult;
@@ -30,6 +32,11 @@ export function EmailAnalyzer() {
     const [loading, setLoading] = useState(false);
     const [mode, setMode] = useState<"analyst" | "raw" | "it">("analyst");
     const [isDragging, setIsDragging] = useState(false);
+
+    // Bulk State
+    const [viewMode, setViewMode] = useState<'single' | 'bulk'>('single');
+    const [bulkQueue, setBulkQueue] = useState<BulkFile[]>([]);
+    const bulkProcessorRef = useRef<BulkProcessor | null>(null);
 
     // Usage State (Added)
     const [usageStatus, setUsageStatus] = useState<{ allowed: boolean; message?: string }>({ allowed: true });
@@ -185,7 +192,38 @@ export function EmailAnalyzer() {
     const handleDrop = async (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
-        const file = e.dataTransfer.files[0];
+
+        const files = Array.from(e.dataTransfer.files);
+
+        if (files.length === 0) return;
+
+        // BULK MODE
+        if (files.length > 1) {
+            if (files.length > 50) {
+                alert("Bulk limit is currently capped at 50 files for browser stability.");
+                return;
+            }
+
+            setViewMode('bulk');
+            setAnalysis(null);
+
+            // Initialize Processor
+            const processor = new BulkProcessor(files, { analyzeBody, analyzeAttachments });
+            bulkProcessorRef.current = processor;
+
+            // Subscribe to updates
+            processor.subscribe(() => {
+                setBulkQueue(processor.getState());
+            });
+
+            // Start Analysis
+            setBulkQueue(processor.getState());
+            processor.start();
+            return;
+        }
+
+        // SINGLE MODE
+        const file = files[0];
         if (file) {
             if (file.size > MAX_FILE_SIZE) {
                 alert("File is too large (>50MB). To prevent browser crashes, please use a smaller file.");
@@ -220,10 +258,36 @@ export function EmailAnalyzer() {
                     </div>
                 )}
 
+                {/* BULK VIEW */}
+                {viewMode === 'bulk' && (
+                    <div className="h-full animate-in fade-in zoom-in-95 duration-300">
+                        <div className="mb-4 flex items-center">
+                            <Button variant="ghost" className="gap-2 pl-0 hover:bg-transparent hover:text-primary" onClick={() => {
+                                setViewMode('single');
+                                setBulkQueue([]);
+                                bulkProcessorRef.current = null;
+                            }}>
+                                <ArrowLeft className="h-4 w-4" /> Back to Single Analysis
+                            </Button>
+                        </div>
+                        <BulkAnalysisDashboard
+                            files={bulkQueue}
+                            onClear={() => {
+                                setBulkQueue([]);
+                                setViewMode('single');
+                            }}
+                            onSelectFile={(result) => {
+                                setAnalysis(result);
+                                setInput(result.header.rawHeaders || "");
+                                setViewMode('single');
+                            }}
+                        />
+                    </div>
+                )}
 
 
                 {/* Input Section */}
-                {!analysis && (
+                {!analysis && viewMode === 'single' && (
                     <div
                         className={`
                         relative flex flex-col items-center justify-center min-h-[600px]
@@ -262,7 +326,7 @@ export function EmailAnalyzer() {
                                     </span>
                                 </h2>
                                 <p className="text-xl text-muted-foreground/80 max-w-lg mx-auto leading-relaxed">
-                                    Drag and drop your .eml file here, or paste headers.
+                                    Drag and drop `.eml` files (Bulk Supported), or paste headers.
                                     <br />
                                     Advanced forensic logic runs entirely in your browser.
                                 </p>
@@ -315,23 +379,43 @@ export function EmailAnalyzer() {
                                             type="file"
                                             className="hidden"
                                             accept=".eml,.txt,message/rfc822"
+                                            multiple // Enable bulk selection
                                             onChange={async (e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                    if (file.size > MAX_FILE_SIZE) {
-                                                        alert("File is too large (>50MB).");
-                                                        e.target.value = '';
+                                                const files = Array.from(e.target.files || []);
+                                                if (files.length === 0) return;
+
+                                                // BULK MODE
+                                                if (files.length > 1) {
+                                                    if (files.length > 50) {
+                                                        alert("Bulk limit is currently capped at 50 files for browser stability.");
                                                         return;
                                                     }
-                                                    try {
-                                                        const text = await file.text();
-                                                        setInput(text);
-                                                        setTimeout(() => performAnalysis(text, analyzeBody, analyzeAttachments), 100);
-                                                    } catch (e) {
-                                                        alert("Failed to read file.");
-                                                    }
-                                                    e.target.value = '';
+                                                    setViewMode('bulk');
+                                                    setAnalysis(null);
+                                                    const processor = new BulkProcessor(files, { analyzeBody, analyzeAttachments });
+                                                    bulkProcessorRef.current = processor;
+                                                    processor.subscribe(() => setBulkQueue(processor.getState()));
+                                                    setBulkQueue(processor.getState());
+                                                    processor.start();
+                                                    e.target.value = ''; // Reset
+                                                    return;
                                                 }
+
+                                                // SINGLE MODE
+                                                const file = files[0];
+                                                if (file.size > MAX_FILE_SIZE) {
+                                                    alert("File is too large (>50MB).");
+                                                    e.target.value = '';
+                                                    return;
+                                                }
+                                                try {
+                                                    const text = await file.text();
+                                                    setInput(text);
+                                                    setTimeout(() => performAnalysis(text, analyzeBody, analyzeAttachments), 100);
+                                                } catch (e) {
+                                                    alert("Failed to read file.");
+                                                }
+                                                e.target.value = '';
                                             }}
                                             id="file-upload-input"
                                         />
@@ -339,7 +423,7 @@ export function EmailAnalyzer() {
                                             variant="outline"
                                             className="h-full w-full rounded-xl border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all"
                                             onClick={() => document.getElementById('file-upload-input')?.click()}
-                                            title="Upload File"
+                                            title="Upload Files (Single or Bulk)"
                                         >
                                             <Download className="w-6 h-6 text-muted-foreground" />
                                         </Button>
@@ -350,7 +434,7 @@ export function EmailAnalyzer() {
                     </div>
                 )}
                 {/* Analysis Dashboard */}
-                {analysis && (
+                {analysis && viewMode === 'single' && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 py-6 px-2">
 
                         {/* Header Actions & Tabs */}

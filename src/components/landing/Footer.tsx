@@ -12,7 +12,7 @@ export function Footer() {
                         <span>MXLens</span>
                     </div>
                     <p className="text-sm text-slate-400">
-                        Secure, instant email forensics for the modern SOC.
+                        Secure, instant email intelligence for the modern SOC.
                         <br />
                         Built with privacy as a first principle.
                     </p>

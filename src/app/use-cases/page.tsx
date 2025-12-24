@@ -40,7 +40,7 @@ export default function UseCasesPage() {
                     title="Credential Phishing"
                     problem="Links hide behind multiple redirects (SendGrid -> bit.ly -> malicious-site.com) to evade scanners."
                     solution="MXLens traces the full redirect path server-side and takes a screenshot of the final landing page, so you see the fake Microsoft 365 login screen without clicking the link."
-                    tags={["Link Unfurling", "Visual Forensics"]}
+                    tags={["Link Unfurling", "Visual Intelligence"]}
                 />
 
                 {/* CTA */}
