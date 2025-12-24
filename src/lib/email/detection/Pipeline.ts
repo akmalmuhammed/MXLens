@@ -8,6 +8,8 @@ import { OpenRedirectDetector } from "./rules/OpenRedirect";
 import { SpellingGrammarDetector } from "./rules/SpellingGrammar";
 // import { SemanticIntentDetector } from "./rules/SemanticIntentDetector";
 import { QuishingDetector } from "./rules/QuishingDetector";
+import { CredentialFormDetector } from "./rules/CredentialFormDetector";
+import { LinkObfuscationDetector } from "./rules/LinkObfuscationDetector";
 
 export class DetectionPipeline {
     private detectors: Detector[] = [];
@@ -26,26 +28,51 @@ export class DetectionPipeline {
         this.detectors.push(new OpenRedirectDetector());
         this.detectors.push(new SpellingGrammarDetector());
 
+        this.detectors.push(new CredentialFormDetector());
+        this.detectors.push(new LinkObfuscationDetector());
+
         // AI Detector (POC) - Disabled per user request
         // this.detectors.push(new SemanticIntentDetector());
     }
 
-    public async run(context: DetectionContext): Promise<{ results: DetectionResult[], totalPenalty: number }> {
+    public async run(context: DetectionContext): Promise<{ results: DetectionResult[], totalPenalty: number, performance: { id: string, name: string, durationMs: number, status: 'success' | 'timeout' | 'error' }[] }> {
         const results: DetectionResult[] = [];
+        const telemetry: { id: string, name: string, durationMs: number, status: 'success' | 'timeout' | 'error' }[] = [];
         let totalPenalty = 0;
 
         for (const detector of this.detectors) {
+            const t0 = performance.now();
+            let status: 'success' | 'timeout' | 'error' = 'success';
+
             try {
-                const result = await detector.detect(context);
+                // Feature: Individual Detector Timeout (ReDoS Protection) - 2000ms
+                const timeoutPromise = new Promise<null>((_, reject) =>
+                    setTimeout(() => reject(new Error(`Timeout (${detector.id})`)), 2000)
+                );
+
+                // @ts-ignore
+                const result = await Promise.race([detector.detect(context), timeoutPromise]);
+
                 if (result && result.triggered) {
                     results.push(result);
                     totalPenalty += result.penalty;
                 }
-            } catch (e) {
-                console.error(`Detector ${detector.id} failed:`, e);
+            } catch (e: any) {
+                status = e.message && e.message.includes("Timeout") ? 'timeout' : 'error';
+                console.warn(`Detector ${detector.id} skipped - ${e}`);
+            } finally {
+                const t1 = performance.now();
+                const duration = t1 - t0;
+                // Add to telemetry
+                telemetry.push({
+                    id: detector.id,
+                    name: detector.name,
+                    durationMs: Math.round(duration * 100) / 100, // Round to 2 decimals
+                    status
+                });
             }
         }
 
-        return { results, totalPenalty };
+        return { results, totalPenalty, performance: telemetry };
     }
 }

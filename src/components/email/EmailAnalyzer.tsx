@@ -38,7 +38,7 @@ export function EmailAnalyzer() {
     const [analyzeAttachments, setAnalyzeAttachments] = useState(false);
 
     // Raw Tab State
-    const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html'>('headers');
+    const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry'>('headers');
 
     const checkUsage = async (): Promise<boolean> => {
         try {
@@ -136,8 +136,13 @@ export function EmailAnalyzer() {
                 // Don't block UI for this failure
             }
 
-        } catch (e) {
+        } catch (e: any) {
             console.error("Analysis failed", e);
+            if (e.message && e.message.includes("parser")) {
+                alert("Error Parsing Email: The file format is invalid or corrupted.");
+            } else {
+                alert("Analysis failed due to an unexpected error. Please check the console.");
+            }
         } finally {
             setLoading(false);
         }
@@ -174,14 +179,24 @@ export function EmailAnalyzer() {
         setIsDragging(false);
     }
 
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
     const handleDrop = async (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
         const file = e.dataTransfer.files[0];
         if (file) {
-            const text = await file.text();
-            setInput(text);
-            setTimeout(() => performAnalysis(text, analyzeBody, analyzeAttachments), 100);
+            if (file.size > MAX_FILE_SIZE) {
+                alert("File is too large (>50MB). To prevent browser crashes, please use a smaller file.");
+                return;
+            }
+            try {
+                const text = await file.text();
+                setInput(text);
+                setTimeout(() => performAnalysis(text, analyzeBody, analyzeAttachments), 100);
+            } catch (e) {
+                alert("Failed to read file.");
+            }
         }
     };
 
@@ -302,9 +317,18 @@ export function EmailAnalyzer() {
                                             onChange={async (e) => {
                                                 const file = e.target.files?.[0];
                                                 if (file) {
-                                                    const text = await file.text();
-                                                    setInput(text);
-                                                    setTimeout(() => performAnalysis(text, analyzeBody, analyzeAttachments), 100);
+                                                    if (file.size > MAX_FILE_SIZE) {
+                                                        alert("File is too large (>50MB).");
+                                                        e.target.value = '';
+                                                        return;
+                                                    }
+                                                    try {
+                                                        const text = await file.text();
+                                                        setInput(text);
+                                                        setTimeout(() => performAnalysis(text, analyzeBody, analyzeAttachments), 100);
+                                                    } catch (e) {
+                                                        alert("Failed to read file.");
+                                                    }
                                                     e.target.value = '';
                                                 }
                                             }}
@@ -605,6 +629,7 @@ export function EmailAnalyzer() {
                                     <Button size="sm" variant={rawTab === 'headers' ? 'secondary' : 'ghost'} onClick={() => setRawTab('headers')} className="rounded-lg hover:bg-background/50">Headers</Button>
                                     {analyzeBody && <Button size="sm" variant={rawTab === 'body_text' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_text')} className="rounded-lg hover:bg-background/50">Body (Text)</Button>}
                                     {analyzeBody && <Button size="sm" variant={rawTab === 'body_html' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_html')} className="rounded-lg hover:bg-background/50">Body (HTML)</Button>}
+                                    <Button size="sm" variant={rawTab === 'telemetry' ? 'secondary' : 'ghost'} onClick={() => setRawTab('telemetry')} className="rounded-lg hover:bg-background/50">Engine Telemetry</Button>
                                 </div>
 
                                 {rawTab === 'headers' && (
@@ -624,6 +649,36 @@ export function EmailAnalyzer() {
                                     <pre className="scrollbar-premium p-6 bg-gray-50 dark:bg-gray-950 text-foreground rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border h-[700px] overflow-y-auto leading-relaxed shadow-inner">
                                         {analysis.emailContent.html || "No HTML content found."}
                                     </pre>
+                                )}
+                                {rawTab === 'telemetry' && (
+                                    <div className="bg-card/40 border rounded-xl overflow-hidden">
+                                        <div className="p-4 border-b bg-muted/20">
+                                            <h4 className="font-semibold text-sm">Detection Pipeline Performance</h4>
+                                        </div>
+                                        <div className="divide-y text-sm">
+                                            {analysis.scoring.performance ? (
+                                                analysis.scoring.performance.map((item, i) => (
+                                                    <div key={i} className="p-3 flex items-center justify-between hover:bg-muted/10">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={`w-2 h-2 rounded-full ${item.status === 'success' ? (item.durationMs > 500 ? 'bg-amber-500' : 'bg-green-500') : 'bg-red-500'}`} />
+                                                            <span className="font-mono text-xs text-muted-foreground mr-2">{item.id}</span>
+                                                            <span className="font-medium">{item.name}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            {item.status !== 'success' && (
+                                                                <span className="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-500 font-bold uppercase">{item.status}</span>
+                                                            )}
+                                                            <span className={`font-mono ${item.durationMs > 500 ? 'text-amber-500 font-bold' : 'text-muted-foreground'}`}>
+                                                                {item.durationMs}ms
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="p-8 text-center text-muted-foreground">No telemetry data available.</div>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         )}

@@ -43,6 +43,64 @@ export interface AnalysisResult {
 }
 
 export class HeaderParser {
+    // Helper to decode RFC 2047
+    private static decodeHeaderValue(val: string): string {
+        try {
+            // Check for encoded words tokens first to avoid unnecessary regex work on plain text
+            if (!val.includes("=?") || !val.includes("?=")) return val;
+
+            // Regex to find encoded words: =?charset?encoding?encoded_text?=
+            // We use a global replace to handle multiple encoded words in a single string
+            return val.replace(/=\?([^\?]+)\?([BQbq])\?([^\?]+)\?=/g, (match, charset, encoding, text) => {
+                try {
+                    if (encoding.toUpperCase() === 'B') {
+                        // Base64
+                        return new TextDecoder(charset).decode(
+                            Uint8Array.from(atob(text), c => c.charCodeAt(0))
+                        );
+                    } else if (encoding.toUpperCase() === 'Q') {
+                        // Quoted-Printable
+                        // Replace _ with space, then decode %XX
+                        let decoded = text.replace(/_/g, ' ');
+                        // Standard decoder might fail on custom QP, but widely supported via decodeURIComponent-like logic 
+                        // if we convert =XX to %XX. HOWEVER, charset matters.
+                        // Simple approach:
+                        decoded = decoded.replace(/=([0-9A-F]{2})/ig, (m: string, p1: string) => String.fromCharCode(parseInt(p1, 16)));
+
+                        // If it's UTF-8, we might need proper multi-byte handling.
+                        // A safer Q-decode for UTF-8:
+                        if (charset.toUpperCase() === 'UTF-8') {
+                            const bytes = [];
+                            for (let i = 0; i < text.length; i++) {
+                                if (text[i] === '=') {
+                                    const hex = text.substr(i + 1, 2);
+                                    if (hex.length === 2) {
+                                        bytes.push(parseInt(hex, 16));
+                                        i += 2;
+                                    } else {
+                                        bytes.push(text.charCodeAt(i));
+                                    }
+                                } else if (text[i] === '_') {
+                                    bytes.push(32);
+                                } else {
+                                    bytes.push(text.charCodeAt(i));
+                                }
+                            }
+                            return new TextDecoder('utf-8').decode(new Uint8Array(bytes));
+                        }
+
+                        return decoded;
+                    }
+                    return match;
+                } catch (e) {
+                    return match; // Fallback to raw if decode fails
+                }
+            });
+        } catch (e) {
+            return val;
+        }
+    }
+
     static async parse(rawInput: string): Promise<AnalysisResult> {
         const parser = new PostalMime();
         // PostalMime expects a full message, but works okay with just headers if we are careful.
@@ -81,18 +139,18 @@ export class HeaderParser {
                 if (match) {
                     currentKey = match[1]; // Case-sensitive store
                     let val = match[2];
-                    // val = this.decodeHeaderValue(val); // Decode RFC 2047 (Not implemented manually, rely on PostalMime mostly)
+                    val = this.decodeHeaderValue(val);
 
-                    const normKey = currentKey;
-
-                    if (headerMap[normKey]) {
-                        if (Array.isArray(headerMap[normKey])) {
-                            headerMap[normKey].push(val);
+                    // NOTE: The original code had a bug here where `normKey` was not defined.
+                    // Assuming `currentKey` is intended to be used directly as the key for `headerMap`.
+                    if (headerMap[currentKey]) {
+                        if (Array.isArray(headerMap[currentKey])) {
+                            headerMap[currentKey].push(val);
                         } else {
-                            headerMap[normKey] = [headerMap[normKey], val];
+                            headerMap[currentKey] = [headerMap[currentKey], val];
                         }
                     } else {
-                        headerMap[normKey] = val;
+                        headerMap[currentKey] = val;
                     }
                 } else if (/^\s+/.test(line) && currentKey) {
                     // Folded header (continuation)

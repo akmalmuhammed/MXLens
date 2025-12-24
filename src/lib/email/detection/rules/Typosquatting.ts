@@ -1,23 +1,39 @@
 import { Detector, DetectionContext, DetectionResult } from "../Detector";
 
 export class TyposquattingDetector implements Detector {
-    id = "typosquatting";
-    name = "Typosquatting Detector";
-    description = "Detects look-alike domains mimicking high-value targets.";
+    id = "homograph-typosquatting";
+    name = "Homograph & Typosquatting Detector";
+    description = "Detects IDN homographs, mixed-script spoofing, and look-alike domains.";
     tags: ('auth' | 'content' | 'link' | 'malware' | 'identity')[] = ['identity'];
 
     // List of high-value brands often impersonated
     private protectedDomains = [
         "gmail.com", "yahoo.com", "outlook.com", "microsoft.com", "apple.com",
         "paypal.com", "amazon.com", "netflix.com", "facebook.com", "instagram.com",
-        "linkedin.com", "dropbox.com", "docu sign.com", "adobe.com", "chase.com",
-        "wellsfargo.com", "bankofamerica.com", "mxlens.com"
+        "linkedin.com", "dropbox.com", "docusign.com", "adobe.com", "chase.com",
+        "wellsfargo.com", "bankofamerica.com", "mxlens.com", "google.com", "stripe.com"
     ];
 
     detect(context: DetectionContext): DetectionResult | null {
         const fromDomain = context.signals.fromDomain.toLowerCase();
 
-        // Skip if it's an exact match (legitimate)
+        // 1. Homograph / Mixed Script Detection
+        // Detects if the domain contains mixed scripts (e.g. Cyrillic + Latin) which is a strong indicator of spoofing
+        // \u0400-\u04FF is Cyrillic. 
+        const mixedScriptRegex = /[a-zA-Z][\u0400-\u04FF]+|[\u0400-\u04FF]+[a-zA-Z]/;
+        if (mixedScriptRegex.test(fromDomain) || fromDomain.startsWith("xn--")) {
+            return {
+                triggered: true,
+                score: 1.0,
+                penalty: -30,
+                name: "Homograph Attack (IDN)",
+                reason: `Domain '${fromDomain}' uses mixed scripts or Punycode to spoof a legitimate domain.`,
+                metadata: { type: 'mixed_script' }
+            };
+        }
+
+        // 2. Typosquatting Checks
+        // Skip if exact match (legitimate)
         if (this.protectedDomains.includes(fromDomain)) return null;
 
         let closestMatch = "";
@@ -42,7 +58,7 @@ export class TyposquattingDetector implements Detector {
                 triggered: true,
                 score: 0.8,
                 penalty: -20,
-                name: this.name,
+                name: "Typosquatting Detected",
                 reason: `Potential Typosquatting: Domain "${fromDomain}" mimics "${closestMatch}"`,
                 metadata: { target: closestMatch, distance: minDistance }
             };

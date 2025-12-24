@@ -87,4 +87,10 @@ export interface ScoringResult {
         reason: string;
         overridden: boolean;
     };
+    performance?: {
+        id: string;
+        name: string;
+        durationMs: number;
+        status: 'success' | 'timeout' | 'error';
+    }[];
 }

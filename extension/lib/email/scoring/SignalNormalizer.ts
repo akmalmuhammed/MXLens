@@ -1,0 +1,302 @@
+import { AnalysisResult } from "../HeaderParser";
+import { NormalizedSignals, AttachmentSignal } from "./types";
+
+export class SignalNormalizer {
+    static async normalize(
+        headerResult: AnalysisResult,
+        emailBody: any | null, // PostalMime object
+        options: {
+            checkBody: boolean;
+            checkAttachments: boolean;
+        }
+    ): Promise<NormalizedSignals> {
+
+        // 1. Normalize Auth Signals
+        const spf = this.mapAuthStatus(headerResult.auth.spf.status);
+        const dkim = this.mapAuthStatus(headerResult.auth.dkim.status);
+        const dmarc = this.mapAuthStatus(headerResult.auth.dmarc.status);
+        const arc = headerResult.arc ? this.mapAuthStatus(headerResult.arc.status) : "none";
+
+        // Extract DMARC Policy
+        let dmarcPolicy: NormalizedSignals['dmarcPolicy'] = "unknown";
+        const dmarcDetails = headerResult.auth.dmarc.details.toLowerCase();
+        if (dmarcDetails.includes("p=reject")) dmarcPolicy = "reject";
+        else if (dmarcDetails.includes("p=quarantine")) dmarcPolicy = "quarantine";
+        else if (dmarcDetails.includes("p=none")) dmarcPolicy = "none";
+
+        // 2. Normalize Routing
+        let timestampsValid = true;
+        for (let i = 0; i < headerResult.hops.length - 1; i++) {
+            const newer = headerResult.hops[i].timestamp;
+            const older = headerResult.hops[i + 1].timestamp;
+            if (newer < older - 2000) {
+                timestampsValid = false;
+                break;
+            }
+        }
+
+        // 3. Body Signals (if enabled)
+        let bodySignals = {
+            hasUrgency: false,
+            hasCredentialHarvesting: false,
+            hasHtmlForm: false,
+            suspiciousLinks: false,
+            rawIpLinks: false,
+            extractedUrls: [] as string[],
+            homoglyphDetected: false,
+            brandInBody: null as string | null
+        };
+
+        if (options.checkBody && emailBody) {
+            const text = (emailBody.text || "") + (emailBody.html || "");
+            bodySignals = this.extractBodyFeatures(text, emailBody.html || "");
+        }
+
+        // 4. Attachment Signals
+        const attachments: AttachmentSignal[] = [];
+        if (options.checkAttachments && emailBody && emailBody.attachments) {
+            for (const att of emailBody.attachments) {
+                const ext = att.filename.split('.').pop()?.toLowerCase() || "";
+                const filename = att.filename.toLowerCase();
+                const content = att.content; // Uint8Array
+
+                // Advanced Analysis (Hash & Magic Bytes)
+                const sha256 = await this.calculateHash(content);
+                const magicType = this.detectMagicType(content);
+
+                // Check for double extension
+                const parts = filename.split('.');
+                const hasDoubleExtension = parts.length > 2 &&
+                    ['exe', 'scr', 'bat', 'com', 'pif', 'js', 'vbs'].includes(parts[parts.length - 1]) &&
+                    ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'jpg', 'png'].includes(parts[parts.length - 2]);
+
+                // Check for Masquerading (Mismatch between Magic Bytes and Extension)
+                // e.g. Magic=EXE but Extension=PDF
+                let isMasquerading = false;
+                if (magicType && magicType !== 'unknown') {
+                    // Simple masquerade check
+                    if (magicType === 'exe' && !['exe', 'dll', 'scr', 'com'].includes(ext)) isMasquerading = true;
+                    if (magicType === 'pdf' && ext !== 'pdf') isMasquerading = true;
+                    if (magicType === 'zip' && !['zip', 'docx', 'xlsx', 'pptx', 'jar', 'apk'].includes(ext)) isMasquerading = true;
+                    // Images usually safe to mismatch (e.g. jpg vs jpeg), skip stricness there for now
+                }
+
+                // Phase 2: Macro & Script Detection
+                const macroDetected = this.detectMacros(content, magicType || 'unknown', ext);
+                const dangerousFunctions = this.scanForDangerousFunctions(content, ext);
+
+                attachments.push({
+                    filename: att.filename,
+                    extension: ext,
+                    size: att.size,
+                    sha256,
+                    magicType,
+                    isMasquerading,
+                    hasDoubleExtension,
+                    isExecutable: ['exe', 'scr', 'bat', 'cmd', 'com', 'pif'].includes(ext) || magicType === 'exe',
+                    isMacroEnabled: ['docm', 'xlsm', 'pptm'].includes(ext),
+                    macroDetected,
+                    isScript: ['js', 'vbs', 'ps1', 'jar', 'py', 'sh', 'html', 'htm'].includes(ext),
+                    dangerousFunctions
+                });
+            }
+        }
+
+        // 5. Cross-Context Prep
+        const fromArray = headerResult.headers['From'] ? (Array.isArray(headerResult.headers['From']) ? headerResult.headers['From'][0] : headerResult.headers['From']) : "";
+        const fromMatch = fromArray.match(/^(?:"?([^"<]+)"?\s)?(?:<?(.+@[^>]+)>?)$/);
+        const fromDisplayName = fromMatch ? (fromMatch[1] || "").trim() : "";
+        const fromEmail = fromMatch ? (fromMatch[2] || fromArray).trim() : fromArray;
+        const fromDomain = fromEmail.split('@')[1] || "";
+
+        // Reply-To
+        const replyTo = headerResult.headers['Reply-To'];
+        let replyToDomain = null;
+        if (replyTo) {
+            const rt = Array.isArray(replyTo) ? replyTo[0] : replyTo;
+            const rtMatch = rt.match(/@([^>]+)/);
+            if (rtMatch) replyToDomain = rtMatch[1].trim();
+        }
+
+        return {
+            // Auth
+            spfResult: spf,
+            dkimResult: dkim,
+            dmarcResult: dmarc,
+            dmarcPolicy,
+            arcResult: arc,
+            arcOriginalSpf: headerResult.arc?.details.find(d => d.startsWith("Original SPF: "))?.split(": ")[1] || null,
+            arcOriginalDkim: headerResult.arc?.details.find(d => d.startsWith("Original DKIM: "))?.split(": ")[1] || null,
+
+            authenticationResultsPresent: !!headerResult.auth.spf.details || !!headerResult.auth.dkim.details,
+            multipleAuthHeaders: Array.isArray(headerResult.headers['Authentication-Results']) && headerResult.headers['Authentication-Results'].length > 1,
+            authservId: this.extractAuthServId(headerResult.headers['Authentication-Results']),
+
+            // Routing
+            receivedHopCount: headerResult.hops.length,
+            hasReceivedHeaders: headerResult.hops.length > 0,
+            headerInjectionDetected: false,
+            receivedTimestampsValid: timestampsValid,
+
+            // Sender
+            fromDomain: fromDomain.toLowerCase(),
+            fromDisplayName,
+            replyToDomain: replyToDomain ? replyToDomain.toLowerCase() : null,
+            returnPathDomain: (headerResult.headers['Return-Path'] || "").replace(/[<>]/g, '').split('@')[1] || "",
+
+            // Body
+            bodyAnalysisEnabled: options.checkBody,
+            ...bodySignals,
+
+            // Attachments
+            attachmentAnalysisEnabled: options.checkAttachments,
+            attachments,
+
+            // Cross Context
+            brandInFrom: null,
+            isFreeEmailProvider: false,
+            isHighValueRole: false
+        };
+    }
+
+    private static mapAuthStatus(status: string): any {
+        const valid = ["pass", "fail", "softfail", "none", "neutral", "temperror", "permerror"];
+        return valid.includes(status) ? status : "none";
+    }
+
+    private static extractAuthServId(header: string | string[]): string | null {
+        if (!header) return null;
+        const h = Array.isArray(header) ? header[0] : header;
+        const match = h.match(/^([^;]+)/);
+        return match ? match[1].trim() : null;
+    }
+
+    private static extractBodyFeatures(text: string, html: string) {
+        const t = text.toLowerCase();
+
+        // NLP Regex
+        const urgency = /\b(immediately|urgent|24 hours|suspend|unauthorized|terminate|lock|verify)\b/i;
+        const credential = /\b(password|credential|login|sign in|verify account|update security)\b/i;
+
+        // HTML Forms
+        const hasForm = /<form|<input[^>]*type=["']?password["']?|action=["']?/i.test(html);
+
+        // Links
+        const urlRegex = /https?:\/\/[^\s<>"']+/g;
+        const urls = (text.match(urlRegex) || []);
+        // Basic IP check: http://1.2.3.4
+        const ipLink = urls.some(u => /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}(?:\/|$)/.test(u));
+
+        return {
+            hasUrgency: urgency.test(t),
+            hasCredentialHarvesting: credential.test(t),
+            hasHtmlForm: hasForm,
+            suspiciousLinks: false,
+            rawIpLinks: ipLink,
+            extractedUrls: urls,
+            homoglyphDetected: false,
+            brandInBody: null
+        };
+    }
+
+    private static async calculateHash(content: Uint8Array | undefined): Promise<string> {
+        if (!content) return "";
+        try {
+            // Safe Crypto Access (Browser vs Node)
+            const subtle = crypto?.subtle || (globalThis as any).crypto?.subtle;
+            if (!subtle) return "";
+
+            const hashBuffer = await subtle.digest('SHA-256', content as any);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch (e) {
+            console.warn("Hashing failed", e);
+            return "";
+        }
+    }
+
+    private static detectMagicType(content: Uint8Array | undefined): string | null {
+        if (!content || content.length < 4) return null;
+
+        // Convert first few bytes to hex for checking
+        const head = Array.from(content.slice(0, 8)).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join('');
+
+        if (head.startsWith("4D5A")) return "exe"; // MZ
+        if (head.startsWith("25504446")) return "pdf"; // %PDF
+        if (head.startsWith("504B0304")) return "zip"; // PK.. (Zip, Docx, Jar)
+        if (head.startsWith("CAFEBABE")) return "class"; // Java
+        if (head.startsWith("7F454C46")) return "elf"; // ELF (Linux Executable)
+        if (head.startsWith("89504E47")) return "png";
+        if (head.startsWith("FFD8FF")) return "jpg";
+        if (head.startsWith("47494638")) return "gif";
+
+        return "unknown";
+    }
+
+    private static indexOfSequence(content: Uint8Array, sequence: Uint8Array): boolean {
+        // Optimization: For very large files, this should be optimized. 
+        // For email attachments (usually <10MB), a simple loop is acceptable for MVP.
+        if (content.length < sequence.length) return false;
+
+        // Simple search
+        for (let i = 0; i <= content.length - sequence.length; i++) {
+            let found = true;
+            for (let j = 0; j < sequence.length; j++) {
+                if (content[i + j] !== sequence[j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) return true;
+        }
+        return false;
+    }
+
+    private static detectMacros(content: Uint8Array | undefined, magicType: string, ext: string): boolean {
+        if (!content) return false;
+
+        // Check for vbaProject.bin in ZIP (Office) files
+        // Hex for 'vbaProject.bin' is 76 62 61 50 72 6F 6A 65 63 74 2E 62 69 6E
+
+        // Check if it's a ZIP-based Office file
+        if (magicType === 'zip' || ['docx', 'docm', 'xlsx', 'xlsm', 'pptx', 'pptm'].includes(ext)) {
+            const vbaSignature = new Uint8Array([0x76, 0x62, 0x61, 0x50, 0x72, 0x6F, 0x6A, 0x65, 0x63, 0x74, 0x2E, 0x62, 0x69, 0x6E]);
+            if (this.indexOfSequence(content, vbaSignature)) return true;
+        }
+
+        return false;
+    }
+
+    private static scanForDangerousFunctions(content: Uint8Array | undefined, ext: string): string[] {
+        if (!content) return [];
+
+        // Only scan text-based scripts or interpreted languages
+        const scriptExts = ['js', 'vbs', 'ps1', 'html', 'htm', 'py', 'sh', 'bat', 'cmd'];
+        if (!scriptExts.includes(ext)) return [];
+
+        let text = "";
+        try {
+            // Basic UTF-8 decode. 
+            const decoder = new TextDecoder('utf-8', { fatal: false, ignoreBOM: true });
+            // Limit to first 100KB for performance
+            text = decoder.decode(content.slice(0, 100 * 1024));
+        } catch {
+            return [];
+        }
+
+        const found: string[] = [];
+        const patterns = [
+            { id: "eval", regex: /\beval\s*\(/i },
+            { id: "shell_execution", regex: /(?:WScript\.Shell|Shell\.Application|cmd\.exe|powershell)/i },
+            { id: "encoding_obfuscation", regex: /(?:base64_decode|FromBase64String)/i },
+            { id: "network_request", regex: /(?:XMLHttpRequest|fetch\(|curl|wget)/i },
+            { id: "auto_open", regex: /(?:AutoOpen|Document_Open|Workbook_Open)/i }
+        ];
+
+        for (const p of patterns) {
+            if (p.regex.test(text)) found.push(p.id);
+        }
+
+        return found;
+    }
+}

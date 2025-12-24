@@ -85,6 +85,21 @@ export class SignalNormalizer {
                 const macroDetected = this.detectMacros(content, magicType || 'unknown', ext);
                 const dangerousFunctions = this.scanForDangerousFunctions(content, ext);
 
+                // Phase 3: PDF Link Extraction
+                if ((magicType === 'pdf' || (ext === 'pdf' && magicType !== 'exe')) && content) {
+                    try {
+                        const { extractLinksFromPdf } = await import('@/utils/pdf.client');
+                        const pdfLinks = await extractLinksFromPdf(content.buffer);
+                        if (pdfLinks && pdfLinks.length > 0) {
+                            bodySignals.extractedUrls.push(...pdfLinks);
+                            bodySignals.extractedUrls = [...new Set(bodySignals.extractedUrls)]; // Unique
+                            bodySignals.suspiciousLinks = bodySignals.suspiciousLinks || pdfLinks.some(u => u.startsWith('http'));
+                        }
+                    } catch (e) {
+                        console.warn("PDF link extraction failed", e);
+                    }
+                }
+
                 attachments.push({
                     filename: att.filename,
                     extension: ext,
@@ -238,8 +253,12 @@ export class SignalNormalizer {
         // For email attachments (usually <10MB), a simple loop is acceptable for MVP.
         if (content.length < sequence.length) return false;
 
+        // Limit scan range to first 10MB to prevent Zip Bomb CPU exhaustion
+        const SCAN_LIMIT = 10 * 1024 * 1024;
+        const limit = Math.min(content.length - sequence.length, SCAN_LIMIT);
+
         // Simple search
-        for (let i = 0; i <= content.length - sequence.length; i++) {
+        for (let i = 0; i <= limit; i++) {
             let found = true;
             for (let j = 0; j < sequence.length; j++) {
                 if (content[i + j] !== sequence[j]) {

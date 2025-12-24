@@ -27,7 +27,7 @@ export class AnalysisEngine {
 
         // 3. Run Detection Pipeline (New V2 Logic)
         const pipeline = new DetectionPipeline();
-        const { results: pipelineResults, totalPenalty: pipelinePenalty } = await pipeline.run({
+        const { results: pipelineResults, totalPenalty: pipelinePenalty, performance: pipelineTelemetry } = await pipeline.run({
             header: headerResult,
             signals: signals,
             emailBody: emailBody,
@@ -68,7 +68,8 @@ export class AnalysisEngine {
             result: {
                 trust: trustResult,
                 confidence: confidenceResult,
-                verdict
+                verdict,
+                performance: pipelineTelemetry
             }
         };
     }
