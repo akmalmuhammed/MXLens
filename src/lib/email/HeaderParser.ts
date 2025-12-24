@@ -44,9 +44,10 @@ export interface AnalysisResult {
 
 export class HeaderParser {
     // Helper to decode RFC 2047
-    private static decodeHeaderValue(val: string): string {
+    public static decodeHeaderValue(val: string): string {
         try {
             // Check for encoded words tokens first to avoid unnecessary regex work on plain text
+            if (!val || typeof val !== 'string') return val;
             if (!val.includes("=?") || !val.includes("?=")) return val;
 
             // Regex to find encoded words: =?charset?encoding?encoded_text?=
@@ -59,6 +60,7 @@ export class HeaderParser {
                             Uint8Array.from(atob(text), c => c.charCodeAt(0))
                         );
                     } else if (encoding.toUpperCase() === 'Q') {
+
                         // Quoted-Printable
                         // Replace _ with space, then decode %XX
                         let decoded = text.replace(/_/g, ' ');
@@ -113,21 +115,31 @@ export class HeaderParser {
         // 2. Extract Headers manually for better fidelity on specific fields
         // PostalMime puts all headers in email.headers array
         const headerMap: Record<string, any> = {};
+
+        // Helper to check and decode if necessary (double-check strategy)
+        const process = (v: string) => {
+            if (v && v.includes('=?') && v.includes('?=')) {
+                return this.decodeHeaderValue(v);
+            }
+            return v;
+        };
+
         email.headers.forEach(h => {
             // specialized handling for array headers like Received
+            const cleanVal = process(h.value);
+
             if (headerMap[h.key]) {
                 if (Array.isArray(headerMap[h.key])) {
-                    headerMap[h.key].push(h.value);
+                    headerMap[h.key].push(cleanVal);
                 } else {
-                    headerMap[h.key] = [headerMap[h.key], h.value];
+                    headerMap[h.key] = [headerMap[h.key], cleanVal];
                 }
             } else {
-                headerMap[h.key] = h.value;
+                headerMap[h.key] = cleanVal;
             }
         });
 
         // 2a. Fallback / Hybrid: Manual Line Parsing
-        // PostalMime processes full messages best. If input is just headers, it might put everything in preamble.
         // If PostalMime found headers, TRUST IT and skip manual fallback to avoid duplication.
         if (Object.keys(headerMap).length === 0) {
             const lines = rawInput.split(/\r?\n/);

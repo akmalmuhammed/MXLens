@@ -40,9 +40,11 @@ export class DetectionPipeline {
         const telemetry: { id: string, name: string, durationMs: number, status: 'success' | 'timeout' | 'error' }[] = [];
         let totalPenalty = 0;
 
-        for (const detector of this.detectors) {
+        // Map detectors to promises
+        const detectionPromises = this.detectors.map(async (detector) => {
             const t0 = performance.now();
             let status: 'success' | 'timeout' | 'error' = 'success';
+            let result: DetectionResult | null = null;
 
             try {
                 // Feature: Individual Detector Timeout (ReDoS Protection) - 2000ms
@@ -51,11 +53,10 @@ export class DetectionPipeline {
                 );
 
                 // @ts-ignore
-                const result = await Promise.race([detector.detect(context), timeoutPromise]);
+                result = await Promise.race([detector.detect(context), timeoutPromise]);
 
                 if (result && result.triggered) {
-                    results.push(result);
-                    totalPenalty += result.penalty;
+                    return result; // Value to be collected
                 }
             } catch (e: any) {
                 status = e.message && e.message.includes("Timeout") ? 'timeout' : 'error';
@@ -71,7 +72,19 @@ export class DetectionPipeline {
                     status
                 });
             }
-        }
+            return result;
+        });
+
+        // Execute all in parallel
+        const outcome = await Promise.allSettled(detectionPromises);
+
+        // Process outcomes
+        outcome.forEach(o => {
+            if (o.status === 'fulfilled' && o.value) {
+                results.push(o.value);
+                totalPenalty += o.value.penalty;
+            }
+        });
 
         return { results, totalPenalty, performance: telemetry };
     }
