@@ -110,14 +110,40 @@ export function PhishingIndicatorsPanel({ penalties, extractedUrls, bodyEnabled,
                     {extractedUrls.length === 0 ? (
                         <div className="p-3 text-sm text-muted-foreground italic">No links found in body.</div>
                     ) : (
-                        extractedUrls.map((url, i) => (
-                            <div key={i} className="p-2 flex items-center justify-between hover:bg-muted/50 text-sm group">
-                                <div className="truncate max-w-[85%] font-mono text-xs text-muted-foreground group-hover:text-foreground" title={url}>
-                                    {url}
+                        extractedUrls.map((url, i) => {
+                            let domain = "";
+                            try {
+                                domain = new URL(url).hostname;
+                            } catch (e) { domain = url; }
+
+                            return (
+                                <div key={i} className="p-2 flex items-center justify-between hover:bg-muted/50 text-sm group">
+                                    <div className="truncate max-w-[65%] font-mono text-xs text-muted-foreground group-hover:text-foreground" title={url}>
+                                        {url}
+                                    </div>
+                                    <div className="flex items-center gap-1 opacity-100 shrink-0">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6"
+                                            title="VirusTotal Search"
+                                            onClick={() => window.open(`https://www.virustotal.com/gui/search/${encodeURIComponent(url)}`, '_blank')}
+                                        >
+                                            <ShieldAlert className="h-3 w-3 text-red-500 hover:text-red-600" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6"
+                                            title="Open Link (Sandbox)"
+                                            onClick={() => window.open(url, '_blank')}
+                                        >
+                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                        </Button>
+                                    </div>
                                 </div>
-                                {/* Simple heuristic display if needed, but Signals already flagged risky links */}
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             </div>

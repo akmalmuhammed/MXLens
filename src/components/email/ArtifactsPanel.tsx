@@ -79,7 +79,7 @@ export function ArtifactsPanel({ artifacts }: ArtifactsPanelProps) {
                                             <span className="font-mono break-all" title={item.value}>{item.value}</span>
                                             {item.label && <span className="text-[10px] text-muted-foreground truncate">{item.label}</span>}
                                         </div>
-                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex items-center gap-1 opacity-100">
                                             {links.map((link, i) => (
                                                 <Button
                                                     key={i}

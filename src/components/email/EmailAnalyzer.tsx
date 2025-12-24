@@ -491,28 +491,7 @@ export function EmailAnalyzer() {
                                         factors={[]}
                                     />
 
-                                    {/* NEW: AI Analysis Summary */}
-                                    <AIAnalysisSummary analysis={analysis.header} />
-
-                                    {/* Impersonation Alert */}
-                                    {analysis.header.impersonationAlert && (
-                                        <div className="bg-red-950/20 border border-red-500/30 p-6 rounded-xl flex items-start gap-4 shadow-sm backdrop-blur-sm">
-                                            <ShieldAlert className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
-                                            <div>
-                                                <h4 className="font-bold text-red-500 text-lg">Potential Impersonation Detected</h4>
-                                                <p className="text-red-200/90 mt-1 leading-relaxed">{analysis.header.impersonationAlert}</p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Phishing Analysis Panel */}
-                                    <PhishingIndicatorsPanel
-                                        penalties={analysis.scoring.trust.penalties}
-                                        extractedUrls={analysis.signals.extractedUrls}
-                                        bodyEnabled={analyzeBody}
-                                        onEnableBody={() => setAnalyzeBody(true)}
-                                    />
-
+                                    {/* Authentication Analysis (Moved Up) */}
                                     <div className="space-y-4">
                                         <h3 className="font-semibold text-xl font-heading text-foreground/90">Authentication Analysis</h3>
                                         <AuthAlignment
@@ -534,6 +513,29 @@ export function EmailAnalyzer() {
                                                 </ul>
                                             </div>
                                         )}
+                                    </div>
+
+                                    {/* Impersonation Alert */}
+                                    {analysis.header.impersonationAlert && (
+                                        <div className="bg-red-950/20 border border-red-500/30 p-6 rounded-xl flex items-start gap-4 shadow-sm backdrop-blur-sm">
+                                            <ShieldAlert className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
+                                            <div>
+                                                <h4 className="font-bold text-red-500 text-lg">Potential Impersonation Detected</h4>
+                                                <p className="text-red-200/90 mt-1 leading-relaxed">{analysis.header.impersonationAlert}</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Phishing Analysis Panel */}
+                                    <PhishingIndicatorsPanel
+                                        penalties={analysis.scoring.trust.penalties}
+                                        extractedUrls={analysis.signals.extractedUrls}
+                                        bodyEnabled={analyzeBody}
+                                        onEnableBody={() => setAnalyzeBody(true)}
+                                    />
+
+                                    <div className="space-y-4">
+                                        {/* Auth Analysis moved up, removed from here */}
                                     </div>
 
                                     {/* X-Headers */}
@@ -618,6 +620,10 @@ export function EmailAnalyzer() {
                                             <ArtifactsPanel artifacts={analysis.header.artifacts} />
                                         </div>
                                     </div>
+
+                                    {/* NEW: AI Analysis Summary (Moved Here) */}
+                                    <AIAnalysisSummary analysis={analysis.header} />
+
                                 </div>
                             </div>
                         )}
