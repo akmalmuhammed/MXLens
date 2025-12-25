@@ -22,6 +22,9 @@ export async function Navbar() {
                     <Link href="/pricing" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden md:block">
                         Pricing
                     </Link>
+                    <Link href="/trust-center" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden lg:block">
+                        Trust
+                    </Link>
 
                     <ModeToggle />
 

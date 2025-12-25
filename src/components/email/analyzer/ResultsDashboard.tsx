@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import DOMPurify from "isomorphic-dompurify";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Download, AlertTriangle } from "lucide-react";
+import { FileText, Download, AlertTriangle, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
 import { NormalizedSignals, ScoringResult } from "@/lib/email/scoring/types";
@@ -111,6 +111,13 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                         New Analysis
                     </Button>
                 </div>
+            </div>
+
+            {/* Privacy Proof Banner */}
+            <div className="flex items-center justify-center gap-2 text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-4 py-2 rounded-lg">
+                <ShieldCheck className="w-4 h-4" />
+                <span className="font-medium">0 bytes of email data sent to server</span>
+                <span className="text-green-500/60">• All analysis performed client-side</span>
             </div>
 
             {/* --- IT MODE --- */}

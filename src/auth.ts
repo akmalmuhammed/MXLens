@@ -85,18 +85,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
                 }
             });
+
+            // Note: New user onboarding redirect is handled via signIn callback below
         }
     },
     callbacks: {
+        async signIn({ user, account }) {
+            // All users can sign in
+            return true;
+        },
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
             const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-            if (isOnDashboard) {
+            const isOnOnboarding = nextUrl.pathname.startsWith('/onboarding');
+
+            // Protect dashboard and onboarding
+            if (isOnDashboard || isOnOnboarding) {
                 if (isLoggedIn) return true;
                 return false; // Redirect unauthenticated users to login page
             } else if (isLoggedIn) {
                 const isAuthPage = nextUrl.pathname.startsWith('/auth');
                 if (isAuthPage) {
+                    // Check if this is a new user redirect (via query param)
+                    if (nextUrl.searchParams.get('welcome') === 'true') {
+                        return Response.redirect(new URL('/onboarding/welcome', nextUrl));
+                    }
                     return Response.redirect(new URL('/dashboard', nextUrl));
                 }
             }

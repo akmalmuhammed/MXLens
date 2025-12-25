@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, ShieldCheck, Scan, Download } from "lucide-react";
+import { Search, ShieldCheck, Scan, Download, ShieldAlert } from "lucide-react";
 import { BulkProcessor, BulkFile } from "../BulkProcessor";
 import { PrivacyControls } from "../PrivacyControls";
 
@@ -116,6 +116,44 @@ export function AnalyzerDropzone({ onAnalyze, onBulkStart, loading, usageStatus 
                         <br />
                         Advanced forensic logic runs entirely in your browser.
                     </p>
+                </div>
+
+                {/* Try Sample Buttons - Critical for conversion */}
+                <div className="flex flex-wrap justify-center gap-3">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                        onClick={async () => {
+                            try {
+                                const res = await fetch('/samples/demo-phishing.eml');
+                                const text = await res.text();
+                                setInput(text);
+                                setTimeout(() => onAnalyze(text, analyzeBody, analyzeAttachments), 100);
+                            } catch (e) { alert('Failed to load sample'); }
+                        }}
+                        disabled={loading || !usageStatus.allowed}
+                    >
+                        <ShieldAlert className="w-4 h-4" />
+                        Try Phishing Sample
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-green-500/30 text-green-400 hover:bg-green-500/10 hover:text-green-300"
+                        onClick={async () => {
+                            try {
+                                const res = await fetch('/samples/demo-legitimate.eml');
+                                const text = await res.text();
+                                setInput(text);
+                                setTimeout(() => onAnalyze(text, analyzeBody, analyzeAttachments), 100);
+                            } catch (e) { alert('Failed to load sample'); }
+                        }}
+                        disabled={loading || !usageStatus.allowed}
+                    >
+                        <ShieldCheck className="w-4 h-4" />
+                        Try Legitimate Sample
+                    </Button>
                 </div>
 
                 <div className="pt-2 w-full max-w-xl mx-auto">
