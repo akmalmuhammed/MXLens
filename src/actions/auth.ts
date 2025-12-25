@@ -42,46 +42,51 @@ export async function registerUser(formData: FormData) {
 
     const { email: validEmail, password: validPassword, name: validName } = validatedFields.data;
 
-    // Check if user exists
-    const existingUser = await db.user.findUnique({
-        where: { email: validEmail },
-    });
-
-    if (existingUser) {
-        return { error: "Email already in use!" };
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(validPassword, 10);
-
-    // Create user AND Organization (Personal Team)
-    const baseSlug = (validName || validEmail.split('@')[0])
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '-') + "-team";
-
-    // Use transaction to ensure both are created or neither
-    await db.$transaction(async (tx) => {
-        const user = await tx.user.create({
-            data: {
-                email: validEmail,
-                hashedPassword: hashedPassword,
-                name: validName || validEmail.split("@")[0],
-            },
+    try {
+        // Check if user exists
+        const existingUser = await db.user.findUnique({
+            where: { email: validEmail },
         });
 
-        await tx.organization.create({
-            data: {
-                name: `${user.name || 'User'}'s Team`,
-                slug: baseSlug + "-" + Math.floor(Math.random() * 10000),
-                members: {
-                    create: {
-                        userId: user.id,
-                        role: "OWNER"
+        if (existingUser) {
+            return { error: "Email already in use!" };
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(validPassword, 10);
+
+        // Create user AND Organization (Personal Team)
+        const baseSlug = (validName || validEmail.split('@')[0])
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '-') + "-team";
+
+        // Use transaction to ensure both are created or neither
+        await db.$transaction(async (tx) => {
+            const user = await tx.user.create({
+                data: {
+                    email: validEmail,
+                    hashedPassword: hashedPassword,
+                    name: validName || validEmail.split("@")[0],
+                },
+            });
+
+            await tx.organization.create({
+                data: {
+                    name: `${user.name || 'User'}'s Team`,
+                    slug: baseSlug + "-" + Math.floor(Math.random() * 10000),
+                    members: {
+                        create: {
+                            userId: user.id,
+                            role: "OWNER"
+                        }
                     }
                 }
-            }
+            });
         });
-    });
+    } catch (error) {
+        console.error("[REGISTER_USER_ERROR]", error);
+        return { error: "Registration failed. Please try again." };
+    }
 
     // Attempt Auto-Login
     let autoLoginSuccess = false;
