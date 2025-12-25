@@ -3,6 +3,8 @@
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { redirect } from "next/navigation";
+import { signOut } from "@/auth";
 
 const RegisterSchema = z.object({
     email: z.string().email(),
@@ -40,19 +42,38 @@ export async function registerUser(formData: FormData) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validPassword, 10);
 
-    // Create user
-    await db.user.create({
-        data: {
-            email: validEmail,
-            hashedPassword: hashedPassword,
-            name: validName || validEmail.split("@")[0],
-        },
+    // Create user AND Organization (Personal Team)
+    const baseSlug = (validName || validEmail.split('@')[0])
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-') + "-team";
+
+    // Use transaction to ensure both are created or neither
+    await db.$transaction(async (tx) => {
+        const user = await tx.user.create({
+            data: {
+                email: validEmail,
+                hashedPassword: hashedPassword,
+                name: validName || validEmail.split("@")[0],
+            },
+        });
+
+        await tx.organization.create({
+            data: {
+                name: `${user.name || 'User'}'s Team`,
+                slug: baseSlug + "-" + Math.floor(Math.random() * 10000),
+                members: {
+                    create: {
+                        userId: user.id,
+                        role: "OWNER"
+                    }
+                }
+            }
+        });
     });
 
-    return { success: "User created!" };
+    // Redirect to login page
+    redirect("/auth/signin?success=true");
 }
-
-import { signOut } from "@/auth";
 
 export async function logout() {
     await signOut({ redirectTo: "/" });
