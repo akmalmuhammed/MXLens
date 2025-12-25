@@ -1,58 +1,52 @@
+import { auth } from "@/auth";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from "lucide-react";
+import { UserNav } from "@/components/layout/UserNav";
 import { ModeToggle } from "@/components/ModeToggle";
-import { UserNav } from "./UserNav";
 
-interface NavbarProps {
-    user?: {
-        name?: string | null;
-        email?: string | null;
-        image?: string | null;
-    };
-}
+export async function Navbar() {
+    const session = await auth();
+    const user = session?.user;
 
-export function Navbar({ user }: NavbarProps) {
     return (
-        <nav className="sticky top-0 z-50 flex items-center justify-between border-b bg-background/80 backdrop-blur-md px-4 py-3 md:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold text-lg md:text-xl shrink-0">
-                <div className="relative h-8 w-8 bg-cyan-500 rounded-lg flex items-center justify-center text-white mr-1">
-                    <span className="font-bold">MX</span>
+        <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/50 backdrop-blur-md">
+            <div className="container mx-auto flex h-16 items-center justify-between px-4">
+                <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <span className="text-cyan-400">MX</span>Lens
+                </Link>
+
+                <div className="flex items-center gap-4">
+                    <Link href="/features" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden md:block">
+                        Features
+                    </Link>
+                    <Link href="/pricing" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden md:block">
+                        Pricing
+                    </Link>
+
+                    <ModeToggle />
+
+                    {user ? (
+                        <div className="flex items-center gap-4">
+                            <Link href="/dashboard">
+                                <Button variant="outline" className="border-cyan-500/30 hover:bg-cyan-500/10 hover:text-cyan-400">
+                                    Dashboard
+                                </Button>
+                            </Link>
+                            <UserNav user={user} />
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2">
+                            <Link href="/auth/signin" className="text-sm font-medium text-slate-400 hover:text-white transition-colors mr-2">
+                                Login
+                            </Link>
+                            <Link href="/auth/signup">
+                                <Button className="bg-cyan-500 text-black hover:bg-cyan-400 font-semibold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all">
+                                    Sign Up
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                 </div>
-                <span className="hidden md:inline-block">MXLens</span>
-            </Link>
-
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground absolute left-1/2 -translate-x-1/2">
-                <Link href="/features" className="hover:text-cyan-500 transition-colors">Features</Link>
-                <Link href="/pricing" className="hover:text-cyan-500 transition-colors">Pricing</Link>
-                <Link href="/use-cases" className="hover:text-cyan-500 transition-colors">Use Cases</Link>
-                <Link href="/docs" className="hover:text-cyan-500 transition-colors">Docs</Link>
-                <Link href="/blog" className="hover:text-cyan-500 transition-colors">Blog</Link>
-            </div>
-
-            <div className="flex items-center gap-4">
-                <ModeToggle />
-
-                {user ? (
-                    <div className="flex items-center gap-4">
-                        <Link href="/dashboard">
-                            <Button variant="ghost" className="text-sm font-medium hidden md:flex">
-                                Dashboard
-                            </Button>
-                        </Link>
-                        <UserNav user={user} />
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-2">
-                        <Link href="/auth/signin">
-                            <Button variant="ghost">Sign In</Button>
-                        </Link>
-                        <Link href="/auth/signup">
-                            <Button>Sign Up</Button>
-                        </Link>
-                    </div>
-                )}
             </div>
         </nav>
     );

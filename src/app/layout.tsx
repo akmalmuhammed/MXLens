@@ -35,28 +35,10 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen flex flex-col`}
-      >
-        <NextTopLoader
-          color="#06b6d4"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={2}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow={false}
-        />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar user={session?.user} />
-          <main className="flex-1">
+      <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <Navbar />
+          <main className="min-h-screen">
             {children}
           </main>
         </ThemeProvider>

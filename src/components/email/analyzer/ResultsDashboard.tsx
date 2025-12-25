@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Download, AlertTriangle } from "lucide-react";
+import Link from "next/link";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
 import { NormalizedSignals, ScoringResult } from "@/lib/email/scoring/types";
 import { PrivacyControls } from "../PrivacyControls";
@@ -95,9 +96,13 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                     <Button variant="ghost" size="sm" onClick={handleDownloadJSON} title="Download JSON" className="hover:bg-muted/50">
                         <Download className="w-4 h-4 mr-2" /> JSON
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={handleDownloadCSV} title="Download CSV" className="hover:bg-muted/50">
-                        <FileText className="w-4 h-4 mr-2" /> CSV
-                    </Button>
+
+                    {/* Conversion Hook */}
+                    <Link href="/auth/signup">
+                        <Button variant="outline" size="sm" className="hidden md:flex border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300">
+                            Save Report
+                        </Button>
+                    </Link>
 
                     <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 
