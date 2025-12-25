@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { registerUser } from "@/actions/auth";
+import { SubmitButton } from "@/components/auth/SubmitButton";
 
 export default function SignUpPage() {
     return (
@@ -79,11 +80,23 @@ export default function SignUpPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" name="password" type="password" required className="h-11" />
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    required
+                                    className="h-11"
+                                    minLength={8}
+                                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                    title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                />
+                                <p className="text-[10px] text-muted-foreground">
+                                    Must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number.
+                                </p>
                             </div>
-                            <Button type="submit" className="w-full h-11 text-base shadow-lg shadow-primary/25">
+                            <SubmitButton className="w-full h-11 text-base shadow-lg shadow-primary/25">
                                 Create Account <ArrowRight className="ml-2 w-4 h-4" />
-                            </Button>
+                            </SubmitButton>
                         </form>
 
                         <div className="mt-6 text-center text-sm text-muted-foreground">

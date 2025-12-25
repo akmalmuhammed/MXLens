@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { redirect } from "next/navigation";
-import { signOut } from "@/auth";
+import { signOut, signIn } from "@/auth";
 
 const RegisterSchema = z.object({
     email: z.string().email(),
@@ -12,10 +12,22 @@ const RegisterSchema = z.object({
     name: z.string().optional(),
 });
 
+import { rateLimit } from "@/lib/rate-limit";
+
+// ... imports
+
 export async function registerUser(formData: FormData) {
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const name = formData.get("name");
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const name = formData.get("name") as string;
+
+    // Rate Limit: 5 registrations per hour per IP (simulated by email domain/hash for now as server actions don't easily give IP without headers())
+    // Note: In Next.js Server Actions, obtaining IP requires headers().get("x-forwarded-for")
+    // We will use a global limiter for now to prevent massive bot spam.
+    const limitStatus = await rateLimit("register_global", 10, 60); // 10 per minute global
+    if (!limitStatus.success) {
+        return { error: "Too many requests. Please try again later." };
+    }
 
     // Validate fields
     const validatedFields = RegisterSchema.safeParse({
@@ -71,8 +83,25 @@ export async function registerUser(formData: FormData) {
         });
     });
 
-    // Redirect to login page
-    redirect("/auth/signin?success=true");
+    // Attempt Auto-Login
+    let autoLoginSuccess = false;
+    try {
+        await signIn("credentials", {
+            email: validEmail,
+            password: validPassword,
+            redirect: false,
+        });
+        autoLoginSuccess = true;
+    } catch (error) {
+        // Log error but don't crash, redirect to signin
+        console.error("Auto-login failed:", error);
+    }
+
+    if (autoLoginSuccess) {
+        redirect("/dashboard?welcome=true");
+    } else {
+        redirect("/auth/signin?success=true");
+    }
 }
 
 export async function logout() {

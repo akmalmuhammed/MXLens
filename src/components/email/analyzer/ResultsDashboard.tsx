@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Download, AlertTriangle } from "lucide-react";
@@ -34,7 +35,7 @@ interface ResultsDashboardProps {
 
 export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments }: ResultsDashboardProps) {
     const [mode, setMode] = useState<"analyst" | "raw" | "it">("analyst");
-    const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry'>('headers');
+    const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
 
     const handleDownloadJSON = () => {
         const exportData = {
@@ -298,7 +299,8 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                     <div className="flex gap-1 mb-4 bg-muted/40 p-1 rounded-xl border border-white/5 w-fit">
                         <Button size="sm" variant={rawTab === 'headers' ? 'secondary' : 'ghost'} onClick={() => setRawTab('headers')} className="rounded-lg hover:bg-background/50">Headers</Button>
                         {analyzeBody && <Button size="sm" variant={rawTab === 'body_text' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_text')} className="rounded-lg hover:bg-background/50">Body (Text)</Button>}
-                        {analyzeBody && <Button size="sm" variant={rawTab === 'body_html' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_html')} className="rounded-lg hover:bg-background/50">Body (HTML)</Button>}
+                        {analyzeBody && <Button size="sm" variant={rawTab === 'body_html' ? 'secondary' : 'ghost'} onClick={() => setRawTab('body_html')} className="rounded-lg hover:bg-background/50">HTML Source</Button>}
+                        {analyzeBody && <Button size="sm" variant={rawTab === 'safe_preview' ? 'secondary' : 'ghost'} onClick={() => setRawTab('safe_preview')} className="rounded-lg hover:bg-background/50">Safe Preview</Button>}
                         <Button size="sm" variant={rawTab === 'telemetry' ? 'secondary' : 'ghost'} onClick={() => setRawTab('telemetry')} className="rounded-lg hover:bg-background/50">Engine Telemetry</Button>
                     </div>
 
@@ -319,6 +321,24 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                         <pre className="scrollbar-premium p-6 bg-gray-50 dark:bg-gray-950 text-foreground rounded-xl overflow-x-auto text-xs font-mono whitespace-pre-wrap break-all border h-[700px] overflow-y-auto leading-relaxed shadow-inner">
                             {analysis.emailContent.html || "No HTML content found."}
                         </pre>
+                    )}
+                    {rawTab === 'safe_preview' && (
+                        <div className="bg-white text-black p-6 rounded-xl border h-[700px] overflow-y-auto shadow-inner">
+                            {analysis.emailContent.html ? (
+                                <div
+                                    className="prose max-w-none"
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(analysis.emailContent.html, {
+                                            USE_PROFILES: { html: true },
+                                            FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'object', 'embed', 'link'],
+                                            FORBID_ATTR: ['style', 'on*', 'action', 'formaction'] // Strict sanitization
+                                        })
+                                    }}
+                                />
+                            ) : (
+                                <div className="text-muted-foreground flex items-center justify-center h-full">No HTML content available to preview.</div>
+                            )}
+                        </div>
                     )}
                     {rawTab === 'telemetry' && (
                         <div className="bg-card/40 border rounded-xl overflow-hidden">
