@@ -33,7 +33,7 @@ function IndexPopup() {
       const { results: scanResults } = await pipeline.run(context)
       setResults(scanResults)
       setStatus(scanResults.length === 0 ? "Clean" : "Threats Found")
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
       setStatus("Error: " + e.message)
     }

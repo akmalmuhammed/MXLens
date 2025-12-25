@@ -1,20 +1,26 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { adminRateLimit } from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
     const session = await auth();
 
-    // 1. Admin Authorization (Simple email check for MVP)
-    // In production, use Roles (e.g., session.user.role === 'ADMIN')
-    const allowedAdmins = process.env.ADMIN_EMAILS?.split(',') || ["user@example.com"];
-
-    if (!session?.user?.email || !allowedAdmins.includes(session.user.email)) {
+    // 1. Admin Authorization (RBAC)
+    if (!session?.user?.id || session.user.role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // 2. Rate Limiting (10 req/min for admin stats)
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
     try {
-        // 2. Aggregate Stats
+        await adminRateLimit.check(10, ip);
+    } catch {
+        return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+    }
+
+    try {
+        // 3. Aggregate Stats
         const [totalUsers, totalOrganizations, totalAnalyses, recentLogs] = await db.$transaction([
             db.user.count(),
             db.organization.count(),

@@ -4,10 +4,19 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
 
+import { rateLimit } from "@/lib/rate-limit";
+
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {
     try {
+        // Rate Limit: 100 req/min for webhooks (generous for bursts)
+        const ip = (await headers()).get("x-forwarded-for") || "unknown";
+        const limit = await rateLimit(ip, 100, 60000); // 100 reqs per 60s
+        if (!limit.success) {
+            return NextResponse.json({ error: "Too Many Requests" }, { status: 429 });
+        }
+
         const body = await req.text();
         const signature = (await headers()).get("stripe-signature") as string;
 

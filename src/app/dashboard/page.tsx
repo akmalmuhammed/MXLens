@@ -201,7 +201,9 @@ export default async function DashboardPage() {
                                             <div className="text-xs font-mono text-muted-foreground hidden sm:block">
                                                 Score: {log.score}
                                             </div>
-                                            <Button size="sm" variant="ghost" className="h-8">Details</Button>
+                                            <Link href={`/analysis/${log.id}`} passHref>
+                                                <Button size="sm" variant="ghost" className="h-8">Details</Button>
+                                            </Link>
                                         </div>
                                     </div>
                                 );

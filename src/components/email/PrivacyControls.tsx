@@ -7,9 +7,26 @@ interface PrivacyControlsProps {
     setAnalyzeBody: (v: boolean) => void;
     analyzeAttachments: boolean;
     setAnalyzeAttachments: (v: boolean) => void;
+    minimal?: boolean;
 }
 
-export function PrivacyControls({ analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments }: PrivacyControlsProps) {
+export function PrivacyControls({ analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, minimal }: PrivacyControlsProps) {
+    if (minimal) {
+        return (
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm bg-muted/30 p-2 rounded-xl border border-white/5 inline-flex">
+                <label className="flex items-center gap-2 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-lg hover:bg-background/50">
+                    <input type="checkbox" checked={analyzeBody} onChange={e => setAnalyzeBody(e.target.checked)} className="rounded border-gray-400 text-primary focus:ring-primary w-4 h-4" />
+                    Analyze Body
+                </label>
+                <div className="w-px h-4 bg-border/50"></div>
+                <label className="flex items-center gap-2 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-lg hover:bg-background/50">
+                    <input type="checkbox" checked={analyzeAttachments} onChange={e => setAnalyzeAttachments(e.target.checked)} className="rounded border-gray-400 text-primary focus:ring-primary w-4 h-4" />
+                    Scan Attachments
+                </label>
+            </div>
+        );
+    }
+
     return (
         <div className="bg-muted/30 border rounded-lg p-4 mb-6">
             <div className="flex items-center gap-2 mb-4">
