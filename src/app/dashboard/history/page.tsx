@@ -1,20 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Calendar, MoreHorizontal, ArrowRight } from "lucide-react";
+import { Search, Filter, Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { db } from "@/lib/db";
+import { auth } from "@/auth";
 
-// Mock Data
-const HISTORY_LOGS = [
-    { id: 'mal-1', subject: "Urgent Invoice", sender: "billing@bad.com", verdict: "Malicious", score: 92, date: new Date() },
-    { id: 'clean-1', subject: "Weekly Report", sender: "newsletter@company.com", verdict: "Clean", score: 5, date: new Date(Date.now() - 3600000) },
-    { id: 'clean-2', subject: "Team Lunch", sender: "hr@company.com", verdict: "Clean", score: 0, date: new Date(Date.now() - 7200000) },
-    { id: 'sus-1', subject: "Verify Account", sender: "security@g00gle.com", verdict: "Suspicious", score: 65, date: new Date(Date.now() - 86400000) },
-    { id: 'clean-3', subject: "Project Update", sender: "pm@client.com", verdict: "Clean", score: 10, date: new Date(Date.now() - 172800000) },
-];
+export default async function HistoryPage() {
+    const session = await auth();
+    const orgId = session?.user?.orgId;
 
-export default function HistoryPage() {
+    const logs = orgId ? await db.analysisLog.findMany({
+        where: { orgId },
+        orderBy: { createdAt: 'desc' },
+        take: 50 // Limit to last 50 for now
+    }) : [];
+
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-end gap-4">
@@ -46,30 +48,45 @@ export default function HistoryPage() {
                             </tr>
                         </thead>
                         <tbody className="[&_tr:last-child]:border-0">
-                            {HISTORY_LOGS.map((log) => (
-                                <tr key={log.id} className="border-b transition-colors hover:bg-muted/50">
-                                    <td className="p-4 align-middle">
-                                        <Badge variant="outline" className={
-                                            log.verdict === 'Malicious' ? 'bg-rose-100 text-rose-600 border-rose-200' :
-                                                log.verdict === 'Suspicious' ? 'bg-amber-100 text-amber-600 border-amber-200' :
-                                                    'bg-emerald-100 text-emerald-600 border-emerald-200'
-                                        }>
-                                            {log.verdict}
-                                        </Badge>
-                                    </td>
-                                    <td className="p-4 align-middle font-medium">{log.subject}</td>
-                                    <td className="p-4 align-middle text-muted-foreground">{log.sender}</td>
-                                    <td className="p-4 align-middle font-mono">{log.score}</td>
-                                    <td className="p-4 align-middle text-muted-foreground">{formatDistanceToNow(log.date)} ago</td>
-                                    <td className="p-4 align-middle text-right">
-                                        <Link href={`/analyze/results/${log.id}`}>
-                                            <Button variant="ghost" size="sm">
-                                                View <ArrowRight className="w-4 h-4 ml-1" />
-                                            </Button>
-                                        </Link>
+                            {logs.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                                        No analysis history found. Scan an email to see it here.
                                     </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                logs.map((log) => {
+                                    // Parse meta safely
+                                    const meta = log.meta as any || {};
+                                    const subject = meta.subject || "No Subject";
+                                    const sender = meta.sender || "Unknown Sender";
+
+                                    return (
+                                        <tr key={log.id} className="border-b transition-colors hover:bg-muted/50">
+                                            <td className="p-4 align-middle">
+                                                <Badge variant="outline" className={
+                                                    log.verdict === 'MALICIOUS' ? 'bg-rose-100 text-rose-600 border-rose-200' :
+                                                        log.verdict === 'SUSPICIOUS' ? 'bg-amber-100 text-amber-600 border-amber-200' :
+                                                            'bg-emerald-100 text-emerald-600 border-emerald-200'
+                                                }>
+                                                    {log.verdict}
+                                                </Badge>
+                                            </td>
+                                            <td className="p-4 align-middle font-medium">{subject}</td>
+                                            <td className="p-4 align-middle text-muted-foreground">{sender}</td>
+                                            <td className="p-4 align-middle font-mono">{log.riskScore}</td>
+                                            <td className="p-4 align-middle text-muted-foreground">{formatDistanceToNow(log.createdAt)} ago</td>
+                                            <td className="p-4 align-middle text-right">
+                                                <Link href={`/analyze/results/${log.id}`}>
+                                                    <Button variant="ghost" size="sm">
+                                                        View <ArrowRight className="w-4 h-4 ml-1" />
+                                                    </Button>
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -77,7 +94,7 @@ export default function HistoryPage() {
 
             <div className="flex items-center justify-end space-x-2 py-4">
                 <Button variant="outline" size="sm" disabled>Previous</Button>
-                <Button variant="outline" size="sm">Next</Button>
+                <Button variant="outline" size="sm" disabled={logs.length < 50}>Next</Button>
             </div>
         </div>
     );

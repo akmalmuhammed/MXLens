@@ -1,5 +1,6 @@
-import { AnimatedUpgradeClient } from "./AnimatedUpgradeClient";
+import PlansPage from "../plans/page";
 
+// For now, redirect or reuse Plans page content for Upgrade
 export default function UpgradePage() {
-    return <AnimatedUpgradeClient />;
+    return <PlansPage />;
 }

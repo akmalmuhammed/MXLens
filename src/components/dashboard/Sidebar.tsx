@@ -43,7 +43,13 @@ const sidebarItems = [
     },
 ];
 
-export function DashboardSidebar() {
+export function DashboardSidebar({
+    dailyUsage = 0,
+    planTier = "FREE"
+}: {
+    dailyUsage?: number;
+    planTier?: string;
+}) {
     const pathname = usePathname();
 
     return (
@@ -89,13 +95,15 @@ export function DashboardSidebar() {
 
             <div className="mt-auto p-4 border-t border-border/50 space-y-4">
                 <div className="bg-muted/50 border border-primary/20 rounded-lg p-4 shadow-sm">
-                    <h4 className="font-semibold text-sm mb-1 text-foreground">Free Plan</h4>
+                    <h4 className="font-semibold text-sm mb-1 text-foreground">
+                        {planTier === "FREE" ? "Free Plan" : "Pro Plan"}
+                    </h4>
                     <p className="text-xs text-muted-foreground mb-3">
-                        7/10 analyses used today
+                        {dailyUsage}/10 analyses used today
                     </p>
                     <Link href="/dashboard/billing">
                         <Button size="sm" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20" variant="default">
-                            Upgrade Pro
+                            {planTier === "FREE" ? "Upgrade Pro" : "Manage Plan"}
                         </Button>
                     </Link>
                 </div>

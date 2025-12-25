@@ -1,18 +1,19 @@
 import { DashboardSidebar } from "@/components/dashboard/Sidebar";
+import { getDashboardStats } from "@/actions/dashboard";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    // Note: RootLayout already provides the html/body. This is a nested layout.
-    // However, RootLayout INCLUDES the main Navbar. 
-    // Usually dashboards have a different layout. 
-    // We might want to HIDE the main Navbar in RootLayout if /dashboard? 
-    // Or just let it be efficiently separate.
+    const stats = await getDashboardStats();
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40 md:flex-row">
-            <DashboardSidebar />
+            <DashboardSidebar
+                dailyUsage={stats.dailyScans}
+                planTier={stats.isPremium ? "PRO" : "FREE"}
+            />
             <div className="flex flex-col flex-1 min-h-screen">
                 <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 md:hidden">
                     {/* Mobile Header Placeholder */}
