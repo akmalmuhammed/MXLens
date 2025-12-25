@@ -8,7 +8,9 @@ import { ShieldAlert, ShieldCheck, ArrowLeft, Download, FileText } from "lucide-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default async function AnalysisDetailPage({ params }: { params: { id: string } }) {
+export default async function AnalysisDetailPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
+
     const session = await auth();
 
     if (!session?.user?.id || !session?.user?.orgId) {
