@@ -5,7 +5,8 @@ import { db } from "@/lib/db";
 
 export async function getDashboardStats() {
     const session = await auth();
-    if (!session?.user?.id) {
+    // Must have Org Context
+    if (!session?.user?.id || !session?.user?.orgId) {
         return {
             totalScans: 0,
             threatsFound: 0,
@@ -17,62 +18,64 @@ export async function getDashboardStats() {
         };
     }
 
-    const userId = session.user.id;
+    const orgId = session.user.orgId;
+    const userId = session.user.id; // Optional: filter by user if role is restricted?
 
-    // 1. Total Scans
-    const totalScans = await db.usageLog.count({
-        where: { userId }
+    // 1. Total Scans (Org Wide)
+    const totalScans = await db.analysisLog.count({
+        where: { orgId }
     });
 
-    // 2. Threats Found (High Risk / Malicious)
-    // Assuming 'verdict' string matches what we store. 
-    // We need to know possible values. Based on EmailAnalyzer, likely "High Risk", "Likely Legitimate", etc.
-    // Let's count "High Risk" and maybe "Suspicious" if that exists.
-    const threatsFound = await db.usageLog.count({
+    // 2. Threats Found
+    const threatsFound = await db.analysisLog.count({
         where: {
-            userId,
-            verdict: { in: ["High Risk", "Malicious", "Phishing"] }
+            orgId,
+            verdict: { in: ["MALICIOUS", "SUSPICIOUS"] }
         }
     });
 
     // 3. Clean Emails
-    const cleanEmails = await db.usageLog.count({
+    const cleanEmails = await db.analysisLog.count({
         where: {
-            userId,
-            verdict: { in: ["Likely Legitimate", "Safe", "Clean"] }
+            orgId,
+            verdict: "CLEAN"
         }
     });
 
-    // 4. Calculate Risk Profile based on recent ratio
+    // 4. Calculate Risk Profile
     const riskRatio = totalScans > 0 ? (threatsFound / totalScans) : 0;
     let riskLevel = "Low";
     if (riskRatio > 0.1) riskLevel = "Medium";
     if (riskRatio > 0.3) riskLevel = "High";
 
     // 5. Recent Activity
-    const recentLogs = await db.usageLog.findMany({
-        where: { userId },
-        orderBy: { timestamp: 'desc' },
+    const recentLogs = await db.analysisLog.findMany({
+        where: { orgId },
+        orderBy: { createdAt: 'desc' },
         take: 5,
         select: {
             id: true,
             verdict: true,
-            timestamp: true,
-            score: true
+            createdAt: true,
+            riskScore: true // Renamed from score
         }
     });
 
-    // 6. Daily Usage (Free Tier Limit)
+    // 6. Daily Usage
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    const dailyScans = await db.usageLog.count({
+    const dailyScans = await db.analysisLog.count({
         where: {
-            userId,
-            timestamp: {
-                gte: startOfDay
-            }
+            orgId,
+            createdAt: { gte: startOfDay }
         }
+    });
+
+    // Check Plan Status
+    const org = await db.organization.findUnique({
+        where: { id: orgId },
+        select: { planTier: true }
     });
 
     return {
@@ -80,8 +83,12 @@ export async function getDashboardStats() {
         threatsFound,
         cleanEmails,
         riskLevel,
-        recentLogs,
-        isPremium: true, // Mocked for "Pro" user experience as requested
+        recentLogs: recentLogs.map(l => ({
+            ...l,
+            timestamp: l.createdAt, // Map legacy field for frontend
+            score: l.riskScore      // Map legacy field
+        })),
+        isPremium: org?.planTier !== "FREE",
         dailyScans
     };
 }

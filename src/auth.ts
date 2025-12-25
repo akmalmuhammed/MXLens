@@ -9,10 +9,13 @@ import bcrypt from "bcryptjs";
 declare module "next-auth" {
     interface User {
         role?: string;
+        orgId?: string;
     }
     interface Session {
         user: {
             role?: string;
+            orgId?: string;
+            orgSlug?: string;
         } & import("next-auth").DefaultSession["user"];
     }
 }
@@ -39,16 +42,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 });
 
                 // If user exists but has no password (OAuth account), fail
-                if (!user || !user.password) return null;
+                if (!user || !user.hashedPassword) return null;
 
-                const passwordsMatch = await bcrypt.compare(password, user.password);
+                const passwordsMatch = await bcrypt.compare(password, user.hashedPassword);
 
                 if (passwordsMatch) {
                     return {
                         id: user.id,
                         name: user.name,
                         email: user.email,
-                        role: user.role,
+                        // role, orgId will be populated in jwt callback
                     };
                 }
 
@@ -58,6 +61,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     pages: {
         signIn: "/auth/signin",
+    },
+    events: {
+        async createUser({ user }) {
+            // "Personal Org" Pattern: Every user gets their own workspace
+            if (!user.email) return;
+
+            // Generate a slug from name or email
+            const baseSlug = (user.name || user.email.split('@')[0])
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '-') + "-team";
+
+            // Create the Org and Membership
+            await prisma.organization.create({
+                data: {
+                    name: `${user.name || 'User'}'s Team`,
+                    slug: baseSlug + "-" + Math.floor(Math.random() * 1000), // Ensure uniqueness
+                    members: {
+                        create: {
+                            userId: user.id!,
+                            role: "OWNER"
+                        }
+                    }
+                }
+            });
+        }
     },
     callbacks: {
         authorized({ auth, request: { nextUrl } }) {
@@ -76,15 +104,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
         async jwt({ token, user }) {
             if (user) {
-                token.role = user.role;
                 token.id = user.id;
             }
+
+            // Fetch the active organization (Just get the first one for now)
+            if (!token.orgId && token.id) {
+                const membership = await prisma.membership.findFirst({
+                    where: { userId: token.id as string },
+                    include: { organization: true },
+                    orderBy: { joinedAt: 'asc' } // Default to oldest (likely personal) org
+                });
+
+                if (membership) {
+                    token.orgId = membership.orgId;
+                    token.orgSlug = membership.organization.slug;
+                    token.role = membership.role;
+                }
+            }
+
             return token;
         },
         async session({ session, token }) {
             if (token && session.user) {
-                session.user.role = token.role as string;
                 session.user.id = token.id as string;
+                session.user.orgId = token.orgId as string;
+                session.user.orgSlug = token.orgSlug as string;
+                session.user.role = token.role as string;
             }
             return session;
         },

@@ -15,31 +15,34 @@ export async function GET(req: Request) {
 
     try {
         // 2. Aggregate Stats
-        const [totalUsers, totalAnalyses, recentLogs] = await db.$transaction([
+        const [totalUsers, totalOrganizations, totalAnalyses, recentLogs] = await db.$transaction([
             db.user.count(),
-            db.usageLog.count(),
-            db.usageLog.findMany({
+            db.organization.count(),
+            db.analysisLog.count(),
+            db.analysisLog.findMany({
                 take: 10,
-                orderBy: { timestamp: 'desc' },
-                include: { user: { select: { email: true } } }
+                orderBy: { createdAt: 'desc' },
+                include: { user: { select: { email: true } }, organization: { select: { name: true } } }
             })
         ]);
 
-        // 3. Subscription Stats
-        const proUsers = await db.user.count({ where: { subscriptionStatus: 'pro' } });
+        // 3. Subscription Stats (Looking at Orgs now)
+        const proOrgs = await db.organization.count({ where: { planTier: { in: ['PRO', 'ENTERPRISE'] } } });
 
         return NextResponse.json({
             overview: {
                 totalUsers,
+                totalOrganizations,
                 totalAnalyses,
-                proUsers,
-                conversionRate: totalUsers > 0 ? (proUsers / totalUsers * 100).toFixed(1) + '%' : '0%'
+                proOrgs,
+                conversionRate: totalOrganizations > 0 ? (proOrgs / totalOrganizations * 100).toFixed(1) + '%' : '0%'
             },
-            recentActivity: recentLogs.map((log: any) => ({
-                user: log.user.email,
+            recentActivity: recentLogs.map((log) => ({
+                user: log.user?.email || "API Key",
+                org: log.organization.name,
                 verdict: log.verdict,
-                score: log.score,
-                time: log.timestamp
+                score: log.riskScore,
+                time: log.createdAt
             }))
         });
 

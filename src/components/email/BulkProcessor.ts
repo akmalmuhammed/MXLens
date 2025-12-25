@@ -81,9 +81,18 @@ export class BulkProcessor {
             };
 
             // Save to history (fire and forget)
+            // Save to history (fire and forget)
             import("@/actions/analysis").then(({ saveAnalysis }) => {
+                const mapVerdict = (v: string): "CLEAN" | "SUSPICIOUS" | "MALICIOUS" | "UNKNOWN" => {
+                    const normalized = v.toLowerCase();
+                    if (normalized.includes("legitimate") || normalized === "clean") return "CLEAN";
+                    if (normalized.includes("suspicious")) return "SUSPICIOUS";
+                    if (normalized.includes("high") || normalized.includes("malicious")) return "MALICIOUS";
+                    return "UNKNOWN";
+                };
+
                 saveAnalysis({
-                    verdict: result.verdict.verdict,
+                    verdict: mapVerdict(result.verdict.verdict),
                     score: result.trust.score,
                     hasAttachments: this.analyzeAttachments,
                     hasBody: this.analyzeBody,

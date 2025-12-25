@@ -23,46 +23,57 @@ export async function POST(req: Request) {
 
         // Handle the event
         if (event.type === "checkout.session.completed") {
-            // 1. Retrieve User ID from client_reference_id or metadata
-            const userId = session.client_reference_id || session.metadata?.userId;
+            const orgId = session.client_reference_id || session.metadata?.orgId;
 
-            if (!userId) {
-                return NextResponse.json({ error: "Missing userId in metadata" }, { status: 400 });
+            if (!orgId) {
+                return NextResponse.json({ error: "Missing orgId in metadata" }, { status: 400 });
             }
 
-            // 2. Update User Subscription
-            await db.user.update({
-                where: { id: userId },
+            // 2. Update Organization Subscription
+            await db.organization.update({
+                where: { id: orgId },
                 data: {
-                    subscriptionStatus: "pro", // or based on product ID
+                    subscriptionStatus: "active",
+                    planTier: "PRO", // Upgrade tier
                     stripeCustomerId: session.customer as string,
                     subscriptionId: session.subscription as string,
-                    messageLimit: 1000, // Upgrade limit
                 },
             });
-            console.log(`User ${userId} upgraded to Pro via Stripe`);
+            console.log(`Org ${orgId} upgraded to Pro via Stripe`);
         }
 
         if (event.type === "invoice.payment_succeeded") {
-            // Renew limits on recurring payment?
+            // Subscription renewal
             const subscriptionId = session.subscription as string;
-            const user = await db.user.findFirst({ where: { subscriptionId } });
-            if (user) {
-                // Reset usage? or just ensure status is active
-                await db.user.update({
-                    where: { id: user.id },
-                    data: {
-                        subscriptionStatus: "pro",
-                        usageCount: 0, // Optional: reset usage on billing cycle
-                        lastUsageReset: new Date()
-                    }
-                });
+            // The object here is Invoice, not Session, but subscription ID field name matches
+            if (subscriptionId) {
+                const org = await db.organization.findFirst({ where: { subscriptionId } });
+                if (org) {
+                    await db.organization.update({
+                        where: { id: org.id },
+                        data: {
+                            subscriptionStatus: "active",
+                            planTier: "PRO" // Ensure tier is maintained
+                        }
+                    });
+                }
             }
         }
 
-        // Handle failures (subscription deleted, etc)
         if (event.type === "customer.subscription.deleted") {
-            // Downgrade
+            const subscriptionId = session.subscription as string;
+            if (subscriptionId) {
+                const org = await db.organization.findFirst({ where: { subscriptionId } });
+                if (org) {
+                    await db.organization.update({
+                        where: { id: org.id },
+                        data: {
+                            subscriptionStatus: "canceled",
+                            planTier: "FREE" // Downgrade
+                        }
+                    });
+                }
+            }
         }
 
         return NextResponse.json({ received: true });

@@ -132,8 +132,17 @@ export function EmailAnalyzer() {
             // Persist Analysis Result
             try {
                 const { saveAnalysis } = await import("@/actions/analysis");
+
+                const mapVerdict = (v: string): "CLEAN" | "SUSPICIOUS" | "MALICIOUS" | "UNKNOWN" => {
+                    const normalized = v.toLowerCase();
+                    if (normalized.includes("legitimate") || normalized === "clean") return "CLEAN";
+                    if (normalized.includes("suspicious")) return "SUSPICIOUS";
+                    if (normalized.includes("high") || normalized.includes("malicious")) return "MALICIOUS";
+                    return "UNKNOWN";
+                };
+
                 await saveAnalysis({
-                    verdict: result.verdict.verdict,
+                    verdict: mapVerdict(result.verdict.verdict),
                     score: result.trust.score,
                     hasAttachments: runAttachments,
                     hasBody: runBody,

@@ -1,88 +1,405 @@
+// MXLens Database Schema
+// Architect: Antigravity
+// Target: Neon (PostgreSQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+// -----------------------------------------------------------------------------
+// ENUMS (Strict Typing)
+// -----------------------------------------------------------------------------
+
+enum UserRole {
+  OWNER
+  ADMIN
+  ANALYST
+  VIEWER
 }
+
+enum PlanTier {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum AnalysisVerdict {
+  CLEAN
+  SUSPICIOUS
+  MALICIOUS
+  UNKNOWN
+}
+
+enum AuditAction {
+  ORG_CREATE
+  ORG_UPDATE
+  MEMBER_INVITE
+  MEMBER_REMOVE
+  API_KEY_CREATE
+  API_KEY_REVOKE
+  SUBSCRIPTION_CHANGE
+}
+
+// -----------------------------------------------------------------------------
+// IDENTITY & TENANCY
+// -----------------------------------------------------------------------------
 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
-  password      String?
-  role          String          @default("user") // "user" | "analyst" | "admin"
-  accounts      Account[]
-  sessions      Session[]
   
-  // Custom MXLens fields
-  stripeCustomerId   String?
-  subscriptionStatus String     @default("free") // free, pro, enterprise
-  subscriptionId     String?
+  // Security
+  hashedPassword String?
+  mfaEnabled     Boolean   @default(false)
+
+  // System Metadata
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[] // NextAuth
+  sessions      Session[] // NextAuth
+  memberships   Membership[] // Org access
   
-  messageLimit       Int        @default(10)
-  usageCount         Int        @default(0)
-  lastUsageReset     DateTime   @default(now())
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  UsageLogs UsageLog[]
+  // Auditing: Actions performed BY this user
+  auditLogs     AuditLog[]
+  analysisComments AnalysisComment[]
+  analysisLogs  AnalysisLog[]
 }
 
+model Organization {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique // URL friendly identifier
+  
+  // Branding (White-labeling capability)
+  logoUrl       String?
+  primaryColor  String?
+
+  // Billing
+  planTier      PlanTier  @default(FREE)
+  stripeCustomerId String? @unique
+  subscriptionId   String?
+  subscriptionStatus String? // "active", "past_due"
+  billableSeats    Int       @default(1)
+
+  // System
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  members       Membership[]
+  invites       OrgInvite[]
+  apiKeys       ApiKey[]
+  analysisLogs  AnalysisLog[]
+  auditLogs     AuditLog[]
+  
+  // Enterprise Relations
+  integrations  Integration[]
+  customRules   CustomRule[]
+  reportConfigs ReportConfig[]
+
+  @@index([slug])
+}
+
+model Membership {
+  id            String    @id @default(cuid())
+  role          UserRole  @default(VIEWER)
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  joinedAt      DateTime  @default(now())
+
+  @@unique([userId, orgId]) // One role per org per user
+  @@index([orgId])
+  @@index([userId])
+}
+
+model OrgInvite {
+  id            String    @id @default(cuid())
+  email         String
+  role          UserRole  @default(ANALYST)
+  token         String    @unique
+  expiresAt     DateTime
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  inviterId     String
+  
+  createdAt     DateTime  @default(now())
+
+  @@index([email])
+  @@index([orgId])
+}
+
+// -----------------------------------------------------------------------------
+// API & INTEGRATION (Enterprise)
+// -----------------------------------------------------------------------------
+
+model ApiKey {
+  id            String    @id @default(cuid())
+  name          String    // e.g. "CI Pipeline", "Splunk Integration"
+  keyPrefix     String    // "mx_live_..."
+  hashedKey     String    @unique
+  lastUsedAt    DateTime?
+  expiresAt     DateTime?
+  
+  isActive      Boolean   @default(true)
+  scopes        String[]  // ["analyze:read", "analyze:write"]
+
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+
+  @@index([orgId])
+}
+
+// -----------------------------------------------------------------------------
+// CORE PRODUCT: ANALYSIS DATA
+// -----------------------------------------------------------------------------
+// NOTE: STRICT PRIVACY. NO PII. NO RAW CONTENT.
+
+model AnalysisLog {
+  id            String    @id @default(cuid())
+  
+  // The Verdict
+  verdict       AnalysisVerdict
+  riskScore     Int       // 0-100
+  confidence    String    // "HIGH", "MEDIUM", "LOW"
+
+  // Privacy-Safe Metadata (JSONB for flexibility without migrations)
+  // Structure: { spf: "pass", dkim: "fail", fileType: "eml", numAttachments: 2 }
+  meta          Json      
+  
+  // Ops Metrics
+  processingMs  Int
+  clientVersion String?
+
+  // Ownership
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  // Optional: Who ran it? Can be null if API key
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id])
+  
+  // Relations
+  comments      AnalysisComment[]
+
+  createdAt     DateTime  @default(now())
+
+  @@index([orgId, createdAt]) // Dashboard Trend Queries
+  @@index([verdict])          // Risk Stats
+}
+
+// -----------------------------------------------------------------------------
+// SECURITY & COMPLIANCE (Audit Trail)
+// -----------------------------------------------------------------------------
+
+model AuditLog {
+  id            String    @id @default(cuid())
+  action        AuditAction
+  
+  // Who?
+  actorId       String    // User ID
+  actorEmail    String    // Snapshot in case user is deleted
+  user          User?     @relation(fields: [actorId], references: [id])
+  ipAddress     String?
+  userAgent     String?
+  
+  // Where?
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  // What?
+  targetId      String?   // ID of object affected (e.g., User ID, ApiKey ID)
+  details       Json?     // e.g. { "oldRole": "VIEWER", "newRole": "ADMIN" }
+
+  createdAt     DateTime  @default(now())
+
+  @@index([orgId, createdAt])
+  @@index([actorId])
+}
+
+// -----------------------------------------------------------------------------
+// NEXTAUTH ADAPTER MODELS (Required)
+// -----------------------------------------------------------------------------
+
 model Account {
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@id([provider, providerAccountId])
+
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
+  id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
- 
-  @@id([identifier, token])
-}
+// -----------------------------------------------------------------------------
+// COLLABORATION & SOCIAL
+// -----------------------------------------------------------------------------
 
-model UsageLog {
-  id               String   @id @default(cuid())
-  userId           String
-  user             User     @relation(fields: [userId], references: [id])
-  timestamp        DateTime @default(now())
+model AnalysisComment {
+  id            String    @id @default(cuid())
+  content       String
   
-  // Metadata only - no content!
-  verdict          String
-  score            Int
-  hasAttachments   Boolean
-  hasBody          Boolean
-  processingTimeMs Int
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  
+  analysisLogId String
+  analysisLog   AnalysisLog @relation(fields: [analysisLogId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([analysisLogId])
+}
+
+// -----------------------------------------------------------------------------
+// ENTERPRISE INTEGRATIONS & AUTOMATION
+// -----------------------------------------------------------------------------
+
+enum IntegrationType {
+  SLACK
+  JIRA
+  MICROSOFT_TEAMS
+  SPLUNK
+  GENERIC_WEBHOOK
+}
+
+model Integration {
+  id            String    @id @default(cuid())
+  type          IntegrationType
+  name          String
+  
+  // Encrypted Config (e.g. Webhook URL, Auth Token)
+  config        Json      
+  isActive      Boolean   @default(true)
+
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  webhookDeliveries WebhookDelivery[]
+
+  @@index([orgId])
+}
+
+model WebhookDelivery {
+  id            String    @id @default(cuid())
+  
+  integrationId String
+  integration   Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  
+  status        Int       // HTTP Status Code
+  success       Boolean
+  requestBody   Json?
+  responseBody  Json?
+  durationMs    Int
+  
+  triggeredAt   DateTime  @default(now())
+
+  @@index([integrationId])
+}
+
+// -----------------------------------------------------------------------------
+// CUSTOM DETECTION ENGINE (Client-Side Config)
+// -----------------------------------------------------------------------------
+
+enum RuleType {
+  ALLOW     // Whitelist
+  BLOCK     // Blacklist
+  FLAG      // Warning
+}
+
+enum RuleTarget {
+  SENDER_EMAIL
+  SENDER_DOMAIN
+  RETURN_PATH
+  IP_ADDRESS
+  SUBJECT_REGEX
+}
+
+model CustomRule {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  
+  type          RuleType
+  target        RuleTarget
+  pattern       String    // e.g. "*@evil.com", "1.2.3.4"
+  
+  isActive      Boolean   @default(true)
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  createdBy     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([orgId])
+  @@index([target, pattern]) // Fast lookup
+}
+
+// -----------------------------------------------------------------------------
+// REPORTING
+// -----------------------------------------------------------------------------
+
+enum ReportFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+model ReportConfig {
+  id            String    @id @default(cuid())
+  name          String
+  frequency     ReportFrequency
+  recipients    String[]  // Array of emails
+  
+  isActive      Boolean   @default(true)
+  lastRunAt     DateTime?
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([orgId])
 }

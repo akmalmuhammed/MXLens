@@ -44,7 +44,7 @@ export async function registerUser(formData: FormData) {
     await db.user.create({
         data: {
             email: validEmail,
-            password: hashedPassword,
+            hashedPassword: hashedPassword,
             name: validName || validEmail.split("@")[0],
         },
     });

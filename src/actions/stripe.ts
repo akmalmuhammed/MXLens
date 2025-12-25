@@ -8,33 +8,36 @@ import { redirect } from "next/navigation";
 export async function createCheckoutSession(isYearly: boolean = false) {
     const session = await auth();
 
-    if (!session || !session.user || !session.user.id) {
+    if (!session?.user?.id || !session?.user?.orgId) {
         return redirect("/auth/signin?callbackUrl=/pricing");
     }
 
-    const user = await db.user.findUnique({
-        where: { id: session.user.id },
+    const orgId = session.user.orgId;
+
+    const org = await db.organization.findUnique({
+        where: { id: orgId },
     });
 
-    if (!user) {
-        throw new Error("User not found");
+    if (!org) {
+        throw new Error("Organization not found");
     }
 
-    // If user already has a stripeCustomerId, reuse it
-    let customerId = user.stripeCustomerId;
+    // If org already has a stripeCustomerId, reuse it
+    let customerId = org.stripeCustomerId;
 
     if (!customerId) {
         const customer = await stripe.customers.create({
-            email: user.email,
-            name: user.name || undefined,
+            email: session.user.email || undefined,
+            name: org.name,
             metadata: {
-                userId: user.id,
+                orgId: org.id,
+                userId: session.user.id // Keep track of who initiated it
             },
         });
         customerId = customer.id;
 
-        await db.user.update({
-            where: { id: user.id },
+        await db.organization.update({
+            where: { id: org.id },
             data: { stripeCustomerId: customerId },
         });
     }
@@ -46,9 +49,10 @@ export async function createCheckoutSession(isYearly: boolean = false) {
     // Create Checkout Session
     const checkoutSession = await stripe.checkout.sessions.create({
         customer: customerId,
-        client_reference_id: user.id,
+        client_reference_id: org.id, // Important: This is now Org ID
         metadata: {
-            userId: user.id,
+            orgId: org.id,
+            userId: session.user.id
         },
         line_items: [
             {
@@ -71,20 +75,20 @@ export async function createCheckoutSession(isYearly: boolean = false) {
 export async function createPortalSession() {
     const session = await auth();
 
-    if (!session || !session.user || !session.user.id) {
+    if (!session?.user?.id || !session?.user?.orgId) {
         return redirect("/auth/signin");
     }
 
-    const user = await db.user.findUnique({
-        where: { id: session.user.id },
+    const org = await db.organization.findUnique({
+        where: { id: session.user.orgId },
     });
 
-    if (!user || !user.stripeCustomerId) {
+    if (!org || !org.stripeCustomerId) {
         return redirect("/pricing");
     }
 
     const portalSession = await stripe.billingPortal.sessions.create({
-        customer: user.stripeCustomerId,
+        customer: org.stripeCustomerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/dashboard`,
     });
 

@@ -14,53 +14,75 @@ export interface UsageResult {
 export async function checkAndTrackUsage(): Promise<UsageResult> {
     const session = await auth();
 
-    if (!session || !session.user || !session.user.id) {
+    if (!session?.user?.id || !session?.user?.orgId) {
         return { allowed: false, remaining: 0, reason: "Authentication required", isGuest: true };
     }
 
-    const user = await db.user.findUnique({
-        where: { id: session.user.id },
-        select: { messageLimit: true, usageCount: true }
+    // New: Check ORGANIZATION Status
+    const org = await db.organization.findUnique({
+        where: { id: session.user.orgId },
+        select: { planTier: true, subscriptionStatus: true }
     });
 
-    if (!user) {
-        return { allowed: false, remaining: 0, reason: "User not found", isGuest: false };
+    if (!org) {
+        return { allowed: false, remaining: 0, reason: "Organization not found", isGuest: false };
     }
 
-    if (user.usageCount >= user.messageLimit) {
-        return { allowed: false, remaining: 0, reason: "Daily limit reached. Upgrade to Premium." };
+    // Simple Quota Logic (Can be expanded later)
+    const LIMITS = {
+        FREE: 10,
+        PRO: 1000,
+        ENTERPRISE: 100000
+    };
+
+    const limit = LIMITS[org.planTier] || 10;
+
+    // Count today's logs for this org
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const usageCount = await db.analysisLog.count({
+        where: {
+            orgId: session.user.orgId,
+            createdAt: { gte: today }
+        }
+    });
+
+    if (usageCount >= limit) {
+        return { allowed: false, remaining: 0, reason: "Daily limit reached for your Team." };
     }
 
-    return { allowed: true, remaining: user.messageLimit - user.usageCount };
+    return { allowed: true, remaining: limit - usageCount };
 }
 
 export async function saveAnalysis(data: {
-    verdict: string;
+    verdict: "CLEAN" | "SUSPICIOUS" | "MALICIOUS" | "UNKNOWN";
     score: number;
     hasAttachments: boolean;
     hasBody: boolean;
     processingTimeMs: number;
 }) {
     const session = await auth();
-    if (!session?.user?.id) return null;
+    if (!session?.user?.id || !session?.user?.orgId) return null;
 
-    // 1. Log the usage
-    const log = await db.usageLog.create({
+    // 1. Create Analysis Log (Replacing UsageLog)
+    const log = await db.analysisLog.create({
         data: {
+            orgId: session.user.orgId,
             userId: session.user.id,
             verdict: data.verdict,
-            score: data.score,
-            hasAttachments: data.hasAttachments,
-            hasBody: data.hasBody,
-            processingTimeMs: data.processingTimeMs,
+            riskScore: data.score,
+            processingMs: data.processingTimeMs,
+            confidence: "HIGH", // Default for client-side
+            meta: {
+                hasAttachments: data.hasAttachments,
+                hasBody: data.hasBody
+            }
         }
     });
 
-    // 2. Increment user usage count
-    await db.user.update({
-        where: { id: session.user.id },
-        data: { usageCount: { increment: 1 } }
-    });
+    // Note: We no longer increment a counter on the User/Org table.
+    // We just count rows in checkAndTrackUsage for accuracy.
 
     return log;
 }
