@@ -1,185 +1,193 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, ShieldAlert, BarChart3, Mail, Globe } from "lucide-react";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { TrendingUp, Shield, AlertTriangle, Clock, BarChart3, PieChart } from "lucide-react";
 
-export default function InsightsPage() {
+export const metadata = {
+    title: "Insights | MXLens",
+    description: "Deep analytics and trends from your email security analyses.",
+};
+
+export default async function InsightsPage() {
+    const session = await auth();
+    if (!session?.user?.orgId) {
+        redirect("/auth/signin");
+    }
+
+    // Fetch aggregated stats
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [totalAnalyses, verdictBreakdown, recentTrend] = await Promise.all([
+        db.analysisLog.count({
+            where: { orgId: session.user.orgId }
+        }),
+        db.analysisLog.groupBy({
+            by: ['verdict'],
+            where: { orgId: session.user.orgId },
+            _count: { verdict: true }
+        }),
+        db.analysisLog.findMany({
+            where: {
+                orgId: session.user.orgId,
+                createdAt: { gte: thirtyDaysAgo }
+            },
+            select: { createdAt: true, verdict: true, riskScore: true },
+            orderBy: { createdAt: 'asc' }
+        })
+    ]);
+
+    // Calculate stats
+    const clean = verdictBreakdown.find(v => v.verdict === 'CLEAN')?._count.verdict || 0;
+    const suspicious = verdictBreakdown.find(v => v.verdict === 'SUSPICIOUS')?._count.verdict || 0;
+    const malicious = verdictBreakdown.find(v => v.verdict === 'MALICIOUS')?._count.verdict || 0;
+    const avgScore = recentTrend.length > 0
+        ? Math.round(recentTrend.reduce((acc, r) => acc + r.riskScore, 0) / recentTrend.length)
+        : 0;
+
     return (
-        <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Security Insights</h1>
-                    <p className="text-muted-foreground">Deep dive into your organization's threat landscape.</p>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    Last 30 Days
-                </div>
+        <div className="space-y-8">
+            <div>
+                <h1 className="text-3xl font-bold tracking-tight font-heading">Security Insights</h1>
+                <p className="text-muted-foreground">Trends and analytics from your email analyses (Last 30 days).</p>
             </div>
 
-            {/* Top Stats Row */}
-            <div className="grid gap-4 md:grid-cols-4">
-                <Card className="border-l-4 border-l-emerald-500">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Clean Traffic</CardTitle>
+            {/* Summary Cards */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Analyses</CardTitle>
+                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">92%</div>
-                        <p className="text-xs text-muted-foreground">+2% from last month</p>
+                        <div className="text-3xl font-bold">{totalAnalyses.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground mt-1">All time</p>
                     </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-rose-500">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Threats Blocked</CardTitle>
+
+                <Card className="border-green-500/20">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Clean Emails</CardTitle>
+                        <Shield className="h-4 w-4 text-green-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">14</div>
-                        <p className="text-xs text-muted-foreground">-5% from last month</p>
+                        <div className="text-3xl font-bold text-green-500">{clean}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {totalAnalyses > 0 ? Math.round((clean / totalAnalyses) * 100) : 0}% of total
+                        </p>
                     </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-amber-500">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Suspicious Domains</CardTitle>
+
+                <Card className="border-amber-500/20">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Suspicious</CardTitle>
+                        <AlertTriangle className="h-4 w-4 text-amber-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">8</div>
-                        <p className="text-xs text-muted-foreground">3 new domains detected</p>
+                        <div className="text-3xl font-bold text-amber-500">{suspicious}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {totalAnalyses > 0 ? Math.round((suspicious / totalAnalyses) * 100) : 0}% of total
+                        </p>
                     </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-blue-500">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Avg. Analysis Time</CardTitle>
+
+                <Card className="border-red-500/20">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Malicious</CardTitle>
+                        <AlertTriangle className="h-4 w-4 text-red-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">1.2s</div>
-                        <p className="text-xs text-muted-foreground">Optimized by 200ms</p>
+                        <div className="text-3xl font-bold text-red-500">{malicious}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {totalAnalyses > 0 ? Math.round((malicious / totalAnalyses) * 100) : 0}% of total
+                        </p>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Charts Area (Mocked with CSS/HTML for now, would replace with Recharts later) */}
+            {/* Trend Overview */}
             <div className="grid gap-6 md:grid-cols-2">
-                <Card className="md:col-span-1">
+                <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <TrendingUp className="w-5 h-5 text-primary" />
-                            Threat Volume Over Time
+                            Average Risk Score
                         </CardTitle>
-                        <CardDescription>Daily volume of malicious emails detected.</CardDescription>
+                        <CardDescription>Based on last 30 days of analyses</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[300px] flex items-end justify-between gap-2 pt-4">
-                        {[10, 40, 25, 50, 30, 60, 45, 20, 35, 10, 5, 60, 40, 30].map((h, i) => (
-                            <div key={i} className="w-full bg-slate-100 dark:bg-slate-800 rounded-t-sm relative group">
-                                <div
-                                    className="absolute bottom-0 w-full bg-gradient-to-t from-rose-500 to-rose-400 rounded-t-sm transition-all hover:bg-rose-600"
-                                    style={{ height: `${h}%` }}
-                                >
-                                    <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-xs px-2 py-1 rounded border shadow-sm">
-                                        {h}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                    <CardContent>
+                        <div className="flex items-end gap-4">
+                            <div className="text-6xl font-bold font-mono">{avgScore}</div>
+                            <div className="text-muted-foreground pb-2">/ 100</div>
+                        </div>
+                        <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                                className={`h-full transition-all ${avgScore < 30 ? 'bg-green-500' :
+                                        avgScore < 60 ? 'bg-amber-500' : 'bg-red-500'
+                                    }`}
+                                style={{ width: `${avgScore}%` }}
+                            />
+                        </div>
                     </CardContent>
                 </Card>
 
-                <Card className="md:col-span-1">
+                <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Globe className="w-5 h-5 text-primary" />
-                            Top Sender Origins
+                            <PieChart className="w-5 h-5 text-primary" />
+                            Verdict Distribution
                         </CardTitle>
-                        <CardDescription>Geographic distribution of analyzed emails.</CardDescription>
+                        <CardDescription>Breakdown by analysis outcome</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">🇺🇸</span>
-                                <span className="font-medium">United States</span>
-                            </div>
-                            <div className="w-1/2 flex items-center gap-2">
-                                <div className="h-2 flex-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-blue-500" style={{ width: '65%' }} />
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                                    <span className="text-sm">Clean</span>
                                 </div>
-                                <span className="text-sm font-mono text-muted-foreground">65%</span>
+                                <span className="font-mono text-sm">{clean}</span>
                             </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">🇩🇪</span>
-                                <span className="font-medium">Germany</span>
-                            </div>
-                            <div className="w-1/2 flex items-center gap-2">
-                                <div className="h-2 flex-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-blue-500" style={{ width: '15%' }} />
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                                    <span className="text-sm">Suspicious</span>
                                 </div>
-                                <span className="text-sm font-mono text-muted-foreground">15%</span>
+                                <span className="font-mono text-sm">{suspicious}</span>
                             </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">🇷🇺</span>
-                                <span className="font-medium">Russia</span>
-                            </div>
-                            <div className="w-1/2 flex items-center gap-2">
-                                <div className="h-2 flex-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-rose-500" style={{ width: '12%' }} />
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                                    <span className="text-sm">Malicious</span>
                                 </div>
-                                <span className="text-sm font-mono text-muted-foreground">12%</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">🇨🇳</span>
-                                <span className="font-medium">China</span>
-                            </div>
-                            <div className="w-1/2 flex items-center gap-2">
-                                <div className="h-2 flex-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-amber-500" style={{ width: '5%' }} />
-                                </div>
-                                <span className="text-sm font-mono text-muted-foreground">5%</span>
+                                <span className="font-mono text-sm">{malicious}</span>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </div>
 
+            {/* Recent Activity Timeline */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <ShieldAlert className="w-5 h-5 text-amber-500" />
-                        Common Threat Indicators
+                        <Clock className="w-5 h-5 text-primary" />
+                        Recent Activity
                     </CardTitle>
-                    <CardDescription>Most frequently detected IOCs in your environment.</CardDescription>
+                    <CardDescription>Last 30 days of email analyses</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b text-left text-muted-foreground">
-                                <th className="pb-3 font-medium">Indicator Type</th>
-                                <th className="pb-3 font-medium">Pattern</th>
-                                <th className="pb-3 font-medium">Frequency</th>
-                                <th className="pb-3 font-medium text-right">Risk Score</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                            <tr className="group hover:bg-muted/50 transition-colors">
-                                <td className="py-3">SPF Record</td>
-                                <td className="py-3 font-mono text-xs">Softfail (none)</td>
-                                <td className="py-3">125 hits</td>
-                                <td className="py-3 text-right text-amber-500 font-bold">Medium</td>
-                            </tr>
-                            <tr className="group hover:bg-muted/50 transition-colors">
-                                <td className="py-3">Attachment</td>
-                                <td className="py-3 font-mono text-xs">.html double extension</td>
-                                <td className="py-3">42 hits</td>
-                                <td className="py-3 text-right text-rose-500 font-bold">High</td>
-                            </tr>
-                            <tr className="group hover:bg-muted/50 transition-colors">
-                                <td className="py-3">Link Reputation</td>
-                                <td className="py-3 font-mono text-xs">Bit.ly redirect chain</td>
-                                <td className="py-3">38 hits</td>
-                                <td className="py-3 text-right text-rose-500 font-bold">High</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    {recentTrend.length === 0 ? (
+                        <div className="text-center py-12 text-muted-foreground">
+                            No analyses in the last 30 days. Start analyzing emails to see trends!
+                        </div>
+                    ) : (
+                        <div className="text-sm text-muted-foreground">
+                            {recentTrend.length} analyses recorded in the last 30 days.
+                            {/* Future: Add a chart visualization here */}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
