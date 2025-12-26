@@ -1,4 +1,3 @@
-```
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -43,7 +42,7 @@ export function ProfileForm({ user }: { user: any }) {
                     {message}
                 </div>
             )}
-            
+
             <div className="grid gap-2">
                 <Label htmlFor="name">Display Name</Label>
                 <Input id="name" name="name" defaultValue={user?.name || ""} placeholder="Your Name" />
@@ -53,7 +52,7 @@ export function ProfileForm({ user }: { user: any }) {
                 <Input id="email" defaultValue={user?.email || ""} disabled className="bg-muted" />
                 <p className="text-xs text-muted-foreground">Contact support to change your email.</p>
             </div>
-            
+
             <div className="flex justify-end pt-4">
                 <Button type="submit" disabled={loading}>
                     {loading ? "Saving..." : "Save Changes"}
@@ -62,4 +61,3 @@ export function ProfileForm({ user }: { user: any }) {
         </form>
     );
 }
-```
