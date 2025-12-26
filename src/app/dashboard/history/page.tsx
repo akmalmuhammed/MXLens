@@ -77,7 +77,7 @@ export default async function HistoryPage() {
                                             <td className="p-4 align-middle font-mono">{log.riskScore}</td>
                                             <td className="p-4 align-middle text-muted-foreground">{formatDistanceToNow(log.createdAt)} ago</td>
                                             <td className="p-4 align-middle text-right">
-                                                <Link href={`/analyze/results/${log.id}`}>
+                                                <Link href={`/analysis/${log.id}`}>
                                                     <Button variant="ghost" size="sm">
                                                         View <ArrowRight className="w-4 h-4 ml-1" />
                                                     </Button>

@@ -33,7 +33,7 @@ export default async function BillingPage() {
                             </div>
                         </div>
                         <div className="mt-8">
-                            <Link href="/billing/upgrade">
+                            <Link href="/dashboard/billing/upgrade">
                                 <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
                                     Upgrade to Pro
                                 </Button>
@@ -43,7 +43,7 @@ export default async function BillingPage() {
                 </Card>
 
                 <div className="space-y-4">
-                    <Link href="/billing/plans">
+                    <Link href="/dashboard/billing/plans">
                         <Card className="hover:border-cyan-500/50 transition-colors cursor-pointer group">
                             <CardContent className="p-6 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
@@ -60,7 +60,7 @@ export default async function BillingPage() {
                         </Card>
                     </Link>
 
-                    <Link href="/billing/payment-methods">
+                    <Link href="/dashboard/billing/payment-methods">
                         <Card className="hover:border-cyan-500/50 transition-colors cursor-pointer group">
                             <CardContent className="p-6 flex items-center justify-between">
                                 <div className="flex items-center gap-4">

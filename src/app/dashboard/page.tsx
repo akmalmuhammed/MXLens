@@ -76,7 +76,7 @@ export default async function DashboardPage() {
                                         View Insights
                                     </Button>
                                 </Link>
-                                <Link href="/history" className="flex-1">
+                                <Link href="/dashboard/history" className="flex-1">
                                     <Button variant="outline" size="sm" className="w-full gap-2 text-xs h-8">
                                         <Globe className="w-3 h-3 text-primary" />
                                         Full History
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
                                 </div>
                             ) : (
                                 <div className="mt-4">
-                                    <Link href="/billing/upgrade">
+                                    <Link href="/dashboard/billing/upgrade">
                                         <Button variant="outline" size="sm" className="w-full gap-2 text-xs h-8">
                                             <Crown className="w-3 h-3 text-amber-500" />
                                             Remove Limits
