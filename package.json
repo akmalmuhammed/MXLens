@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@assemblyscript/loader": "^0.28.9",
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -65,6 +66,7 @@
     "@types/node": "^20.19.27",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "assemblyscript": "^0.28.9",
     "eslint": "^9",
     "eslint-config-next": "16.1.0",
     "prisma": "^5.22.0",
