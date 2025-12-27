@@ -1,6 +1,16 @@
 {
     "rewrites": [
         {
+            "source": "/",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "admin.mxlens.com"
+                }
+            ],
+            "destination": "/admin"
+        },
+        {
             "source": "/:path*",
             "has": [
                 {
