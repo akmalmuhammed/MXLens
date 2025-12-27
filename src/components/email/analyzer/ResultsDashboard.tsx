@@ -17,6 +17,7 @@ import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
 import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown, Gavel } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
+import { getAnalysisTriageState } from "@/actions/analysis";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -98,21 +99,36 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
         URL.revokeObjectURL(url);
     };
 
+    const [triageStatus, setTriageStatus] = useState<string | null>(null);
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 py-6 px-2">
             {/* Header Actions & Tabs */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6 border-b border-border/40">
-                <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full md:w-auto">
-                    <TabsList className="grid w-full grid-cols-3 h-10 bg-muted/50 p-1 rounded-xl border border-white/5">
-                        <TabsTrigger value="analyst" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Analyst</TabsTrigger>
-                        <TabsTrigger value="raw" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Raw</TabsTrigger>
-                        <TabsTrigger value="it" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Quick IT</TabsTrigger>
-                    </TabsList>
-                </Tabs>
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                    <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full md:w-auto">
+                        <TabsList className="grid w-full grid-cols-3 h-10 bg-muted/50 p-1 rounded-xl border border-white/5">
+                            <TabsTrigger value="analyst" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Analyst</TabsTrigger>
+                            <TabsTrigger value="raw" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Raw</TabsTrigger>
+                            <TabsTrigger value="it" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Quick IT</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+
+                    {/* Status Badge */}
+                    {triageStatus && (
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold border ${triageStatus === 'CLOSED' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                                triageStatus === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                    'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                            }`}>
+                            {triageStatus}
+                        </div>
+                    )}
+                </div>
+
                 <div className="flex gap-2 items-center w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
                     {/* Triage Button (Pro) */}
                     {analysis.id && (
-                        <TriageDialog analysisId={analysis.id} />
+                        <TriageDialog analysisId={analysis.id} onStatusChange={setTriageStatus} />
                     )}
 
                     {/* Save Report Dropdown */}
@@ -412,33 +428,62 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
     );
 }
 
-function TriageDialog({ analysisId }: { analysisId: string }) {
+function TriageDialog({ analysisId, onStatusChange }: { analysisId: string, onStatusChange?: (status: string) => void }) {
     const { data: session } = useSession();
+    const [isOpen, setIsOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [triageData, setTriageData] = useState<{
+        status: "OPEN" | "IN_PROGRESS" | "CLOSED" | "ARCHIVED";
+        classification: "TRUE_POSITIVE" | "FALSE_POSITIVE" | "UNDETERMINED" | null;
+        comments: any[];
+    } | null>(null);
+
+    // Fetch fresh data when dialog opens
+    useEffect(() => {
+        if (isOpen && analysisId) {
+            setLoading(true);
+            getAnalysisTriageState(analysisId).then((data: any) => {
+                if (data) {
+                    setTriageData({
+                        status: data.triageStatus,
+                        classification: data.classification,
+                        comments: data.comments
+                    });
+                    if (onStatusChange) onStatusChange(data.triageStatus as string);
+                }
+                setLoading(false);
+            });
+        }
+    }, [isOpen, analysisId]);
 
     if (!session?.user) return null;
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button variant="secondary" className="gap-2 bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20 hover:text-indigo-300">
                     <Gavel className="w-4 h-4" /> Triage
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl text-left">
                 <DialogHeader>
                     <DialogTitle>Analyst Triage</DialogTitle>
                     <DialogDescription>
                         Verify this analysis, add notes, and manage case status.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="pt-4">
-                    <AnalystTriagePanel
-                        analysisId={analysisId}
-                        initialStatus="OPEN"
-                        initialClassification={null}
-                        initialComments={[]}
-                        currentUserEmail={session.user.email || ""}
-                    />
+                <div className="pt-4 min-h-[400px]">
+                    {loading ? (
+                        <div className="flex justify-center items-center h-40 text-muted-foreground">Loading case details...</div>
+                    ) : (
+                        <AnalystTriagePanel
+                            analysisId={analysisId}
+                            initialStatus={triageData?.status || "OPEN"}
+                            initialClassification={triageData?.classification || null}
+                            initialComments={triageData?.comments || []}
+                            currentUserEmail={session.user.email || ""}
+                        />
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

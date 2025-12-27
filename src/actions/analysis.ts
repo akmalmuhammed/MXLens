@@ -175,3 +175,26 @@ export async function getComments(id: string) {
 
     return { success: true, comments };
 }
+
+export async function getAnalysisTriageState(analysisId: string) {
+    const session = await auth();
+    if (!session?.user) return null;
+
+    try {
+        const log = await db.analysisLog.findUnique({
+            where: { id: analysisId },
+            select: {
+                triageStatus: true,
+                classification: true,
+                comments: {
+                    include: { user: { select: { name: true, image: true } } },
+                    orderBy: { createdAt: 'desc' }
+                }
+            }
+        });
+        return log;
+    } catch (error) {
+        console.error("Failed to fetch triage state:", error);
+        return null;
+    }
+}
