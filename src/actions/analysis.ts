@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { auth } from "@/auth";
@@ -29,13 +30,13 @@ export async function checkAndTrackUsage(): Promise<UsageResult> {
     }
 
     // Simple Quota Logic (Can be expanded later)
-    const LIMITS = {
+    const LIMITS: Record<string, number> = {
         FREE: 10,
         PRO: 1000,
         ENTERPRISE: 100000
     };
 
-    const limit = LIMITS[org.planTier] || 10;
+    const limit = LIMITS[org.planTier as string] || 10;
 
     // Count today's logs for this org
     const today = new Date();
@@ -65,26 +66,86 @@ export async function saveAnalysis(data: {
     const session = await auth();
     if (!session?.user?.id || !session?.user?.orgId) return null;
 
-    // 1. Create Analysis Log (Replacing UsageLog)
-    const log = await db.analysisLog.create({
-        data: {
-            orgId: session.user.orgId,
-            userId: session.user.id,
-            verdict: data.verdict,
-            riskScore: data.score,
-            processingMs: data.processingTimeMs,
-            confidence: "HIGH", // Default for client-side
-            meta: {
-                hasAttachments: data.hasAttachments,
-                hasBody: data.hasBody
-            }
+    const orgId = session.user.orgId;
+    const userId = session.user.id;
+
+    // Transaction to ensure sequential IDs if applicable
+    const log = await db.$transaction(async (tx) => {
+        // 1. Check Plan & Increment Counter
+        const org = await tx.organization.findUnique({
+            where: { id: orgId },
+            select: { planTier: true, incidentCounter: true } as any
+        });
+
+        let incidentId = null;
+
+        // Force cast safely to avoid build errors if Types are stale
+        const safeOrg = org as any;
+
+        if (safeOrg && (safeOrg.planTier === "PRO" || safeOrg.planTier === "ENTERPRISE")) {
+            // Note: Currently enabling for PRO too, but strictly usually TEAM. 
+            const nextId = (safeOrg.incidentCounter || 1000) + 1;
+            await tx.organization.update({
+                where: { id: orgId },
+                data: { incidentCounter: nextId } as any
+            });
+            incidentId = `#INC-${nextId}`;
         }
+
+        // 2. Create Log
+        return await tx.analysisLog.create({
+            data: {
+                orgId,
+                userId,
+                verdict: data.verdict,
+                riskScore: data.score,
+                processingMs: data.processingTimeMs,
+                confidence: "HIGH",
+                incidentId, // Will be null for Free/Basic
+                meta: {
+                    hasAttachments: data.hasAttachments,
+                    hasBody: data.hasBody
+                }
+            } as any
+        });
     });
 
-    // Note: We no longer increment a counter on the User/Org table.
-    // We just count rows in checkAndTrackUsage for accuracy.
-
     return log;
+}
+
+export async function assignIncident(analysisId: string, assigneeId: string) {
+    const session = await auth();
+    if (!session?.user?.id || !session?.user?.orgId) return { error: "Unauthorized" };
+
+    try {
+        // Validation: Verify assignee belongs to same org (security)
+        if (assigneeId !== "unassigned") {
+            const member = await db.membership.findUnique({
+                where: {
+                    userId_orgId: {
+                        userId: assigneeId,
+                        orgId: session.user.orgId
+                    }
+                }
+            });
+            if (!member) return { error: "Assignee not in organization" };
+        }
+
+        const updateData = assigneeId === "unassigned" ? { assigneeId: null } : { assigneeId };
+
+        await db.analysisLog.update({
+            where: {
+                id: analysisId,
+                orgId: session.user.orgId
+            },
+            data: updateData as any
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to assign incident:", error);
+        return { error: "Failed to assign incident" };
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -101,7 +162,7 @@ export async function updateTriageStatus(id: string, status: "OPEN" | "IN_PROGRE
                 id,
                 orgId: session.user.orgId // Org isolation
             },
-            data: { triageStatus: status }
+            data: { triageStatus: status } as any
         });
         return { success: true };
     } catch (error) {
@@ -120,7 +181,7 @@ export async function updateClassification(id: string, classification: "TRUE_POS
                 id,
                 orgId: session.user.orgId
             },
-            data: { classification }
+            data: { classification } as any
         });
         return { success: true };
     } catch (error) {
@@ -190,11 +251,41 @@ export async function getAnalysisTriageState(analysisId: string) {
                     include: { user: { select: { name: true, image: true } } },
                     orderBy: { createdAt: 'desc' }
                 }
-            }
+            } as any
         });
         return log;
     } catch (error) {
         console.error("Failed to fetch triage state:", error);
         return null;
+    }
+}
+
+export async function getIncidents() {
+    const session = await auth();
+    if (!session?.user?.id || !session?.user?.orgId) return [];
+
+    try {
+        const incidents = await db.analysisLog.findMany({
+            where: {
+                orgId: session.user.orgId,
+                triageStatus: { not: "ARCHIVED" }, // Show everything except archived
+            } as any,
+            include: {
+                assignee: {
+                    select: { name: true, image: true, email: true }
+                },
+                user: { // The reporter
+                    select: { name: true }
+                },
+                organization: {
+                    select: { planTier: true }
+                }
+            } as any,
+            orderBy: { createdAt: 'desc' }
+        });
+        return incidents as any[];
+    } catch (error) {
+        console.error("Failed to fetch incidents:", error);
+        return [];
     }
 }

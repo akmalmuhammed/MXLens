@@ -17,6 +17,7 @@ import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
 import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown, Gavel } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
+import { IncidentWorkbench } from "@/components/email/analyzer/IncidentWorkbench";
 import { getAnalysisTriageState } from "@/actions/analysis";
 import {
     DropdownMenu,
@@ -51,10 +52,25 @@ interface ResultsDashboardProps {
     setAnalyzeBody: (v: boolean) => void;
     analyzeAttachments: boolean;
     setAnalyzeAttachments: (v: boolean) => void;
+    userPlan?: string;
 }
 
-export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments }: ResultsDashboardProps) {
+export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, userPlan = "FREE" }: ResultsDashboardProps) {
+    const { data: session } = useSession();
     const [mode, setMode] = useState<"analyst" | "raw" | "it">("analyst");
+
+    // TEAM PLAN: Render Incident Workbench
+    if ((userPlan === "TEAM" || userPlan === "ENTERPRISE") && analysis.id) {
+        return (
+            <IncidentWorkbench
+                analysis={analysis}
+                initialStatus="OPEN"
+                initialSeverity="MEDIUM"
+                incidentId="#INC-PENDING" // TODO: Fetch actual ID
+                currentUser={session?.user}
+            />
+        );
+    }
     const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
 
     const handleDownloadJSON = () => {
@@ -117,8 +133,8 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                     {/* Status Badge */}
                     {triageStatus && (
                         <div className={`px-3 py-1 rounded-full text-xs font-bold border ${triageStatus === 'CLOSED' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                triageStatus === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-                                    'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                            triageStatus === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                'bg-amber-500/10 text-amber-500 border-amber-500/20'
                             }`}>
                             {triageStatus}
                         </div>

@@ -13,7 +13,7 @@ import { AnalyzerDropzone } from "./analyzer/AnalyzerDropzone";
 import { ResultsDashboard } from "./analyzer/ResultsDashboard";
 import { UsageBanner } from "./analyzer/UsageBanner";
 
-interface EnhancedAnalysis {
+export interface EnhancedAnalysis {
     id?: string;
     header: AnalysisResult;
     signals: NormalizedSignals;
@@ -22,7 +22,11 @@ interface EnhancedAnalysis {
     timestamp: number;
 }
 
-export function EmailAnalyzer() {
+interface EmailAnalyzerProps {
+    userPlan?: string;
+}
+
+export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
     const [analysis, setAnalysis] = useState<EnhancedAnalysis | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -220,6 +224,7 @@ export function EmailAnalyzer() {
                         setAnalyzeBody={setAnalyzeBody}
                         analyzeAttachments={analyzeAttachments}
                         setAnalyzeAttachments={setAnalyzeAttachments}
+                        userPlan={userPlan}
                     />
                 )}
             </div>

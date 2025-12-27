@@ -1,9 +1,21 @@
-"use client";
-
 import { EmailAnalyzer } from "@/components/email/EmailAnalyzer";
 import { ShieldCheck, EyeOff, Cpu } from "lucide-react";
+import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
 
-export default function AnalyzePage() {
+export default async function AnalyzePage() {
+    const session = await auth();
+    let planTier = "FREE";
+
+    if (session?.user?.orgId) {
+        const org = await db.organization.findUnique({
+            where: { id: session.user.orgId },
+            select: { planTier: true }
+        });
+        if (org) planTier = org.planTier;
+    }
+
     return (
         <div className="container mx-auto py-8 min-h-screen space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -30,7 +42,7 @@ export default function AnalyzePage() {
                 {/* Decorative gradients */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
                 <div className="relative z-10 h-full p-1">
-                    <EmailAnalyzer />
+                    <EmailAnalyzer userPlan={planTier} />
                 </div>
             </div>
 

@@ -23,6 +23,14 @@ enum UserRole {
   VIEWER
 }
 
+// Platform-level admin roles (different from org roles)
+enum AdminRole {
+  SUPER_ADMIN     // Full platform access
+  SUPPORT_ADMIN   // Can view/manage users and orgs
+  BILLING_ADMIN   // Can view/manage billing
+  READ_ONLY       // View-only access to admin panel
+}
+
 enum PlanTier {
   FREE
   PRO
@@ -59,6 +67,21 @@ enum TriageStatus {
   ARCHIVED
 }
 
+enum IncidentSource {
+  MANUAL_UPLOAD
+  JIRA
+  SERVICENOW
+  GRAPH_API // Microsoft 365
+  IMAP
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
 // -----------------------------------------------------------------------------
 // IDENTITY & TENANCY
 // -----------------------------------------------------------------------------
@@ -74,6 +97,10 @@ model User {
   hashedPassword String?
   mfaEnabled     Boolean   @default(false)
 
+  // Platform Admin Access (separate from org-level roles)
+  isPlatformAdmin Boolean   @default(false)
+  adminRole       AdminRole?
+
   // System Metadata
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -87,6 +114,7 @@ model User {
   auditLogs     AuditLog[]
   analysisComments AnalysisComment[]
   analysisLogs  AnalysisLog[]
+  assignedCases AnalysisLog[] @relation("AssignedCases")
 }
 
 model Organization {
@@ -103,6 +131,8 @@ model Organization {
   stripeCustomerId String? @unique
   subscriptionId   String?
   subscriptionStatus String? // "active", "past_due"
+  incidentCounter    Int       @default(1000) // Start at #INC-1000 for aesthetics
+
   billableSeats    Int       @default(1)
 
   // System
@@ -206,6 +236,14 @@ model AnalysisLog {
   // Analyst Triage
   classification AnalysisClassification?
   triageStatus   TriageStatus            @default(OPEN)
+
+  // Team Features (New)
+  incidentId      String?             @unique // E.g., "#INC-1024" (Readable ID)
+  source          IncidentSource      @default(MANUAL_UPLOAD)
+  externalId      String?             // E.g. "JIRA-123", "MSG-XYZ"
+  severity        IncidentSeverity    @default(MEDIUM)
+  assigneeId      String?             // Link to User (Team Member)
+  assignee        User?               @relation("AssignedCases", fields: [assigneeId], references: [id])
 
   // Ownership
   orgId         String

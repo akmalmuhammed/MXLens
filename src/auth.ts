@@ -10,12 +10,16 @@ declare module "next-auth" {
     interface User {
         role?: string;
         orgId?: string;
+        isPlatformAdmin?: boolean;
+        adminRole?: string;
     }
     interface Session {
         user: {
             role?: string;
             orgId?: string;
             orgSlug?: string;
+            isPlatformAdmin?: boolean;
+            adminRole?: string;
         } & import("next-auth").DefaultSession["user"];
     }
 }
@@ -24,6 +28,19 @@ declare module "next-auth" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" }, // Required for Credentials provider
+    cookies: {
+        sessionToken: {
+            name: process.env.NODE_ENV === "production" ? "__Secure-authjs.session-token" : "authjs.session-token",
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+                // Set domain to share across subdomains (e.g., .mxlens.com)
+                domain: process.env.NODE_ENV === "production" ? ".mxlens.com" : undefined,
+            },
+        },
+    },
     providers: [
         Google,
         Credentials({
@@ -120,18 +137,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.id = user.id;
             }
 
-            // Fetch the active organization (Just get the first one for now)
-            if (!token.orgId && token.id) {
-                const membership = await prisma.membership.findFirst({
-                    where: { userId: token.id as string },
-                    include: { organization: true },
-                    orderBy: { joinedAt: 'asc' } // Default to oldest (likely personal) org
+            // Fetch user data including admin status and org
+            if (token.id && (!token.orgId || token.isPlatformAdmin === undefined)) {
+                const userData = await prisma.user.findUnique({
+                    where: { id: token.id as string },
+                    select: {
+                        isPlatformAdmin: true,
+                        adminRole: true,
+                        memberships: {
+                            include: { organization: true },
+                            orderBy: { joinedAt: 'asc' },
+                            take: 1,
+                        },
+                    },
                 });
 
-                if (membership) {
-                    token.orgId = membership.orgId;
-                    token.orgSlug = membership.organization.slug;
-                    token.role = membership.role;
+                if (userData) {
+                    token.isPlatformAdmin = userData.isPlatformAdmin;
+                    token.adminRole = userData.adminRole;
+
+                    if (userData.memberships[0]) {
+                        token.orgId = userData.memberships[0].orgId;
+                        token.orgSlug = userData.memberships[0].organization.slug;
+                        token.role = userData.memberships[0].role;
+                    }
                 }
             }
 
@@ -143,6 +172,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.orgId = token.orgId as string;
                 session.user.orgSlug = token.orgSlug as string;
                 session.user.role = token.role as string;
+                session.user.isPlatformAdmin = token.isPlatformAdmin as boolean;
+                session.user.adminRole = token.adminRole as string;
             }
             return session;
         },
