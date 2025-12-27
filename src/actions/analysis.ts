@@ -86,3 +86,92 @@ export async function saveAnalysis(data: {
 
     return log;
 }
+
+// -----------------------------------------------------------------------------
+// ANALYST TRIAGE ACTIONS
+// -----------------------------------------------------------------------------
+
+export async function updateTriageStatus(id: string, status: "OPEN" | "IN_PROGRESS" | "CLOSED" | "ARCHIVED") {
+    const session = await auth();
+    if (!session?.user?.id || !session?.user?.orgId) return { error: "Unauthorized" };
+
+    try {
+        await db.analysisLog.update({
+            where: {
+                id,
+                orgId: session.user.orgId // Org isolation
+            },
+            data: { triageStatus: status }
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to update status:", error);
+        return { error: "Failed to update status" };
+    }
+}
+
+export async function updateClassification(id: string, classification: "TRUE_POSITIVE" | "FALSE_POSITIVE" | "UNDETERMINED") {
+    const session = await auth();
+    if (!session?.user?.id || !session?.user?.orgId) return { error: "Unauthorized" };
+
+    try {
+        await db.analysisLog.update({
+            where: {
+                id,
+                orgId: session.user.orgId
+            },
+            data: { classification }
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to update classification:", error);
+        return { error: "Failed to update classification" };
+    }
+}
+
+export async function addComment(id: string, content: string) {
+    const session = await auth();
+    if (!session?.user?.id || !session?.user?.orgId) return { error: "Unauthorized" };
+
+    if (!content.trim()) return { error: "Comment cannot be empty" };
+
+    try {
+        const comment = await db.analysisComment.create({
+            data: {
+                analysisLogId: id,
+                userId: session.user.id,
+                content: content
+            },
+            include: {
+                user: { select: { name: true, image: true } }
+            }
+        });
+        return { success: true, comment };
+    } catch (error) {
+        console.error("Failed to add comment:", error);
+        return { error: "Failed to add comment" };
+    }
+}
+
+export async function getComments(id: string) {
+    const session = await auth();
+    if (!session?.user?.id || !session?.user?.orgId) return { error: "Unauthorized" };
+
+    // Verify access first
+    const log = await db.analysisLog.findUnique({
+        where: { id, orgId: session.user.orgId },
+        select: { id: true }
+    });
+
+    if (!log) return { error: "Not found" };
+
+    const comments = await db.analysisComment.findMany({
+        where: { analysisLogId: id },
+        include: {
+            user: { select: { name: true, image: true } }
+        },
+        orderBy: { createdAt: 'asc' }
+    });
+
+    return { success: true, comments };
+}

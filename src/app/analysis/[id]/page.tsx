@@ -8,6 +8,8 @@ import { ShieldAlert, ShieldCheck, ArrowLeft, Download, FileText } from "lucide-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
+
 export default async function AnalysisDetailPage(props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
 
@@ -19,6 +21,12 @@ export default async function AnalysisDetailPage(props: { params: Promise<{ id: 
 
     const log = await db.analysisLog.findUnique({
         where: { id: params.id },
+        include: {
+            comments: {
+                include: { user: { select: { name: true, image: true } } },
+                orderBy: { createdAt: 'asc' }
+            }
+        }
     });
 
     if (!log) {
@@ -105,6 +113,17 @@ export default async function AnalysisDetailPage(props: { params: Promise<{ id: 
                         </div>
                     </CardContent>
                 </Card>
+            </div>
+
+            {/* Analyst Triage Section */}
+            <div className="border border-border/40 rounded-xl overflow-hidden shadow-sm">
+                <AnalystTriagePanel
+                    analysisId={log.id}
+                    initialStatus={log.triageStatus}
+                    initialClassification={log.classification}
+                    initialComments={log.comments}
+                    currentUserEmail={session.user.email || ""}
+                />
             </div>
         </div>
     );

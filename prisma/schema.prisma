@@ -46,6 +46,19 @@ enum AuditAction {
   SUBSCRIPTION_CHANGE
 }
 
+enum AnalysisClassification {
+  TRUE_POSITIVE
+  FALSE_POSITIVE
+  UNDETERMINED
+}
+
+enum TriageStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+  ARCHIVED
+}
+
 // -----------------------------------------------------------------------------
 // IDENTITY & TENANCY
 // -----------------------------------------------------------------------------
@@ -189,6 +202,10 @@ model AnalysisLog {
   // Ops Metrics
   processingMs  Int
   clientVersion String?
+
+  // Analyst Triage
+  classification AnalysisClassification?
+  triageStatus   TriageStatus            @default(OPEN)
 
   // Ownership
   orgId         String

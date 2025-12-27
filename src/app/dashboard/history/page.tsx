@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Calendar, ArrowRight } from "lucide-react";
+import { Search, Filter, Calendar, ArrowRight, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { db } from "@/lib/db";
@@ -14,7 +14,12 @@ export default async function HistoryPage() {
     const logs = orgId ? await db.analysisLog.findMany({
         where: { orgId },
         orderBy: { createdAt: 'desc' },
-        take: 50 // Limit to last 50 for now
+        take: 50, // Limit to last 50 for now
+        include: {
+            _count: {
+                select: { comments: true }
+            }
+        }
     }) : [];
 
     return (
@@ -39,18 +44,19 @@ export default async function HistoryPage() {
                     <table className="w-full caption-bottom text-sm text-left">
                         <thead className="[&_tr]:border-b">
                             <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Verdict</th>
+                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground w-[120px]">Date</th>
+                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground w-[120px]">Verdict</th>
                                 <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Subject</th>
                                 <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Sender</th>
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Score</th>
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Date</th>
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground text-right">Actions</th>
+                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground w-[140px]">Classification</th>
+                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground w-[80px]">Notes</th>
+                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground text-right w-[80px]">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="[&_tr:last-child]:border-0">
                             {logs.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                                    <td colSpan={7} className="p-8 text-center text-muted-foreground">
                                         No analysis history found. Scan an email to see it here.
                                     </td>
                                 </tr>
@@ -60,9 +66,13 @@ export default async function HistoryPage() {
                                     const meta = log.meta as any || {};
                                     const subject = meta.subject || "No Subject";
                                     const sender = meta.sender || "Unknown Sender";
+                                    const commentCount = (log as any)._count?.comments || 0;
 
                                     return (
                                         <tr key={log.id} className="border-b transition-colors hover:bg-muted/50">
+                                            <td className="p-4 align-middle text-muted-foreground whitespace-nowrap">
+                                                {formatDistanceToNow(log.createdAt)} ago
+                                            </td>
                                             <td className="p-4 align-middle">
                                                 <Badge variant="outline" className={
                                                     log.verdict === 'MALICIOUS' ? 'bg-rose-100 text-rose-600 border-rose-200' :
@@ -72,14 +82,29 @@ export default async function HistoryPage() {
                                                     {log.verdict}
                                                 </Badge>
                                             </td>
-                                            <td className="p-4 align-middle font-medium">{subject}</td>
-                                            <td className="p-4 align-middle text-muted-foreground">{sender}</td>
-                                            <td className="p-4 align-middle font-mono">{log.riskScore}</td>
-                                            <td className="p-4 align-middle text-muted-foreground">{formatDistanceToNow(log.createdAt)} ago</td>
+                                            <td className="p-4 align-middle font-medium truncate max-w-[200px]" title={subject}>{subject}</td>
+                                            <td className="p-4 align-middle text-muted-foreground truncate max-w-[150px]" title={sender}>{sender}</td>
+                                            <td className="p-4 align-middle">
+                                                {log.classification ? (
+                                                    <Badge variant="secondary" className="text-xs">
+                                                        {log.classification.replace('_', ' ')}
+                                                    </Badge>
+                                                ) : (
+                                                    <span className="text-muted-foreground opacity-50 text-xs">-</span>
+                                                )}
+                                            </td>
+                                            <td className="p-4 align-middle">
+                                                {commentCount > 0 && (
+                                                    <div className="flex items-center gap-1 text-muted-foreground">
+                                                        <MessageSquare className="w-4 h-4" />
+                                                        <span className="text-xs">{commentCount}</span>
+                                                    </div>
+                                                )}
+                                            </td>
                                             <td className="p-4 align-middle text-right">
                                                 <Link href={`/analysis/${log.id}`}>
-                                                    <Button variant="ghost" size="sm">
-                                                        View <ArrowRight className="w-4 h-4 ml-1" />
+                                                    <Button variant="ghost" size="icon">
+                                                        <ArrowRight className="w-4 h-4" />
                                                     </Button>
                                                 </Link>
                                             </td>
