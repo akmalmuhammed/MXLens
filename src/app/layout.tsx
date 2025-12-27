@@ -3,6 +3,7 @@ import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 import { ThemeProvider } from "@/components/theme-provider"
+import { SessionProvider } from "next-auth/react"
 import { Navbar } from "@/components/layout/Navbar";
 import { auth } from "@/auth";
 
@@ -37,10 +38,12 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <Navbar />
-          <main className="min-h-screen">
-            {children}
-          </main>
+          <SessionProvider session={session}>
+            <Navbar />
+            <main className="min-h-screen">
+              {children}
+            </main>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

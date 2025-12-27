@@ -14,6 +14,7 @@ import { ResultsDashboard } from "./analyzer/ResultsDashboard";
 import { UsageBanner } from "./analyzer/UsageBanner";
 
 interface EnhancedAnalysis {
+    id?: string;
     header: AnalysisResult;
     signals: NormalizedSignals;
     scoring: ScoringResult;
@@ -119,13 +120,18 @@ export function EmailAnalyzer() {
                     return "UNKNOWN";
                 };
 
-                await saveAnalysis({
+                const savedLog = await saveAnalysis({
                     verdict: mapVerdict(result.verdict.verdict),
                     score: result.trust.score,
                     hasAttachments: runAttachments,
                     hasBody: runBody,
                     processingTimeMs: Date.now() - startTime
                 });
+
+                if (savedLog && savedLog.id) {
+                    setAnalysis(prev => prev ? ({ ...prev, id: savedLog.id }) : null);
+                }
+
             } catch (err) {
                 console.error("Failed to save analysis history:", err);
             }

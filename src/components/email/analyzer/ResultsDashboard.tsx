@@ -15,8 +15,11 @@ import { AnalysisRecommendations } from "../AnalysisRecommendations";
 import { ArtifactsPanel } from "../ArtifactsPanel";
 import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
 import { ShieldAlert } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
 
 interface EnhancedAnalysis {
+    id?: string;
     header: AnalysisResult;
     signals: NormalizedSignals;
     scoring: ScoringResult;
@@ -248,6 +251,13 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                             <div className="pt-8">
                                 <AnalysisRecommendations verdict={analysis.scoring.verdict.verdict} />
                             </div>
+
+                            {/* Triage Panel Integration */}
+                            {analysis.id && (
+                                <div className="pt-8 border-t border-border/40">
+                                    <TriageSection analysisId={analysis.id} />
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -379,6 +389,25 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                     )}
                 </div>
             )}
+        </div>
+    );
+}
+
+function TriageSection({ analysisId }: { analysisId: string }) {
+    const { data: session } = useSession();
+
+    if (!session?.user) return null;
+
+    return (
+        <div className="space-y-4">
+            <h3 className="font-semibold text-xl font-heading text-foreground/90">Analyst Triage</h3>
+            <AnalystTriagePanel
+                analysisId={analysisId}
+                initialStatus="OPEN"
+                initialClassification={null}
+                initialComments={[]}
+                currentUserEmail={session.user.email || ""}
+            />
         </div>
     );
 }
