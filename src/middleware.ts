@@ -11,59 +11,59 @@ export default auth((req) => {
     const isAuthPage = nextUrl.pathname.startsWith("/auth");
 
     // Check if we are on the admin subdomain
-    const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost:3000"; // For local dev
+    const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost:3000";
 
     // -------------------------------------------------------------------------
     // ADMIN SUBDOMAIN LOGIC
     // -------------------------------------------------------------------------
     if (isAdminSubdomain) {
-        // Rewrite root "/" to "/admin"
-        if (nextUrl.pathname === "/") {
-            const url = new URL("/admin", nextUrl);
-            return NextResponse.rewrite(url);
+        // 1. Handle Auth: Redirect all auth/login attempts to the main domain
+        // This ensures cookies are set on .mxlens.com correctly
+        if (isAuthPage) {
+            return NextResponse.redirect(new URL(`https://mxlens.com${nextUrl.pathname}${nextUrl.search}`, nextUrl));
         }
 
-        // If path doesn't start with /admin, rewrite it to /admin/...
-        // (This makes admin.mxlens.com/users -> /admin/users)
-        if (!nextUrl.pathname.startsWith("/admin")) {
-            const url = new URL(`/admin${nextUrl.pathname}`, nextUrl);
-            return NextResponse.rewrite(url);
-        }
-
-        // At this point, the URL is technically /admin/... due to rewrite or direct access
-        // We must ensure the user is an admin
+        // 2. Enforce Login
         if (!isLoggedIn) {
-            // Redirect to main site login if not logged in
-            // We can use the main domain for auth to share cookies easier
-            // Or keep them on admin subdomain if cookies are shared correctly
-            return NextResponse.redirect(new URL("/auth/signin", nextUrl));
+            const from = encodeURIComponent(nextUrl.pathname);
+            // Redirect to main site login
+            return NextResponse.redirect(new URL(`https://mxlens.com/auth/signin?callbackUrl=https://${hostname}${nextUrl.pathname}`, nextUrl));
         }
 
+        // 3. Enforce Admin Role
         const isPlatformAdmin = req.auth?.user?.isPlatformAdmin;
         if (!isPlatformAdmin) {
             // Redirect non-admins back to main dashboard
             return NextResponse.redirect(new URL("https://mxlens.com/dashboard", nextUrl));
         }
 
+        // 4. Rewrite Logic (The "Magic")
+        // If we are here, user is logged in AND is an admin.
+
+        // Rewrite root "/" to "/admin"
+        if (nextUrl.pathname === "/") {
+            return NextResponse.rewrite(new URL("/admin", nextUrl));
+        }
+
+        // If path doesn't start with /admin, rewrite it to /admin/...
+        if (!nextUrl.pathname.startsWith("/admin")) {
+            return NextResponse.rewrite(new URL(`/admin${nextUrl.pathname}`, nextUrl));
+        }
+
         return NextResponse.next();
     }
 
     // -------------------------------------------------------------------------
-    // MAIN DOMAIN ADMIN ROUTE PROTECTION
+    // MAIN DOMAIN LOGIC
     // -------------------------------------------------------------------------
-    // Block /admin on main domain (unless we want to allow it as alias)
-    // If user tries mxlens.com/admin, we can redirect to admin.mxlens.com or treat as normal admin route
-    const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-    if (isAdminRoute) {
-        if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", nextUrl));
-        const isPlatformAdmin = req.auth?.user?.isPlatformAdmin;
-        if (!isPlatformAdmin) return NextResponse.redirect(new URL("/dashboard", nextUrl));
-        return NextResponse.next();
+
+    // Block /admin on main domain to prevent duplicate content SEO issues
+    // and force usage of the subdomain
+    if (nextUrl.pathname.startsWith("/admin")) {
+        // Optional: Redirect to subdomain
+        return NextResponse.redirect(new URL(`https://admin.mxlens.com${nextUrl.pathname.replace('/admin', '')}`, nextUrl));
     }
 
-    // -------------------------------------------------------------------------
-    // STANDARD APP PROTECTION
-    // -------------------------------------------------------------------------
     // Protect dashboard and onboarding
     if (isDashboard || isOnboarding) {
         if (!isLoggedIn) {
