@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import DOMPurify from "isomorphic-dompurify";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Download, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Download, AlertTriangle, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
 import { NormalizedSignals, ScoringResult } from "@/lib/email/scoring/types";
@@ -14,9 +14,25 @@ import { AIAnalysisSummary } from "../AIAnalysisSummary";
 import { AnalysisRecommendations } from "../AnalysisRecommendations";
 import { ArtifactsPanel } from "../ArtifactsPanel";
 import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown, Gavel } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface EnhancedAnalysis {
     id?: string;
@@ -94,19 +110,29 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                     </TabsList>
                 </Tabs>
                 <div className="flex gap-2 items-center w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                    <Button variant="ghost" size="sm" onClick={() => window.print()} title="Export as PDF" className="hover:bg-muted/50">
-                        <FileText className="w-4 h-4 mr-2" /> PDF
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleDownloadJSON} title="Download JSON" className="hover:bg-muted/50">
-                        <Download className="w-4 h-4 mr-2" /> JSON
-                    </Button>
+                    {/* Triage Button (Pro) */}
+                    {analysis.id && (
+                        <TriageDialog analysisId={analysis.id} />
+                    )}
 
-                    {/* Conversion Hook */}
-                    <Link href="/auth/signup">
-                        <Button variant="outline" size="sm" className="hidden md:flex border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300">
-                            Save Report
-                        </Button>
-                    </Link>
+                    {/* Save Report Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                Save Report <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuLabel>Export Options</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleDownloadJSON} className="gap-2 cursor-pointer">
+                                <FileJson className="w-4 h-4 text-orange-500" /> JSON Data
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.print()} className="gap-2 cursor-pointer">
+                                <FileText className="w-4 h-4 text-blue-500" /> PDF Report
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 
@@ -251,13 +277,6 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                             <div className="pt-8">
                                 <AnalysisRecommendations verdict={analysis.scoring.verdict.verdict} />
                             </div>
-
-                            {/* Triage Panel Integration */}
-                            {analysis.id && (
-                                <div className="pt-8 border-t border-border/40">
-                                    <TriageSection analysisId={analysis.id} />
-                                </div>
-                            )}
                         </div>
                     </div>
 
@@ -393,21 +412,35 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
     );
 }
 
-function TriageSection({ analysisId }: { analysisId: string }) {
+function TriageDialog({ analysisId }: { analysisId: string }) {
     const { data: session } = useSession();
 
     if (!session?.user) return null;
 
     return (
-        <div className="space-y-4">
-            <h3 className="font-semibold text-xl font-heading text-foreground/90">Analyst Triage</h3>
-            <AnalystTriagePanel
-                analysisId={analysisId}
-                initialStatus="OPEN"
-                initialClassification={null}
-                initialComments={[]}
-                currentUserEmail={session.user.email || ""}
-            />
-        </div>
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="secondary" className="gap-2 bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20 hover:text-indigo-300">
+                    <Gavel className="w-4 h-4" /> Triage
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>Analyst Triage</DialogTitle>
+                    <DialogDescription>
+                        Verify this analysis, add notes, and manage case status.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="pt-4">
+                    <AnalystTriagePanel
+                        analysisId={analysisId}
+                        initialStatus="OPEN"
+                        initialClassification={null}
+                        initialComments={[]}
+                        currentUserEmail={session.user.email || ""}
+                    />
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
