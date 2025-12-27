@@ -1,7 +1,7 @@
 "use client";
 
-// Dynamic import of PDF.js types to avoid server-side bundling issues
-import * as PDFJS from 'pdfjs-dist';
+// Dynamic import of PDF.js to avoid bundling in main chunk
+// Actual import happens in extractLinksFromPdf() when needed
 
 export async function extractLinksFromPdf(pdfBuffer: ArrayBuffer): Promise<string[]> {
     if (typeof window === 'undefined') return []; // Client-side only

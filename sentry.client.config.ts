@@ -8,9 +8,9 @@ Sentry.init({
             blockAllMedia: true,
         }),
     ],
-    // Tracing
-    tracesSampleRate: 1.0, //  Capture 100% of the transactions
-    // Session Replay
-    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, always sample the session when an error occurs.
+    // Tracing - reduced for production efficiency
+    tracesSampleRate: 0.2, // Capture 20% of transactions (was 100%)
+    // Session Replay - reduced to minimize bandwidth
+    replaysSessionSampleRate: 0.01, // 1% of sessions (was 10%)
+    replaysOnErrorSampleRate: 1.0, // Always capture sessions with errors
 });
