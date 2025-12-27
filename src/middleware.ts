@@ -8,7 +8,7 @@ export default auth((req) => {
     const isLoggedIn = !!req.auth?.user;
     const isDashboard = nextUrl.pathname.startsWith("/dashboard");
     const isOnboarding = nextUrl.pathname.startsWith("/onboarding");
-    const isAuthPage = nextUrl.pathname.startsWith("/auth");
+    const isAuthPage = nextUrl.pathname.startsWith("/auth"); // Main site auth
 
     // Check if we are on the admin subdomain
     const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost:3000";
@@ -17,35 +17,34 @@ export default auth((req) => {
     // ADMIN SUBDOMAIN LOGIC
     // -------------------------------------------------------------------------
     if (isAdminSubdomain) {
-        // 1. Handle Auth: Redirect all auth/login attempts to the main domain
-        // This ensures cookies are set on .mxlens.com correctly
-        if (isAuthPage) {
-            return NextResponse.redirect(new URL(`https://mxlens.com${nextUrl.pathname}${nextUrl.search}`, nextUrl));
+        // Allow access to the Dedicated Admin Login Page
+        // This page is at src/app/admin/auth/signin/page.tsx -> /admin/auth/signin
+        if (nextUrl.pathname === "/admin/auth/signin") {
+            return NextResponse.next();
         }
 
-        // 2. Enforce Login
+        // 1. Enforce Login
         if (!isLoggedIn) {
-            const from = encodeURIComponent(nextUrl.pathname);
-            // Redirect to main site login
-            return NextResponse.redirect(new URL(`https://mxlens.com/auth/signin?callbackUrl=https://${hostname}${nextUrl.pathname}`, nextUrl));
+            // Redirect to INTERNAL admin login, not main site
+            return NextResponse.redirect(new URL("/admin/auth/signin", nextUrl));
         }
 
-        // 3. Enforce Admin Role
+        // 2. Enforce Admin Role
         const isPlatformAdmin = req.auth?.user?.isPlatformAdmin;
         if (!isPlatformAdmin) {
-            // Redirect non-admins back to main dashboard
+            // Redirect non-admins back to main dashboard (cross-domain)
             return NextResponse.redirect(new URL("https://mxlens.com/dashboard", nextUrl));
         }
 
-        // 4. Rewrite Logic (The "Magic")
-        // If we are here, user is logged in AND is an admin.
+        // 3. Rewrite Logic
 
-        // Rewrite root "/" to "/admin"
+        // Rewrite root "/" to "/admin" (The Admin Dashboard default page)
         if (nextUrl.pathname === "/") {
             return NextResponse.rewrite(new URL("/admin", nextUrl));
         }
 
-        // If path doesn't start with /admin, rewrite it to /admin/...
+        // Ensure all other paths point to /admin/... (e.g. /users -> /admin/users)
+        // BUT exclude paths that already start with /admin (like /admin/auth/signin)
         if (!nextUrl.pathname.startsWith("/admin")) {
             return NextResponse.rewrite(new URL(`/admin${nextUrl.pathname}`, nextUrl));
         }
@@ -57,10 +56,8 @@ export default auth((req) => {
     // MAIN DOMAIN LOGIC
     // -------------------------------------------------------------------------
 
-    // Block /admin on main domain to prevent duplicate content SEO issues
-    // and force usage of the subdomain
+    // Block /admin routes on main domain (force subdomain usage)
     if (nextUrl.pathname.startsWith("/admin")) {
-        // Optional: Redirect to subdomain
         return NextResponse.redirect(new URL(`https://admin.mxlens.com${nextUrl.pathname.replace('/admin', '')}`, nextUrl));
     }
 
@@ -77,6 +74,8 @@ export default auth((req) => {
         if (nextUrl.searchParams.get("welcome") === "true") {
             return NextResponse.redirect(new URL("/onboarding/welcome", nextUrl));
         }
+        // Removed redirect loop risk by NOT forcing redirect if they just landed on signin
+        // But for UX, let's keep it, assuming main domain auth is stable.
         return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
 
