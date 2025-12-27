@@ -30,6 +30,30 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/",
+        has: [
+          {
+            type: "host",
+            value: "admin.mxlens.com",
+          },
+        ],
+        destination: "/admin",
+      },
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "admin.mxlens.com",
+          },
+        ],
+        destination: "/admin/:path*",
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {
