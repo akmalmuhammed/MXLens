@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import PostalMime from 'postal-mime';
 import { HeaderParser, AnalysisResult } from "@/lib/email/HeaderParser";
