@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import PostalMime from 'postal-mime';
 import { HeaderParser, AnalysisResult } from "@/lib/email/HeaderParser";
 import { AnalysisEngine } from "@/lib/email/scoring/AnalysisEngine";
@@ -29,6 +30,7 @@ interface EmailAnalyzerProps {
 }
 
 export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
+    const router = useRouter();
     const [analysis, setAnalysis] = useState<EnhancedAnalysis | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -135,11 +137,15 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                 });
 
                 if (savedLog && savedLog.id) {
-                    setAnalysis(prev => prev ? ({ ...prev, id: savedLog.id }) : null);
+                    // Redirect to persistent analysis page (survives refresh)
+                    router.push(`/analysis/${savedLog.id}`);
+                    return; // Stop here, let the new page take over
                 }
 
             } catch (err) {
                 console.error("Failed to save analysis history:", err);
+                // Still show results locally if save fails
+                setAnalysis(prev => prev ? ({ ...prev, id: undefined }) : null);
             }
 
         } catch (e: any) {
