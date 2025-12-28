@@ -15,7 +15,16 @@ export interface UsageResult {
 export async function checkAndTrackUsage(): Promise<UsageResult> {
     const session = await auth();
 
+    console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] Session state:", {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        orgId: session?.user?.orgId,
+        orgSlug: session?.user?.orgSlug,
+        role: session?.user?.role
+    });
+
     if (!session?.user?.id || !session?.user?.orgId) {
+        console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] No session or orgId - returning guest");
         return { allowed: false, remaining: 0, reason: "Authentication required", isGuest: true };
     }
 
@@ -25,7 +34,15 @@ export async function checkAndTrackUsage(): Promise<UsageResult> {
         select: { planTier: true, subscriptionStatus: true }
     });
 
+    console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] Org lookup:", {
+        orgId: session.user.orgId,
+        found: !!org,
+        planTier: org?.planTier,
+        subscriptionStatus: org?.subscriptionStatus
+    });
+
     if (!org) {
+        console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] ERROR: Organization not found!");
         return { allowed: false, remaining: 0, reason: "Organization not found", isGuest: false };
     }
 
@@ -47,6 +64,12 @@ export async function checkAndTrackUsage(): Promise<UsageResult> {
             orgId: session.user.orgId,
             createdAt: { gte: today }
         }
+    });
+
+    console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] Usage:", {
+        limit,
+        usageCount,
+        remaining: limit - usageCount
     });
 
     if (usageCount >= limit) {

@@ -116,10 +116,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+                console.log("[MXLENS_DEBUG] [AUTH/JWT] New user login, setting token.id:", user.id);
             }
 
             // Fetch user data including admin status and org
             if (token.id && (!token.orgId || token.isPlatformAdmin === undefined)) {
+                console.log("[MXLENS_DEBUG] [AUTH/JWT] Fetching user data for token.id:", token.id);
+
                 const userData = await prisma.user.findUnique({
                     where: { id: token.id as string },
                     select: {
@@ -130,7 +133,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             orderBy: { joinedAt: 'asc' },
                             take: 1,
                         },
-                    },
+                    } as any,
+                }) as any;
+
+                console.log("[MXLENS_DEBUG] [AUTH/JWT] User data fetched:", {
+                    userId: token.id,
+                    found: !!userData,
+                    isPlatformAdmin: userData?.isPlatformAdmin,
+                    membershipsCount: userData?.memberships?.length || 0,
+                    firstMembership: userData?.memberships?.[0] ? {
+                        orgId: userData.memberships[0].orgId,
+                        orgSlug: userData.memberships[0].organization.slug,
+                        role: userData.memberships[0].role
+                    } : null
                 });
 
                 if (userData) {
@@ -141,7 +156,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         token.orgId = userData.memberships[0].orgId;
                         token.orgSlug = userData.memberships[0].organization.slug;
                         token.role = userData.memberships[0].role;
+                    } else {
+                        console.log("[MXLENS_DEBUG] [AUTH/JWT] WARNING: User has no memberships!");
                     }
+                } else {
+                    console.log("[MXLENS_DEBUG] [AUTH/JWT] WARNING: User not found in database!");
                 }
             }
 

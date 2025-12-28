@@ -8,12 +8,26 @@ export default async function AnalyzePage() {
     const session = await auth();
     let planTier = "FREE";
 
+    console.log("[MXLENS_DEBUG] [ANALYZE_PAGE] Session state:", {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        orgId: session?.user?.orgId,
+        orgSlug: session?.user?.orgSlug
+    });
+
     if (session?.user?.orgId) {
         const org = await db.organization.findUnique({
             where: { id: session.user.orgId },
             select: { planTier: true }
         });
+        console.log("[MXLENS_DEBUG] [ANALYZE_PAGE] Org lookup:", {
+            orgId: session.user.orgId,
+            found: !!org,
+            planTier: org?.planTier
+        });
         if (org) planTier = org.planTier;
+    } else {
+        console.log("[MXLENS_DEBUG] [ANALYZE_PAGE] No orgId in session - user may not have membership");
     }
 
     return (

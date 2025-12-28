@@ -5,8 +5,18 @@ import { db } from "@/lib/db";
 
 export async function getDashboardStats() {
     const session = await auth();
+
+    console.log("[MXLENS_DEBUG] [DASHBOARD/getDashboardStats] Session state:", {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        orgId: session?.user?.orgId,
+        orgSlug: session?.user?.orgSlug,
+        role: session?.user?.role
+    });
+
     // Must have Org Context
     if (!session?.user?.id || !session?.user?.orgId) {
+        console.log("[MXLENS_DEBUG] [DASHBOARD/getDashboardStats] No session or orgId - returning empty stats");
         return {
             totalScans: 0,
             threatsFound: 0,
@@ -20,6 +30,8 @@ export async function getDashboardStats() {
 
     const orgId = session.user.orgId;
     const userId = session.user.id; // Optional: filter by user if role is restricted?
+
+    console.log("[MXLENS_DEBUG] [DASHBOARD/getDashboardStats] Fetching stats for org:", orgId);
 
     // 1. Total Scans (Org Wide)
     const totalScans = await db.analysisLog.count({

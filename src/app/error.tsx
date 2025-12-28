@@ -14,7 +14,9 @@ export default function Error({
 }) {
     useEffect(() => {
         // Log the error to an error reporting service
-        console.error(error);
+        console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error caught:", error);
+        console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error message:", error.message);
+        console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error stack:", error.stack);
     }, [error]);
 
     return (
@@ -23,9 +25,31 @@ export default function Error({
                 <AlertTriangle className="h-12 w-12" />
             </div>
             <h2 className="text-4xl font-bold mb-4">Analysis Interrupted</h2>
-            <p className="text-xl text-muted-foreground max-w-md mb-8">
+            <p className="text-xl text-muted-foreground max-w-md mb-4">
                 Something went wrong on our end. Our heat-seeking missile team has been dispatched to fix it.
             </p>
+
+            {/* Show error details for debugging */}
+            <div className="max-w-lg mb-8 text-left">
+                <details className="bg-muted/50 border border-border rounded-lg p-4">
+                    <summary className="cursor-pointer text-sm font-medium text-muted-foreground">
+                        Technical Details (click to expand)
+                    </summary>
+                    <div className="mt-4 space-y-2">
+                        <p className="text-xs font-mono text-destructive break-all">
+                            <strong>Error:</strong> {error.message}
+                        </p>
+                        {error.digest && (
+                            <p className="text-xs font-mono text-muted-foreground">
+                                <strong>Digest:</strong> {error.digest}
+                            </p>
+                        )}
+                        <p className="text-xs font-mono text-muted-foreground break-all whitespace-pre-wrap">
+                            <strong>Stack:</strong> {error.stack?.slice(0, 500)}...
+                        </p>
+                    </div>
+                </details>
+            </div>
 
             <div className="flex gap-4">
                 <Button onClick={() => reset()} variant="outline">
@@ -35,10 +59,7 @@ export default function Error({
                     <Button>Return Home</Button>
                 </Link>
             </div>
-
-            {error.digest && (
-                <p className="mt-8 text-xs text-muted-foreground font-mono">Error ID: {error.digest}</p>
-            )}
         </div>
     );
 }
+
