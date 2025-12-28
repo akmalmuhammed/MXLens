@@ -87,8 +87,8 @@ export async function POST(req: Request) {
 
         // Handle failed payment - mark as past_due
         if (event.type === "invoice.payment_failed") {
-            const invoice = event.data.object as Stripe.Invoice;
-            const subscriptionId = invoice.subscription as string;
+            const invoice = event.data.object as any; // Stripe Invoice type varies by version
+            const subscriptionId = invoice.subscription as string | null;
 
             if (subscriptionId) {
                 const org = await db.organization.findFirst({ where: { subscriptionId } });
