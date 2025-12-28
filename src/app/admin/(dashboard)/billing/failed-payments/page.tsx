@@ -19,7 +19,7 @@ export default async function FailedPaymentsPage() {
             planTier: true,
             stripeCustomerId: true,
             subscriptionStatus: true,
-            currentPeriodEnd: true,
+            createdAt: true,
             _count: {
                 select: { members: true },
             },
@@ -119,10 +119,7 @@ export default async function FailedPaymentsPage() {
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                                        {org.currentPeriodEnd
-                                            ? new Date(org.currentPeriodEnd).toLocaleDateString()
-                                            : "—"
-                                        }
+                                        {new Date(org.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         <Button size="sm" variant="outline">

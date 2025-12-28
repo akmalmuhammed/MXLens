@@ -19,9 +19,8 @@ export default async function SubscriptionsPage() {
             slug: true,
             planTier: true,
             stripeCustomerId: true,
-            stripeSubscriptionId: true,
+            subscriptionId: true,
             subscriptionStatus: true,
-            currentPeriodEnd: true,
             createdAt: true,
             _count: {
                 select: { members: true },
@@ -37,8 +36,8 @@ export default async function SubscriptionsPage() {
         plan: org.planTier,
         status: org.subscriptionStatus || "inactive",
         stripeCustomerId: org.stripeCustomerId,
-        stripeSubscriptionId: org.stripeSubscriptionId,
-        currentPeriodEnd: org.currentPeriodEnd?.toISOString() || null,
+        subscriptionId: org.subscriptionId,
+        renewsAt: org.createdAt.toISOString(), // Placeholder - would come from Stripe
         members: org._count.members,
         createdAt: org.createdAt.toISOString(),
     }));

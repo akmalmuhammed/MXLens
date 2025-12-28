@@ -10,8 +10,8 @@ interface Subscription {
     plan: string;
     status: string;
     stripeCustomerId: string | null;
-    stripeSubscriptionId: string | null;
-    currentPeriodEnd: string | null;
+    subscriptionId: string | null;
+    renewsAt: string;
     members: number;
     createdAt: string;
 }
@@ -118,27 +118,24 @@ export function SubscriptionsClient({ subscriptions, stats }: Props) {
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${sub.plan === "ENTERPRISE"
-                                                ? "bg-primary/20 text-primary border-primary/30"
-                                                : "bg-secure/20 text-secure border-secure/30"
+                                            ? "bg-primary/20 text-primary border-primary/30"
+                                            : "bg-secure/20 text-secure border-secure/30"
                                             }`}>
                                             {sub.plan}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`inline-flex items-center gap-1.5 text-sm ${sub.status === "active" ? "text-secure" :
-                                                sub.status === "past_due" ? "text-destructive" : "text-warning"
+                                            sub.status === "past_due" ? "text-destructive" : "text-warning"
                                             }`}>
                                             <span className={`h-2 w-2 rounded-full ${sub.status === "active" ? "bg-secure" :
-                                                    sub.status === "past_due" ? "bg-destructive" : "bg-warning"
+                                                sub.status === "past_due" ? "bg-destructive" : "bg-warning"
                                                 }`} />
                                             {sub.status}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                                        {sub.currentPeriodEnd
-                                            ? new Date(sub.currentPeriodEnd).toLocaleDateString()
-                                            : "—"
-                                        }
+                                        {new Date(sub.renewsAt).toLocaleDateString()}
                                     </td>
                                     <td className="px-4 py-3 text-right font-mono text-sm">{sub.members}</td>
                                 </tr>
