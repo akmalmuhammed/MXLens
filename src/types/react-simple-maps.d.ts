@@ -78,6 +78,8 @@ declare module "react-simple-maps" {
         stroke?: string;
         strokeWidth?: number;
         strokeLinecap?: string;
+        strokeOpacity?: number;
+        strokeDasharray?: string;
         fill?: string;
         children?: React.ReactNode;
         style?: React.CSSProperties;
