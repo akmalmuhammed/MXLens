@@ -86,54 +86,80 @@ export async function saveAnalysis(data: {
     hasBody: boolean;
     processingTimeMs: number;
 }) {
+    console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Called with:", data);
+
     const session = await auth();
-    if (!session?.user?.id || !session?.user?.orgId) return null;
+
+    console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Session:", {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        orgId: session?.user?.orgId
+    });
+
+    if (!session?.user?.id || !session?.user?.orgId) {
+        console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] No session - returning null");
+        return null;
+    }
 
     const orgId = session.user.orgId;
     const userId = session.user.id;
 
-    // Transaction to ensure sequential IDs if applicable
-    const log = await db.$transaction(async (tx) => {
-        // 1. Check Plan & Increment Counter
-        const org = await tx.organization.findUnique({
-            where: { id: orgId },
-            select: { planTier: true, incidentCounter: true } as any
-        });
+    try {
+        // Transaction to ensure sequential IDs if applicable
+        const log = await db.$transaction(async (tx) => {
+            console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Inside transaction");
 
-        let incidentId = null;
-
-        // Force cast safely to avoid build errors if Types are stale
-        const safeOrg = org as any;
-
-        if (safeOrg && (safeOrg.planTier === "PRO" || safeOrg.planTier === "ENTERPRISE")) {
-            // Note: Currently enabling for PRO too, but strictly usually TEAM. 
-            const nextId = (safeOrg.incidentCounter || 1000) + 1;
-            await tx.organization.update({
+            // 1. Check Plan & Increment Counter
+            const org = await tx.organization.findUnique({
                 where: { id: orgId },
-                data: { incidentCounter: nextId } as any
+                select: { planTier: true, incidentCounter: true } as any
             });
-            incidentId = `#INC-${nextId}`;
-        }
 
-        // 2. Create Log
-        return await tx.analysisLog.create({
-            data: {
-                orgId,
-                userId,
-                verdict: data.verdict,
-                riskScore: data.score,
-                processingMs: data.processingTimeMs,
-                confidence: "HIGH",
-                incidentId, // Will be null for Free/Basic
-                meta: {
-                    hasAttachments: data.hasAttachments,
-                    hasBody: data.hasBody
-                }
-            } as any
+            console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Org lookup:", org);
+
+            let incidentId = null;
+
+            // Force cast safely to avoid build errors if Types are stale
+            const safeOrg = org as any;
+
+            if (safeOrg && (safeOrg.planTier === "PRO" || safeOrg.planTier === "ENTERPRISE")) {
+                // Note: Currently enabling for PRO too, but strictly usually TEAM. 
+                const nextId = (safeOrg.incidentCounter || 1000) + 1;
+                console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Incrementing counter to:", nextId);
+
+                await tx.organization.update({
+                    where: { id: orgId },
+                    data: { incidentCounter: nextId } as any
+                });
+                incidentId = `#INC-${nextId}`;
+            }
+
+            console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Creating log with incidentId:", incidentId);
+
+            // 2. Create Log
+            return await tx.analysisLog.create({
+                data: {
+                    orgId,
+                    userId,
+                    verdict: data.verdict,
+                    riskScore: data.score,
+                    processingMs: data.processingTimeMs,
+                    confidence: "HIGH",
+                    incidentId, // Will be null for Free/Basic
+                    meta: {
+                        hasAttachments: data.hasAttachments,
+                        hasBody: data.hasBody
+                    }
+                } as any
+            });
         });
-    });
 
-    return log;
+        console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Log created:", log?.id);
+        return log;
+    } catch (error) {
+        console.error("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] ERROR:", error);
+        throw error;
+    }
 }
 
 export async function assignIncident(analysisId: string, assigneeId: string) {
