@@ -4,8 +4,8 @@ import type { NextRequest } from "next/server";
 
 // Helper to check for Better Auth admin session cookie
 function hasAdminSession(request: NextRequest): boolean {
-    // Better Auth uses "admin.session_token" as cookie name with prefix "admin"
-    const sessionCookie = request.cookies.get("admin.session_token");
+    // Better Auth uses "__Secure-admin.session_token" for HTTPS cookies
+    const sessionCookie = request.cookies.get("__Secure-admin.session_token");
     return !!sessionCookie?.value;
 }
 
