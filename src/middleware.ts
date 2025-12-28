@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 
 export default auth((req) => {
     const { nextUrl } = req;
-    const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
-    const hostname = host.split(":")[0]; // Handle localhost:3000 case implicitly
+    const hostname = req.headers.get("host") ?? "";
+    // const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
+    // const hostname = host.split(":")[0];
 
     const isLoggedIn = !!req.auth?.user;
     const isDashboard = nextUrl.pathname.startsWith("/dashboard");
