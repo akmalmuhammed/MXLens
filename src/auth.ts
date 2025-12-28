@@ -111,27 +111,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // All users can sign in
             return true;
         },
-        authorized({ auth, request: { nextUrl } }) {
-            const isLoggedIn = !!auth?.user;
-            const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-            const isOnOnboarding = nextUrl.pathname.startsWith('/onboarding');
-
-            // Protect dashboard and onboarding
-            if (isOnDashboard || isOnOnboarding) {
-                if (isLoggedIn) return true;
-                return false; // Redirect unauthenticated users to login page
-            } else if (isLoggedIn) {
-                const isAuthPage = nextUrl.pathname.startsWith('/auth');
-                if (isAuthPage) {
-                    // Check if this is a new user redirect (via query param)
-                    if (nextUrl.searchParams.get('welcome') === 'true') {
-                        return Response.redirect(new URL('/onboarding/welcome', nextUrl));
-                    }
-                    return Response.redirect(new URL('/dashboard', nextUrl));
-                }
-            }
-            return true;
-        },
+        // authorized callback removed to allow middleware.ts to handle all routing and protection logic
+        // preventing conflicts between NextAuth internal logic and our custom middleware.
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
