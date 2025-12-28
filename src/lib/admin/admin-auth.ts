@@ -1,6 +1,7 @@
-import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { adminAuth } from "@/lib/admin-auth";
 
 export type AdminRole = "SUPER_ADMIN" | "SUPPORT_ADMIN" | "BILLING_ADMIN" | "READ_ONLY";
 
@@ -12,36 +13,48 @@ export interface AdminSession {
 }
 
 /**
- * Get the current admin session. Returns null if user is not a platform admin.
+ * Get the current admin session from Better Auth.
+ * Returns null if user is not logged in or not a platform admin.
  */
 export async function getAdminSession(): Promise<AdminSession | null> {
-    const session = await auth();
+    try {
+        // Get session from Better Auth using the API
+        const session = await adminAuth.api.getSession({
+            headers: {
+                cookie: (await cookies()).toString(),
+            },
+        });
 
-    if (!session?.user?.id) {
+        if (!session?.user?.id) {
+            return null;
+        }
+
+        // Query admin user from our isolated admin table
+        const adminUser = await db.adminUser.findUnique({
+            where: { id: session.user.id },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                isPlatformAdmin: true,
+            },
+        });
+
+        if (!adminUser || !adminUser.isPlatformAdmin) {
+            return null;
+        }
+
+        return {
+            userId: adminUser.id,
+            email: adminUser.email,
+            name: adminUser.name,
+            adminRole: (adminUser.role as AdminRole) || "SUPER_ADMIN",
+        };
+    } catch (error) {
+        console.error("Error getting admin session:", error);
         return null;
     }
-
-    const user = await db.user.findUnique({
-        where: { id: session.user.id },
-        select: {
-            id: true,
-            email: true,
-            name: true,
-            isPlatformAdmin: true,
-            adminRole: true,
-        },
-    });
-
-    if (!user || !user.isPlatformAdmin || !user.adminRole) {
-        return null;
-    }
-
-    return {
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        adminRole: user.adminRole as AdminRole,
-    };
 }
 
 /**
@@ -58,13 +71,13 @@ export async function requireAdminAccess(): Promise<AdminSession> {
 }
 
 /**
- * Require admin access for page routes. Redirects to home if not admin.
+ * Require admin access for page routes. Redirects to login if not admin.
  */
 export async function requireAdminAccessPage(): Promise<AdminSession> {
     const adminSession = await getAdminSession();
 
     if (!adminSession) {
-        redirect("/");
+        redirect("/admin/auth/signin");
     }
 
     return adminSession;
