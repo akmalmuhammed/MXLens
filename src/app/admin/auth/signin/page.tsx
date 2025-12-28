@@ -23,12 +23,16 @@ export default function AdminSignInPage() {
         const password = formData.get("password") as string;
 
         try {
+            console.log("Attempting login with:", { email });
             const result = await signIn.email({
                 email,
                 password,
             });
 
+            console.log("Login result:", result);
+
             if (result.error) {
+                console.error("Login error:", result.error);
                 setError(result.error.message || "Invalid credentials");
                 setIsLoading(false);
                 return;
@@ -37,8 +41,9 @@ export default function AdminSignInPage() {
             // Successful login - redirect to admin dashboard
             router.push("/admin");
             router.refresh();
-        } catch (err) {
-            setError("An error occurred. Please try again.");
+        } catch (err: any) {
+            console.error("Login exception:", err);
+            setError(err?.message || "An error occurred. Please try again.");
             setIsLoading(false);
         }
     }
