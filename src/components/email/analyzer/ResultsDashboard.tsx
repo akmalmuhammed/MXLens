@@ -58,8 +58,11 @@ interface ResultsDashboardProps {
 export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, userPlan = "FREE" }: ResultsDashboardProps) {
     const { data: session } = useSession();
     const [mode, setMode] = useState<"analyst" | "raw" | "it">("analyst");
+    const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
+    const [triageStatus, setTriageStatus] = useState<string | null>(null);
 
     // TEAM PLAN: Render Incident Workbench
+    // NOTE: All hooks MUST be called before this return
     if ((userPlan === "TEAM" || userPlan === "ENTERPRISE") && analysis.id) {
         return (
             <IncidentWorkbench
@@ -71,7 +74,6 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
             />
         );
     }
-    const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
 
     const handleDownloadJSON = () => {
         const exportData = {
@@ -114,8 +116,6 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
         a.click();
         URL.revokeObjectURL(url);
     };
-
-    const [triageStatus, setTriageStatus] = useState<string | null>(null);
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 py-6 px-2">
