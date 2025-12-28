@@ -26,8 +26,8 @@ export default auth((req) => {
 
         // 1. Enforce Login
         if (!isLoggedIn) {
-            // Redirect to INTERNAL admin login, not main site
-            return NextResponse.redirect(new URL("/admin/auth/signin", nextUrl));
+            // Redirect to INTERNAL admin login - use absolute URL to avoid domain mismatch
+            return NextResponse.redirect("https://admin.mxlens.com/admin/auth/signin");
         }
 
         // 2. Enforce Admin Role
@@ -43,13 +43,13 @@ export default auth((req) => {
 
         // Rewrite root "/" to "/admin" (The Admin Dashboard default page)
         if (nextUrl.pathname === "/") {
-            return NextResponse.rewrite(new URL("/admin", nextUrl));
+            return NextResponse.rewrite("https://admin.mxlens.com/admin");
         }
 
         // Ensure all other paths point to /admin/... (e.g. /users -> /admin/users)
         // BUT exclude paths that already start with /admin (like /admin/auth/signin)
         if (!nextUrl.pathname.startsWith("/admin")) {
-            return NextResponse.rewrite(new URL(`/admin${nextUrl.pathname}`, nextUrl));
+            return NextResponse.rewrite(`https://admin.mxlens.com/admin${nextUrl.pathname}`);
         }
 
         return NextResponse.next();
