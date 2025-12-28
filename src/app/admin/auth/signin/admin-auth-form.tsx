@@ -31,7 +31,7 @@ export function AdminAuthForm({ className, ...props }: AdminAuthFormProps) {
         await signIn("credentials", {
             email: email,
             password: password,
-            callbackUrl: "/admin", // Redirect to admin dashboard
+            callbackUrl: "https://admin.mxlens.com/admin", // Absolute URL to stay on admin subdomain
         });
 
         // No loading false, waiting for redirect
