@@ -19,7 +19,6 @@ export default auth((req) => {
     // -------------------------------------------------------------------------
     if (isAdminSubdomain) {
         // Allow access to the Dedicated Admin Login Page
-        // This page is at src/app/admin/auth/signin/page.tsx -> /admin/auth/signin
         if (nextUrl.pathname === "/admin/auth/signin") {
             return NextResponse.next();
         }
@@ -31,10 +30,12 @@ export default auth((req) => {
         }
 
         // 2. Enforce Admin Role
-        const isPlatformAdmin = req.auth?.user?.isPlatformAdmin;
+        // Defensive boolean cast to handle undefined/null edge cases
+        const isPlatformAdmin = Boolean(req.auth?.user?.isPlatformAdmin);
         if (!isPlatformAdmin) {
             // Redirect non-admins back to main dashboard (cross-domain)
-            return NextResponse.redirect(new URL("https://mxlens.com/dashboard", nextUrl));
+            // Use Clean Absolute URL string to avoid context bleeding
+            return NextResponse.redirect("https://mxlens.com/dashboard");
         }
 
         // 3. Rewrite Logic
@@ -58,8 +59,10 @@ export default auth((req) => {
     // -------------------------------------------------------------------------
 
     // Block /admin routes on main domain (force subdomain usage)
-    if (nextUrl.pathname.startsWith("/admin")) {
-        return NextResponse.redirect(new URL(`https://admin.mxlens.com${nextUrl.pathname.replace('/admin', '')}`, nextUrl));
+    // Anti-Loop Check: Only redirect if we are NOT already on the admin subdomain
+    if (nextUrl.pathname.startsWith("/admin") && !isAdminSubdomain) {
+        // Use Clean Absolute URL string
+        return NextResponse.redirect(`https://admin.mxlens.com${nextUrl.pathname.replace('/admin', '')}`);
     }
 
     // Protect dashboard and onboarding
@@ -75,8 +78,6 @@ export default auth((req) => {
         if (nextUrl.searchParams.get("welcome") === "true") {
             return NextResponse.redirect(new URL("/onboarding/welcome", nextUrl));
         }
-        // Removed redirect loop risk by NOT forcing redirect if they just landed on signin
-        // But for UX, let's keep it, assuming main domain auth is stable.
         return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
 
@@ -84,5 +85,6 @@ export default auth((req) => {
 });
 
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+    // Optimized matcher to exclude public assets and search engine files
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
 };
