@@ -5,12 +5,12 @@ import { db as prisma } from "@/lib/db";
 // Create a Proxy around Prisma to map "user" -> "adminUser" etc.
 // This forces Better Auth to use our isolated admin tables
 const adminPrisma = new Proxy(prisma, {
-    get: (target, prop) => {
+    get: (target: any, prop: string) => {
         if (prop === "user") return target.adminUser;
         if (prop === "session") return target.adminSession;
         if (prop === "account") return target.adminAccount;
         if (prop === "verification") return target.adminVerification;
-        return target[prop as keyof typeof target];
+        return target[prop];
     },
 });
 
