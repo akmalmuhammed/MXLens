@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users as UsersIcon, Search, Shield } from "lucide-react";
+import { Users as UsersIcon, Search, Shield, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface User {
     id: string;
@@ -83,6 +84,12 @@ export default function UsersPage() {
                         Manage all users on the platform
                     </p>
                 </div>
+                <Link href="/admin/users/new">
+                    <Button className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Create User
+                    </Button>
+                </Link>
             </div>
 
             {/* Stats */}
@@ -173,18 +180,18 @@ export default function UsersPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${user.isPlatformAdmin
-                                                ? "bg-primary/20 text-primary border-primary/30"
-                                                : "bg-muted text-muted-foreground border-border"
+                                            ? "bg-primary/20 text-primary border-primary/30"
+                                            : "bg-muted text-muted-foreground border-border"
                                             }`}>
                                             {user.adminRole || "USER"}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`inline-flex items-center gap-1.5 text-sm ${user.status === "active" ? "text-secure" :
-                                                user.status === "inactive" ? "text-warning" : "text-destructive"
+                                            user.status === "inactive" ? "text-warning" : "text-destructive"
                                             }`}>
                                             <span className={`h-2 w-2 rounded-full ${user.status === "active" ? "bg-secure" :
-                                                    user.status === "inactive" ? "bg-warning" : "bg-destructive"
+                                                user.status === "inactive" ? "bg-warning" : "bg-destructive"
                                                 }`} />
                                             {user.status}
                                         </span>

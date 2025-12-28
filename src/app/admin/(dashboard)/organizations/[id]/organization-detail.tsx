@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -13,6 +13,7 @@ import {
     Loader2,
     Copy,
     Check,
+    UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Member {
     id: string;
@@ -58,6 +65,12 @@ interface Organization {
     };
 }
 
+interface ExistingUser {
+    id: string;
+    name: string | null;
+    email: string;
+}
+
 interface Props {
     organization: Organization;
 }
@@ -66,12 +79,44 @@ export function OrganizationDetail({ organization }: Props) {
     const router = useRouter();
     const [isAddingUser, setIsAddingUser] = useState(false);
     const [addUserOpen, setAddUserOpen] = useState(false);
+    const [addExistingOpen, setAddExistingOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [newUserResult, setNewUserResult] = useState<{
         email: string;
         tempPassword: string;
     } | null>(null);
     const [copied, setCopied] = useState(false);
+
+    // For adding existing users
+    const [existingUsers, setExistingUsers] = useState<ExistingUser[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState<string>("");
+    const [selectedRole, setSelectedRole] = useState<string>("ANALYST");
+
+    // Fetch existing users when dialog opens
+    useEffect(() => {
+        if (addExistingOpen) {
+            fetchExistingUsers();
+        }
+    }, [addExistingOpen]);
+
+    async function fetchExistingUsers() {
+        setLoadingUsers(true);
+        try {
+            const res = await fetch("/api/admin/users?limit=100");
+            if (res.ok) {
+                const data = await res.json();
+                // Filter out users already in this org
+                const memberIds = organization.members.map(m => m.userId);
+                const available = data.users.filter((u: any) => !memberIds.includes(u.id));
+                setExistingUsers(available);
+            }
+        } catch (err) {
+            console.error("Failed to fetch users:", err);
+        } finally {
+            setLoadingUsers(false);
+        }
+    }
 
     async function handleAddUser(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -103,6 +148,38 @@ export function OrganizationDetail({ organization }: Props) {
                 email: result.email,
                 tempPassword: result.tempPassword,
             });
+            router.refresh();
+        } catch (err: any) {
+            setError(err.message || "Failed to add user");
+        } finally {
+            setIsAddingUser(false);
+        }
+    }
+
+    async function handleAddExistingUser() {
+        if (!selectedUserId) return;
+
+        setIsAddingUser(true);
+        setError(null);
+
+        try {
+            const res = await fetch("/api/admin/organizations/members", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    orgId: organization.id,
+                    userId: selectedUserId,
+                    role: selectedRole,
+                }),
+            });
+
+            if (!res.ok) {
+                const result = await res.json();
+                throw new Error(result.error || "Failed to add user");
+            }
+
+            setAddExistingOpen(false);
+            setSelectedUserId("");
             router.refresh();
         } catch (err: any) {
             setError(err.message || "Failed to add user");
@@ -195,129 +272,211 @@ export function OrganizationDetail({ organization }: Props) {
             <div className="rounded-lg border border-border bg-card">
                 <div className="flex items-center justify-between p-4 border-b border-border">
                     <h2 className="text-lg font-semibold">Members</h2>
-                    <Dialog open={addUserOpen} onOpenChange={setAddUserOpen}>
-                        <DialogTrigger asChild>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                             <Button size="sm" className="gap-2">
                                 <Plus className="h-4 w-4" />
                                 Add User
                             </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            {newUserResult ? (
-                                <>
-                                    <DialogHeader>
-                                        <DialogTitle className="text-secure">
-                                            ✓ User Created Successfully
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            Share these credentials with the user:
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <div className="space-y-4 mt-4">
-                                        <div className="p-4 bg-muted rounded-lg font-mono text-sm space-y-2">
-                                            <p>
-                                                <strong>Email:</strong> {newUserResult.email}
-                                            </p>
-                                            <p>
-                                                <strong>Password:</strong>{" "}
-                                                {newUserResult.tempPassword}
-                                            </p>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <Button
-                                                onClick={copyCredentials}
-                                                variant="outline"
-                                                className="flex-1"
-                                            >
-                                                {copied ? (
-                                                    <Check className="h-4 w-4 mr-2" />
-                                                ) : (
-                                                    <Copy className="h-4 w-4 mr-2" />
-                                                )}
-                                                {copied ? "Copied!" : "Copy Credentials"}
-                                            </Button>
-                                            <Button
-                                                onClick={() => {
-                                                    setNewUserResult(null);
-                                                    setAddUserOpen(false);
-                                                }}
-                                            >
-                                                Done
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <DialogHeader>
-                                        <DialogTitle>Add User to Organization</DialogTitle>
-                                        <DialogDescription>
-                                            Create a new user and add them to {organization.name}
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    {error && (
-                                        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
-                                            {error}
-                                        </div>
-                                    )}
-                                    <form onSubmit={handleAddUser} className="space-y-4 mt-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="userName">Name *</Label>
-                                            <Input
-                                                id="userName"
-                                                name="userName"
-                                                placeholder="John Doe"
-                                                required
-                                                disabled={isAddingUser}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="userEmail">Email *</Label>
-                                            <Input
-                                                id="userEmail"
-                                                name="userEmail"
-                                                type="email"
-                                                placeholder="john@example.com"
-                                                required
-                                                disabled={isAddingUser}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="userRole">Role *</Label>
-                                            <Select name="userRole" defaultValue="ANALYST">
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select role" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="OWNER">Owner</SelectItem>
-                                                    <SelectItem value="ADMIN">Admin</SelectItem>
-                                                    <SelectItem value="ANALYST">Analyst</SelectItem>
-                                                    <SelectItem value="VIEWER">Viewer</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="flex justify-end gap-2 pt-4">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() => setAddUserOpen(false)}
-                                                disabled={isAddingUser}
-                                            >
-                                                Cancel
-                                            </Button>
-                                            <Button type="submit" disabled={isAddingUser}>
-                                                {isAddingUser && (
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                )}
-                                                Create User
-                                            </Button>
-                                        </div>
-                                    </form>
-                                </>
-                            )}
-                        </DialogContent>
-                    </Dialog>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => setAddUserOpen(true)}>
+                                <UserPlus className="h-4 w-4 mr-2" />
+                                Create New User
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setAddExistingOpen(true)}>
+                                <Users className="h-4 w-4 mr-2" />
+                                Add Existing User
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
+
+                {/* Create New User Dialog */}
+                <Dialog open={addUserOpen} onOpenChange={setAddUserOpen}>
+                    <DialogContent>
+                        {newUserResult ? (
+                            <>
+                                <DialogHeader>
+                                    <DialogTitle className="text-secure">
+                                        ✓ User Created Successfully
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Share these credentials with the user:
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4 mt-4">
+                                    <div className="p-4 bg-muted rounded-lg font-mono text-sm space-y-2">
+                                        <p>
+                                            <strong>Email:</strong> {newUserResult.email}
+                                        </p>
+                                        <p>
+                                            <strong>Password:</strong>{" "}
+                                            {newUserResult.tempPassword}
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            onClick={copyCredentials}
+                                            variant="outline"
+                                            className="flex-1"
+                                        >
+                                            {copied ? (
+                                                <Check className="h-4 w-4 mr-2" />
+                                            ) : (
+                                                <Copy className="h-4 w-4 mr-2" />
+                                            )}
+                                            {copied ? "Copied!" : "Copy Credentials"}
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setNewUserResult(null);
+                                                setAddUserOpen(false);
+                                            }}
+                                        >
+                                            Done
+                                        </Button>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <DialogHeader>
+                                    <DialogTitle>Create New User</DialogTitle>
+                                    <DialogDescription>
+                                        Create a new user and add them to {organization.name}
+                                    </DialogDescription>
+                                </DialogHeader>
+                                {error && (
+                                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+                                        {error}
+                                    </div>
+                                )}
+                                <form onSubmit={handleAddUser} className="space-y-4 mt-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="userName">Name *</Label>
+                                        <Input
+                                            id="userName"
+                                            name="userName"
+                                            placeholder="John Doe"
+                                            required
+                                            disabled={isAddingUser}
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="userEmail">Email *</Label>
+                                        <Input
+                                            id="userEmail"
+                                            name="userEmail"
+                                            type="email"
+                                            placeholder="john@example.com"
+                                            required
+                                            disabled={isAddingUser}
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="userRole">Role *</Label>
+                                        <Select name="userRole" defaultValue="ANALYST">
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select role" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="OWNER">Owner</SelectItem>
+                                                <SelectItem value="ADMIN">Admin</SelectItem>
+                                                <SelectItem value="ANALYST">Analyst</SelectItem>
+                                                <SelectItem value="VIEWER">Viewer</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex justify-end gap-2 pt-4">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => setAddUserOpen(false)}
+                                            disabled={isAddingUser}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button type="submit" disabled={isAddingUser}>
+                                            {isAddingUser && (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            )}
+                                            Create User
+                                        </Button>
+                                    </div>
+                                </form>
+                            </>
+                        )}
+                    </DialogContent>
+                </Dialog>
+
+                {/* Add Existing User Dialog */}
+                <Dialog open={addExistingOpen} onOpenChange={setAddExistingOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add Existing User</DialogTitle>
+                            <DialogDescription>
+                                Select a user to add to {organization.name}
+                            </DialogDescription>
+                        </DialogHeader>
+                        {error && (
+                            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+                                {error}
+                            </div>
+                        )}
+                        <div className="space-y-4 mt-4">
+                            <div className="grid gap-2">
+                                <Label>Select User *</Label>
+                                <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                                    <SelectTrigger disabled={loadingUsers}>
+                                        <SelectValue placeholder={loadingUsers ? "Loading..." : "Select a user"} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {existingUsers.map((user) => (
+                                            <SelectItem key={user.id} value={user.id}>
+                                                {user.name || user.email} ({user.email})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>Role *</Label>
+                                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="OWNER">Owner</SelectItem>
+                                        <SelectItem value="ADMIN">Admin</SelectItem>
+                                        <SelectItem value="ANALYST">Analyst</SelectItem>
+                                        <SelectItem value="VIEWER">Viewer</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex justify-end gap-2 pt-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setAddExistingOpen(false)}
+                                    disabled={isAddingUser}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleAddExistingUser}
+                                    disabled={isAddingUser || !selectedUserId}
+                                >
+                                    {isAddingUser && (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    )}
+                                    Add to Organization
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
                 <table className="w-full">
                     <thead>
                         <tr className="border-b border-border bg-muted/30">
