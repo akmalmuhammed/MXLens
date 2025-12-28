@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 
 export default auth((req) => {
     const { nextUrl } = req;
-    const hostname = req.headers.get("host");
+    const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
+    const hostname = host.split(":")[0]; // Handle localhost:3000 case implicitly
 
     const isLoggedIn = !!req.auth?.user;
     const isDashboard = nextUrl.pathname.startsWith("/dashboard");
@@ -11,7 +12,7 @@ export default auth((req) => {
     const isAuthPage = nextUrl.pathname.startsWith("/auth"); // Main site auth
 
     // Check if we are on the admin subdomain
-    const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost:3000";
+    const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost";
 
     // -------------------------------------------------------------------------
     // ADMIN SUBDOMAIN LOGIC
