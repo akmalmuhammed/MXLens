@@ -19,6 +19,10 @@ import { useSession } from "next-auth/react";
 import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
 import { IncidentWorkbench } from "@/components/email/analyzer/IncidentWorkbench";
 import { getAnalysisTriageState } from "@/actions/analysis";
+import { IPGeolocationMap } from "@/components/analysis/IPGeolocationMap";
+import { fetchIPGeolocations } from "@/actions/geolocation";
+import { extractIPsFromHeaders } from "@/lib/threat-intel/geolocation";
+import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -60,9 +64,31 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
     const [mode, setMode] = useState<"analyst" | "raw" | "it">("analyst");
     const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
     const [triageStatus, setTriageStatus] = useState<string | null>(null);
+    const [ipLocations, setIpLocations] = useState<GeoLocation[]>([]);
+    const [loadingGeo, setLoadingGeo] = useState(false);
 
     // Check if this is a team/enterprise user for additional features
     const isTeamPlan = userPlan === "TEAM" || userPlan === "ENTERPRISE" || userPlan === "PRO";
+
+    // Fetch IP geolocation data on mount
+    useEffect(() => {
+        async function loadGeoData() {
+            if (!analysis?.header?.headers) return;
+            setLoadingGeo(true);
+            try {
+                const ips = extractIPsFromHeaders(analysis.header.headers);
+                if (ips.length > 0) {
+                    const locations = await fetchIPGeolocations(ips);
+                    setIpLocations(locations);
+                }
+            } catch (error) {
+                console.error("Failed to fetch IP geolocation:", error);
+            } finally {
+                setLoadingGeo(false);
+            }
+        }
+        loadGeoData();
+    }, [analysis?.header?.headers]);
 
     const handleDownloadJSON = () => {
         const exportData = {
@@ -295,6 +321,21 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
 
                         <div className="pt-8 border-t border-border/40">
                             <InteractiveHops hops={analysis.header.hops} />
+
+                            {/* IP Geolocation Map */}
+                            <div className="pt-8 space-y-4">
+                                <h3 className="font-semibold text-xl font-heading text-foreground/90 flex items-center gap-2">
+                                    🗺️ Sender Route Map
+                                </h3>
+                                {loadingGeo ? (
+                                    <div className="h-[350px] bg-muted/20 rounded-xl border animate-pulse flex items-center justify-center">
+                                        <span className="text-muted-foreground">Loading geolocation data...</span>
+                                    </div>
+                                ) : (
+                                    <IPGeolocationMap locations={ipLocations} />
+                                )}
+                            </div>
+
                             <div className="pt-8">
                                 <AnalysisRecommendations verdict={analysis.scoring.verdict.verdict} />
                             </div>
