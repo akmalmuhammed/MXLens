@@ -137,15 +137,12 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                 });
 
                 if (savedLog && savedLog.id) {
-                    // Redirect to persistent analysis page (survives refresh)
-                    router.push(`/analysis/${savedLog.id}`);
-                    return; // Stop here, let the new page take over
+                    // Just update state with ID - stay on same page
+                    setAnalysis(prev => prev ? ({ ...prev, id: savedLog.id }) : null);
                 }
 
             } catch (err) {
                 console.error("Failed to save analysis history:", err);
-                // Still show results locally if save fails
-                setAnalysis(prev => prev ? ({ ...prev, id: undefined }) : null);
             }
 
         } catch (e: any) {

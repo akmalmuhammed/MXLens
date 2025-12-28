@@ -61,19 +61,8 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
     const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
     const [triageStatus, setTriageStatus] = useState<string | null>(null);
 
-    // TEAM PLAN: Render Incident Workbench
-    // NOTE: All hooks MUST be called before this return
-    if ((userPlan === "TEAM" || userPlan === "ENTERPRISE") && analysis.id) {
-        return (
-            <IncidentWorkbench
-                analysis={analysis}
-                initialStatus="OPEN"
-                initialSeverity="MEDIUM"
-                incidentId="#INC-PENDING" // TODO: Fetch actual ID
-                currentUser={session?.user}
-            />
-        );
-    }
+    // Check if this is a team/enterprise user for additional features
+    const isTeamPlan = userPlan === "TEAM" || userPlan === "ENTERPRISE" || userPlan === "PRO";
 
     const handleDownloadJSON = () => {
         const exportData = {
