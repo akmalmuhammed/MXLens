@@ -487,6 +487,9 @@ function TriageDialog({ analysisId, onStatusChange }: { analysisId: string, onSt
                             initialClassification={triageData?.classification || null}
                             initialComments={triageData?.comments || []}
                             currentUserEmail={session.user.email || ""}
+                            onStatusChange={(status) => {
+                                if (onStatusChange) onStatusChange(status);
+                            }}
                         />
                     )}
                 </div>

@@ -29,6 +29,7 @@ interface AnalystTriagePanelProps {
     initialClassification: AnalysisClassification | null;
     initialComments: Comment[];
     currentUserEmail: string;
+    onStatusChange?: (status: TriageStatus) => void; // Callback for instant parent update
 }
 
 export function AnalystTriagePanel({
@@ -36,7 +37,8 @@ export function AnalystTriagePanel({
     initialStatus,
     initialClassification,
     initialComments,
-    currentUserEmail
+    currentUserEmail,
+    onStatusChange
 }: AnalystTriagePanelProps) {
     const [status, setStatus] = useState<TriageStatus>(initialStatus);
     const [classification, setClassification] = useState<AnalysisClassification | null>(initialClassification);
@@ -47,7 +49,10 @@ export function AnalystTriagePanel({
 
     async function handleStatusChange(newStatus: TriageStatus) {
         setStatus(newStatus);
-        await updateTriageStatus(analysisId, newStatus);
+        // Immediately notify parent for instant UI update
+        if (onStatusChange) onStatusChange(newStatus);
+        // Then persist to server (non-blocking)
+        updateTriageStatus(analysisId, newStatus);
     }
 
     async function handleClassificationChange(value: string) {
