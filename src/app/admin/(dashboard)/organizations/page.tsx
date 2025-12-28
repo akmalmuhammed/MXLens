@@ -82,10 +82,12 @@ export default function OrganizationsPage() {
                         Manage all organizations on the platform
                     </p>
                 </div>
-                <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Create Organization
-                </Button>
+                <Link href="/admin/organizations/new">
+                    <Button className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Create Organization
+                    </Button>
+                </Link>
             </div>
 
             {/* Stats */}
@@ -173,10 +175,10 @@ export default function OrganizationsPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${org.plan === "ENTERPRISE"
-                                                ? "bg-primary/20 text-primary border-primary/30"
-                                                : org.plan === "PRO"
-                                                    ? "bg-secure/20 text-secure border-secure/30"
-                                                    : "bg-muted text-muted-foreground border-border"
+                                            ? "bg-primary/20 text-primary border-primary/30"
+                                            : org.plan === "PRO"
+                                                ? "bg-secure/20 text-secure border-secure/30"
+                                                : "bg-muted text-muted-foreground border-border"
                                             }`}>
                                             {org.plan}
                                         </span>
