@@ -193,9 +193,11 @@ export function AdminHeader() {
                             Settings
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive">
-                            <LogOut className="mr-2 h-4 w-4" />
-                            Logout
+                        <DropdownMenuItem className="text-destructive focus:text-destructive" asChild>
+                            <a href="/admin/auth/signout">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Logout
+                            </a>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

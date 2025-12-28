@@ -1,5 +1,13 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+// Helper to check for Better Auth admin session cookie
+function hasAdminSession(request: NextRequest): boolean {
+    // Better Auth uses "admin.session_token" as cookie name with prefix "admin"
+    const sessionCookie = request.cookies.get("admin.session_token");
+    return !!sessionCookie?.value;
+}
 
 export default auth((req) => {
     const { nextUrl } = req;
@@ -14,44 +22,28 @@ export default auth((req) => {
     const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost";
 
     // -------------------------------------------------------------------------
-    // DEBUG: Return auth state for /api/debug/middleware
-    // -------------------------------------------------------------------------
-    if (nextUrl.pathname === "/api/debug/middleware") {
-        return NextResponse.json({
-            hostname,
-            isAdminSubdomain,
-            isLoggedIn,
-            auth: req.auth,
-            user: req.auth?.user,
-            isPlatformAdmin: req.auth?.user?.isPlatformAdmin,
-        });
-    }
-
-    // -------------------------------------------------------------------------
-    // ADMIN SUBDOMAIN LOGIC
+    // ADMIN SUBDOMAIN LOGIC (Using Better Auth)
     // -------------------------------------------------------------------------
     if (isAdminSubdomain) {
-        // Allow access to the Dedicated Admin Login Page
-        if (nextUrl.pathname === "/admin/auth/signin") {
+        // Allow access to admin auth routes (login, logout, API)
+        if (nextUrl.pathname.startsWith("/admin/auth") || nextUrl.pathname.startsWith("/api/admin/auth")) {
             return NextResponse.next();
         }
 
-        // 1. Enforce Login
-        if (!isLoggedIn) {
+        // Check for Better Auth admin session
+        const hasSession = hasAdminSession(req);
+
+        if (!hasSession) {
             return NextResponse.redirect("https://admin.mxlens.com/admin/auth/signin");
         }
 
-        // 2. Enforce Admin Role
-        const isPlatformAdmin = Boolean(req.auth?.user?.isPlatformAdmin);
-        if (!isPlatformAdmin) {
-            return NextResponse.redirect("https://mxlens.com/dashboard");
-        }
-
-        // 3. Rewrite Logic
+        // User has admin session - allow access
+        // Rewrite root "/" to "/admin"
         if (nextUrl.pathname === "/") {
             return NextResponse.rewrite("https://admin.mxlens.com/admin");
         }
 
+        // Rewrite other paths to /admin/...
         if (!nextUrl.pathname.startsWith("/admin")) {
             return NextResponse.rewrite(`https://admin.mxlens.com/admin${nextUrl.pathname}`);
         }
