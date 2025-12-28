@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import DOMPurify from "isomorphic-dompurify";
 import {
     ShieldAlert,
     BookOpen,
@@ -128,7 +129,15 @@ export function IncidentWorkbench({ analysis, initialStatus, initialSeverity, in
                                 Email Content Preview
                             </div>
                             <div className="p-8 prose dark:prose-invert max-w-none">
-                                <div dangerouslySetInnerHTML={{ __html: analysis.emailContent.html || `<pre>${analysis.emailContent.text}</pre>` }} />
+                                <div dangerouslySetInnerHTML={{
+                                    __html: DOMPurify.sanitize(
+                                        analysis.emailContent.html || `<pre>${analysis.emailContent.text}</pre>`,
+                                        {
+                                            FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'object', 'embed', 'link'],
+                                            FORBID_ATTR: ['style', 'onerror', 'onload', 'onclick', 'onmouseover', 'action', 'formaction']
+                                        }
+                                    )
+                                }} />
                             </div>
                         </div>
                     </div>

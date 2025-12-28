@@ -85,6 +85,51 @@ export async function POST(req: Request) {
             }
         }
 
+        // Handle failed payment - mark as past_due
+        if (event.type === "invoice.payment_failed") {
+            const invoice = event.data.object as Stripe.Invoice;
+            const subscriptionId = invoice.subscription as string;
+
+            if (subscriptionId) {
+                const org = await db.organization.findFirst({ where: { subscriptionId } });
+                if (org) {
+                    await db.organization.update({
+                        where: { id: org.id },
+                        data: { subscriptionStatus: "past_due" }
+                    });
+                    console.log(`Org ${org.id} marked as past_due due to payment failure`);
+                }
+            }
+        }
+
+        // Handle subscription updates (plan changes, etc.)
+        if (event.type === "customer.subscription.updated") {
+            const subscription = event.data.object as Stripe.Subscription;
+            const subscriptionId = subscription.id;
+
+            if (subscriptionId) {
+                const org = await db.organization.findFirst({ where: { subscriptionId } });
+                if (org) {
+                    // Update status based on subscription status
+                    const statusMap: Record<string, string> = {
+                        'active': 'active',
+                        'past_due': 'past_due',
+                        'canceled': 'canceled',
+                        'unpaid': 'past_due',
+                        'incomplete': 'past_due'
+                    };
+
+                    await db.organization.update({
+                        where: { id: org.id },
+                        data: {
+                            subscriptionStatus: statusMap[subscription.status] || subscription.status
+                        }
+                    });
+                    console.log(`Org ${org.id} subscription updated to ${subscription.status}`);
+                }
+            }
+        }
+
         return NextResponse.json({ received: true });
 
     } catch (error) {
