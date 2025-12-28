@@ -1,6 +1,7 @@
 "use client"; // Error components must be Client Components
 
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
@@ -13,7 +14,10 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log the error to an error reporting service
+        // Send error to Sentry for production monitoring
+        Sentry.captureException(error);
+
+        // Also log locally for debugging
         console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error caught:", error);
         console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error message:", error.message);
         console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error stack:", error.stack);
