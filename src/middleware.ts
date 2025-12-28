@@ -25,8 +25,8 @@ export default auth((req) => {
     // ADMIN SUBDOMAIN LOGIC (Using Better Auth)
     // -------------------------------------------------------------------------
     if (isAdminSubdomain) {
-        // Allow access to admin auth routes (login, logout, API)
-        if (nextUrl.pathname.startsWith("/admin/auth") || nextUrl.pathname.startsWith("/api/admin/auth")) {
+        // Allow access to admin auth routes, API routes, and login/logout pages
+        if (nextUrl.pathname.startsWith("/admin/auth") || nextUrl.pathname.startsWith("/api")) {
             return NextResponse.next();
         }
 
