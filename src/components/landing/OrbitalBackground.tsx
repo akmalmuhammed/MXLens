@@ -47,6 +47,8 @@ const OrbitCircle = ({
                 top: `calc(50% - ${size / 2}px + ${offsetY}px)`,
                 opacity,
                 filter: blur ? "blur(1px)" : "none",
+                willChange: "transform",
+                transform: "translateZ(0)", // Force GPU layer
             }}
             animate={{
                 rotate: reverse ? -360 : 360,
