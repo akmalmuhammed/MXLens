@@ -194,7 +194,12 @@ export class SignalNormalizer {
         const credential = /\b(password|credential|login|sign in|verify account|update security)\b/i;
 
         // HTML Forms
-        const hasForm = /<form|<input[^>]*type=["']?password["']?|action=["']?/i.test(html);
+        // ReDoS Mitigation: Avoid catastrophic backtracking on open-ended tags
+        // Limit the search scope for attributes to reasonable lengths
+        const hasForm =
+            /<form[\s>]/i.test(html) ||
+            /<input(?:\s+[^>]{0,1000})?\s+type=["']?password["']?/i.test(html) ||
+            /action\s*=\s*["'][^"']{0,1000}["']/i.test(html);
 
         // Links
         const urlRegex = /https?:\/\/[^\s<>"']+/g;

@@ -133,8 +133,10 @@ export function IncidentWorkbench({ analysis, initialStatus, initialSeverity, in
                                     __html: DOMPurify.sanitize(
                                         analysis.emailContent.html || `<pre>${analysis.emailContent.text}</pre>`,
                                         {
-                                            FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'object', 'embed', 'link'],
-                                            FORBID_ATTR: ['style', 'onerror', 'onload', 'onclick', 'onmouseover', 'action', 'formaction']
+                                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'pre', 'code', 'blockquote', 'img'],
+                                            ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'title', 'class', 'width', 'height'],
+                                            FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'object', 'embed', 'link', 'meta', 'base'],
+                                            ADD_ATTR: ['target'],
                                         }
                                     )
                                 }} />

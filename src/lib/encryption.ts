@@ -3,14 +3,17 @@ import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 
 // Use a secure key from environment or fallback for dev (WARN in logs)
 const ALGORITHM = "aes-256-gcm";
-const IV_LENGTH = 16; // 128-bit IV for GCM
+const IV_LENGTH = 16;
+// FAIL SECURE: Never use a hardcoded fallback in production
 const KEY = process.env.ENCRYPTION_KEY
     ? Buffer.from(process.env.ENCRYPTION_KEY, "hex")
-    : Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex"); // 32 bytes
-
-if (!process.env.ENCRYPTION_KEY && process.env.NODE_ENV === "production") {
-    console.error("FATAL: ENCRYPTION_KEY is not set in production. Secrets are using a known zero-key.");
-}
+    : (() => {
+        if (process.env.NODE_ENV === "production") {
+            throw new Error("FATAL: ENCRYPTION_KEY is missing in production");
+        }
+        console.warn("WARNING: Using insecure dev key for encryption");
+        return Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
+    })();
 
 export interface EncryptedData {
     iv: string;
