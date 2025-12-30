@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react"
 import { Navbar } from "@/components/layout/Navbar";
 import { NavbarUtils } from "@/components/layout/NavbarUtils";
 import { auth } from "@/auth";
+import { PostHogProvider } from "@/providers/PostHogProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -45,16 +46,18 @@ export default async function RootLayout({
       <body className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <SessionProvider session={session}>
-            {/* Skip Link for Keyboard Users */}
-            <a href="#main-content" className="skip-link">
-              Skip to main content
-            </a>
-            <NavbarUtils>
-              <Navbar />
-            </NavbarUtils>
-            <main id="main-content" className="min-h-screen" role="main">
-              {children}
-            </main>
+            <PostHogProvider>
+              {/* Skip Link for Keyboard Users */}
+              <a href="#main-content" className="skip-link">
+                Skip to main content
+              </a>
+              <NavbarUtils>
+                <Navbar />
+              </NavbarUtils>
+              <main id="main-content" className="min-h-screen" role="main">
+                {children}
+              </main>
+            </PostHogProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>
