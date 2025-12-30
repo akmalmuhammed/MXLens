@@ -15,7 +15,7 @@ const badges = [
 
 export const HeroSection = () => {
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-16">
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 {/* Background image placeholder - replaced with gradient for now */}
@@ -41,7 +41,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 mb-8"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 mb-6"
                     >
                         <Shield className="w-4 h-4 text-primary" />
                         <span className="text-sm font-mono text-primary">
@@ -54,7 +54,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.1 }}
-                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4"
                     >
                         <span className="text-foreground">Email Intelligence.</span>
                         <br />
@@ -66,7 +66,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.2 }}
-                        className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+                        className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
                     >
                         The first completely client-side analysis engine. Drag, drop, and
                         dissect suspicious emails without them ever leaving your browser.
@@ -78,7 +78,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.3 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10"
                     >
                         <Button className="group w-full sm:w-auto text-lg h-14 px-8 rounded-full shadow-glow" size="lg" asChild>
                             <Link href="/analyze">
