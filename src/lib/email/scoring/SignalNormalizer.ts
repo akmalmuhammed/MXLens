@@ -44,7 +44,8 @@ export class SignalNormalizer {
             rawIpLinks: false,
             extractedUrls: [] as string[],
             homoglyphDetected: false,
-            brandInBody: null as string | null
+            brandInBody: null as string | null,
+            hasHiddenText: false
         };
 
         if (options.checkBody && emailBody) {
