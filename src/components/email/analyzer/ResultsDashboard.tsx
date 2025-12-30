@@ -427,9 +427,10 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                     className="prose max-w-none"
                                     dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(analysis.emailContent.html, {
-                                            USE_PROFILES: { html: true },
-                                            FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'object', 'embed', 'link'],
-                                            FORBID_ATTR: ['style', 'on*', 'action', 'formaction'] // Strict sanitization
+                                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'pre', 'code', 'blockquote', 'img'],
+                                            ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'title', 'class', 'width', 'height'],
+                                            FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'object', 'embed', 'link', 'meta', 'base'],
+                                            ADD_ATTR: ['target'],
                                         })
                                     }}
                                 />
