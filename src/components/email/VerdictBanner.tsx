@@ -19,32 +19,36 @@ export function VerdictBanner({ verdict, score, confidence, reason, factors }: V
             title: "Likely Legitimate",
             variant: "default" as const,
             color: "text-green-600 dark:text-green-400",
-            borderColor: "border-green-200 dark:border-green-900",
-            bgColor: "bg-green-50 dark:bg-green-900/20"
+            borderColor: "border-green-200/50 dark:border-green-900/50",
+            bgColor: "bg-green-50/60 dark:bg-green-900/10",
+            gradientFrom: "from-green-500/5 to-transparent"
         },
         'Suspicious': {
             icon: AlertTriangle,
             title: "Suspicious",
             variant: "destructive" as const,
             color: "text-amber-600 dark:text-amber-400",
-            borderColor: "border-amber-200 dark:border-amber-900",
-            bgColor: "bg-amber-50 dark:bg-amber-900/20"
+            borderColor: "border-amber-200/50 dark:border-amber-900/50",
+            bgColor: "bg-amber-50/60 dark:bg-amber-900/10",
+            gradientFrom: "from-amber-500/5 to-transparent"
         },
         'High Risk': {
             icon: ShieldAlert,
             title: "High Risk",
             variant: "destructive" as const,
-            color: "text-red-700 dark:text-red-500",
-            borderColor: "border-red-200 dark:border-red-900",
-            bgColor: "bg-red-50 dark:bg-red-900/20"
+            color: "text-red-700 dark:text-red-500/90",
+            borderColor: "border-red-200/50 dark:border-red-900/50",
+            bgColor: "bg-red-50/60 dark:bg-red-900/10",
+            gradientFrom: "from-red-500/5 to-transparent"
         },
         'Unknown': {
             icon: AlertCircle,
             title: "Unknown Verdict",
             variant: "default" as const,
             color: "text-blue-600 dark:text-blue-400",
-            borderColor: "border-blue-200 dark:border-blue-900",
-            bgColor: "bg-blue-50 dark:bg-blue-900/20"
+            borderColor: "border-blue-200/50 dark:border-blue-900/50",
+            bgColor: "bg-blue-50/60 dark:bg-blue-900/10",
+            gradientFrom: "from-blue-500/5 to-transparent"
         }
     };
 
@@ -52,7 +56,7 @@ export function VerdictBanner({ verdict, score, confidence, reason, factors }: V
     const Icon = current.icon;
 
     return (
-        <Alert className={`${current.bgColor} ${current.borderColor} transition-colors duration-200`}>
+        <Alert className={`${current.bgColor} ${current.borderColor} backdrop-blur-sm bg-gradient-to-r ${current.gradientFrom} transition-colors duration-200`}>
             <div className="flex items-start gap-4">
                 <Icon className={`h-6 w-6 mt-1 ${current.color}`} />
                 <div className="flex-1">

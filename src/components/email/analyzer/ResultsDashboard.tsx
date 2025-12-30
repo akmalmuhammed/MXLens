@@ -184,7 +184,7 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
 
                     <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 
-                    <Button variant="default" size="sm" onClick={onClear} className="shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
+                    <Button variant="default" size="sm" onClick={onClear} className="shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all bg-primary/80 hover:bg-primary/90">
                         New Analysis
                     </Button>
                 </div>
@@ -247,7 +247,7 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Left Column */}
                     <div className="lg:col-span-8 space-y-8">
-                        <div className="bg-muted/10 p-4 rounded-xl border border-white/5">
+                        <div className="bg-card/60 backdrop-blur-sm p-4 rounded-xl border border-border/50">
                             <PrivacyControls
                                 analyzeBody={analyzeBody}
                                 setAnalyzeBody={setAnalyzeBody}
@@ -287,11 +287,11 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                         </div>
 
                         {analysis.header.impersonationAlert && (
-                            <div className="bg-red-950/20 border border-red-500/30 p-6 rounded-xl flex items-start gap-4 shadow-sm backdrop-blur-sm">
-                                <ShieldAlert className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
+                            <div className="bg-red-950/10 border border-red-500/20 p-6 rounded-xl flex items-start gap-4 shadow-sm backdrop-blur-sm">
+                                <ShieldAlert className="w-6 h-6 text-red-500/80 shrink-0 mt-0.5" />
                                 <div>
-                                    <h4 className="font-bold text-red-500 text-lg">Potential Impersonation Detected</h4>
-                                    <p className="text-red-200/90 mt-1 leading-relaxed">{analysis.header.impersonationAlert}</p>
+                                    <h4 className="font-bold text-red-500/90 text-lg">Potential Impersonation Detected</h4>
+                                    <p className="text-red-200/70 mt-1 leading-relaxed">{analysis.header.impersonationAlert}</p>
                                 </div>
                             </div>
                         )}

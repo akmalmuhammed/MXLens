@@ -21,8 +21,8 @@ export function ExtractedArtifactsCard({ ips, urls, attachments, fromDomain }: E
     };
 
     return (
-        <div className="border rounded-xl p-0 bg-card/50 shadow-sm overflow-hidden">
-            <div className="bg-muted/30 px-4 py-3 border-b flex items-center justify-between">
+        <div className="border border-border/50 rounded-xl p-0 bg-card/60 backdrop-blur-sm shadow-sm overflow-hidden">
+            <div className="bg-muted/20 px-4 py-3 border-b border-border/50 flex items-center justify-between">
                 <h3 className="font-semibold flex items-center gap-2">
                     <FileKey className="w-4 h-4 text-primary" />
                     Extracted Artifacts
