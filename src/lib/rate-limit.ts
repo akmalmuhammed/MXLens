@@ -1,62 +1,100 @@
-import { LRUCache } from "lru-cache";
+import { Redis } from "@upstash/redis";
+import { Ratelimit } from "@upstash/ratelimit";
 
-type RateLimitOptions = {
-    uniqueTokenPerInterval?: number;
-    interval?: number;
-};
+// Initialize Redis client (lazy, serverless-safe)
+let redis: Redis | null = null;
 
+function getRedis(): Redis {
+    if (!redis) {
+        const url = process.env.UPSTASH_REDIS_REST_URL;
+        const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+        if (!url || !token) {
+            throw new Error("Upstash Redis credentials missing. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.");
+        }
+
+        redis = new Redis({ url, token });
+    }
+    return redis;
+}
+
+// Pre-configured rate limiters for different use cases
+// These are globally shared across all serverless instances
+
+/**
+ * Admin API rate limiter: 100 requests per minute
+ */
+export const adminRateLimiter = new Ratelimit({
+    redis: getRedis(),
+    limiter: Ratelimit.slidingWindow(100, "1 m"),
+    prefix: "ratelimit:admin",
+    analytics: true,
+});
+
+/**
+ * General API rate limiter: 60 requests per minute per IP
+ */
+export const apiRateLimiter = new Ratelimit({
+    redis: getRedis(),
+    limiter: Ratelimit.slidingWindow(60, "1 m"),
+    prefix: "ratelimit:api",
+    analytics: true,
+});
+
+/**
+ * Analysis rate limiter: 10 requests per minute (per user/org)
+ */
+export const analysisRateLimiter = new Ratelimit({
+    redis: getRedis(),
+    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    prefix: "ratelimit:analysis",
+    analytics: true,
+});
+
+/**
+ * Webhook rate limiter: 30 requests per minute per IP
+ */
+export const webhookRateLimiter = new Ratelimit({
+    redis: getRedis(),
+    limiter: Ratelimit.slidingWindow(30, "1 m"),
+    prefix: "ratelimit:webhook",
+    analytics: true,
+});
+
+/**
+ * Generic rate limit function for ad-hoc use
+ * @param identifier - Unique identifier (IP, user ID, etc.)
+ * @param limit - Max requests allowed
+ * @param window - Time window (e.g., "1 m", "1 h", "1 d")
+ */
+export async function rateLimit(
+    identifier: string,
+    limit: number = 60,
+    window: string = "1 m"
+): Promise<{ success: boolean; remaining: number; reset: number }> {
+    const limiter = new Ratelimit({
+        redis: getRedis(),
+        limiter: Ratelimit.slidingWindow(limit, window as any),
+        prefix: "ratelimit:adhoc",
+    });
+
+    const result = await limiter.limit(identifier);
+
+    return {
+        success: result.success,
+        remaining: result.remaining,
+        reset: result.reset,
+    };
+}
+
+// Legacy compatibility - deprecated, use specific limiters above
 export class RateLimit {
-    tokenCache: LRUCache<string, number[]>;
-    interval: number;
-    uniqueTokenPerInterval: number;
-
-    constructor(options: RateLimitOptions = {}) {
-        this.uniqueTokenPerInterval = options.uniqueTokenPerInterval || 500;
-        this.interval = options.interval || 60000;
-        this.tokenCache = new LRUCache({
-            max: this.uniqueTokenPerInterval,
-            ttl: this.interval,
-        });
-    }
-
-    check(limit: number, token: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const tokenCount = (this.tokenCache.get(token) as number[]) || [0];
-            if (tokenCount[0] === 0) {
-                this.tokenCache.set(token, [1]);
-            } else {
-                this.tokenCache.set(token, [tokenCount[0] + 1]);
-            }
-            const currentUsage = this.tokenCache.get(token) as number[];
-
-            if (currentUsage[0] > limit) {
-                reject();
-            } else {
-                resolve();
-            }
-        });
+    async check(limit: number, token: string): Promise<void> {
+        const result = await rateLimit(token, limit, "1 m");
+        if (!result.success) {
+            throw new Error("Rate limit exceeded");
+        }
     }
 }
 
-export const adminRateLimit = new RateLimit({
-    interval: 60 * 1000, // 1 minute
-    uniqueTokenPerInterval: 500,
-});
-
-// Shared cache for ad-hoc limits (like webhooks)
-const globalLimiter = new RateLimit({
-    interval: 60 * 1000,
-    uniqueTokenPerInterval: 2000,
-});
-
-export async function rateLimit(identifier: string, limit: number, duration: number) {
-    // Note: duration is ignored here because we reuse the globalLimiter which has fixed 60s ttl
-    // For more complex usage, we'd need a map of limiters. 
-    // This is sufficient for the current audit requirements.
-    try {
-        await globalLimiter.check(limit, identifier);
-        return { success: true };
-    } catch {
-        return { success: false };
-    }
-}
+export const adminRateLimit = new RateLimit();

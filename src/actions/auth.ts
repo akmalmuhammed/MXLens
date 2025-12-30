@@ -24,7 +24,7 @@ export async function registerUser(formData: FormData) {
     // Rate Limit: 5 registrations per hour per IP (simulated by email domain/hash for now as server actions don't easily give IP without headers())
     // Note: In Next.js Server Actions, obtaining IP requires headers().get("x-forwarded-for")
     // We will use a global limiter for now to prevent massive bot spam.
-    const limitStatus = await rateLimit("register_global", 10, 60); // 10 per minute global
+    const limitStatus = await rateLimit("register_global", 10, "1 m"); // 10 per minute global
     if (!limitStatus.success) {
         return { error: "Too many requests. Please try again later." };
     }

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         // Rate Limit: 100 req/min for webhooks (generous for bursts)
         // SECURITY: x-forwarded-for is spoofable unless behind a trusted proxy (Vercel overrides this safely)
         const ip = (await headers()).get("x-forwarded-for")?.split(',')[0] || "unknown";
-        const limit = await rateLimit(ip, 100, 60000); // 100 reqs per 60s
+        const limit = await rateLimit(ip, 100, "1 m"); // 100 reqs per minute
         if (!limit.success) {
             return NextResponse.json({ error: "Too Many Requests" }, { status: 429 });
         }
