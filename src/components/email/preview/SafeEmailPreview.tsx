@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { SafeSanitizer } from "@/lib/email/sanitizer";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, ShieldCheck, Image as ImageIcon } from "lucide-react";
@@ -13,7 +13,7 @@ interface SafeEmailPreviewProps {
 export function SafeEmailPreview({ html }: SafeEmailPreviewProps) {
     const [allowImages, setAllowImages] = useState(false);
     const [sanitizedHtml, setSanitizedHtml] = useState("");
-    const iframeRef = useRef<HTMLIFrameElement>(null);
+
 
     useEffect(() => {
         // Sanitize content whenever html or image preference changes
@@ -21,35 +21,7 @@ export function SafeEmailPreview({ html }: SafeEmailPreviewProps) {
         setSanitizedHtml(safe);
     }, [html, allowImages]);
 
-    useEffect(() => {
-        // Inject sanitized HTML into iframe
-        if (iframeRef.current) {
-            const doc = iframeRef.current.contentDocument;
-            if (doc) {
-                doc.open();
-                doc.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="utf-8">
-                        <style>
-                            body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; margin: 0; padding: 16px; color: #333; word-wrap: break-word; }
-                            img[data-original-src] { cursor: pointer; opacity: 0.5; }
-                            /* Scrollbar styling to match app a bit */
-                            ::-webkit-scrollbar { width: 8px; height: 8px; }
-                            ::-webkit-scrollbar-track { background: #f1f1f1; }
-                            ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-                        </style>
-                    </head>
-                    <body>
-                        ${sanitizedHtml}
-                    </body>
-                    </html>
-                `);
-                doc.close();
-            }
-        }
-    }, [sanitizedHtml]);
+
 
     return (
         <div className="flex flex-col h-full bg-background border rounded-xl overflow-hidden shadow-sm">
@@ -98,10 +70,28 @@ export function SafeEmailPreview({ html }: SafeEmailPreviewProps) {
             <div className="flex-1 relative bg-white">
                 {/* Bg white because emails are usually designed for white paper */}
                 <iframe
-                    ref={iframeRef}
                     title="Safe Email Preview"
                     sandbox="allow-popups" // NO allow-scripts!
                     className="absolute inset-0 w-full h-full border-0"
+                    srcDoc={`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="utf-8">
+                            <style>
+                                body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; margin: 0; padding: 16px; color: #333; word-wrap: break-word; }
+                                img[data-original-src] { cursor: pointer; opacity: 0.5; }
+                                /* Scrollbar styling to match app a bit */
+                                ::-webkit-scrollbar { width: 8px; height: 8px; }
+                                ::-webkit-scrollbar-track { background: #f1f1f1; }
+                                ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+                            </style>
+                        </head>
+                        <body>
+                            ${sanitizedHtml}
+                        </body>
+                        </html>
+                    `}
                 />
             </div>
         </div>
