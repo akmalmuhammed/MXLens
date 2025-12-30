@@ -80,8 +80,8 @@ export function ExtractedArtifactsCard({ ips, urls, attachments, fromDomain }: E
                         <h4 className="text-xs font-bold uppercase text-muted-foreground mb-3 flex items-center gap-2">
                             <Link2 className="w-3 h-3" /> Suspicious Links
                         </h4>
-                        <div className="space-y-2">
-                            {urls.slice(0, 10).map((url, idx) => {
+                        <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                            {urls.map((url, idx) => {
                                 try {
                                     const domain = new URL(url).hostname;
                                     return (
@@ -104,11 +104,6 @@ export function ExtractedArtifactsCard({ ips, urls, attachments, fromDomain }: E
                                     return null;
                                 }
                             })}
-                            {urls.length > 10 && (
-                                <div className="text-xs text-muted-foreground text-center pt-1">
-                                    + {urls.length - 10} more links hidden
-                                </div>
-                            )}
                         </div>
                     </div>
                 )}
