@@ -54,7 +54,7 @@ export function Hero() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Check className="w-5 h-5 text-primary" />
-                        <span>Open Source Core</span>
+                        <span>Privacy First</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <Check className="w-5 h-5 text-primary" />

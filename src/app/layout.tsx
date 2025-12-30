@@ -39,8 +39,12 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <SessionProvider session={session}>
+            {/* Skip Link for Keyboard Users */}
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
             <Navbar />
-            <main className="min-h-screen">
+            <main id="main-content" className="min-h-screen" role="main">
               {children}
             </main>
           </SessionProvider>
