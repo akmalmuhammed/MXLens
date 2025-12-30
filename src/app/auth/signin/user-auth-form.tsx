@@ -73,6 +73,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                         ) : null}
                         Sign In
                     </Button>
+                    <div className="text-center">
+                        <a href="/auth/reset-password" className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline">
+                            Forgot your password?
+                        </a>
+                    </div>
                 </div>
             </form>
 

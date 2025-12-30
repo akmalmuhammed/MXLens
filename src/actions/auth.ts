@@ -82,7 +82,18 @@ export async function registerUser(formData: FormData) {
                     }
                 }
             });
+
+            return user;
         });
+
+        // Send verification email (non-blocking)
+        try {
+            const { sendVerificationOnRegistration } = await import("@/actions/email-verification");
+            await sendVerificationOnRegistration(validEmail);
+        } catch (emailError) {
+            console.error("Failed to send verification email:", emailError);
+            // Don't fail registration if email fails
+        }
     } catch (error) {
         console.error("[REGISTER_USER_ERROR]", error);
         return { error: "Registration failed. Please try again." };
