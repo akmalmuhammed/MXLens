@@ -6,6 +6,8 @@ import Stripe from "stripe";
 import * as Sentry from "@sentry/nextjs";
 
 import { rateLimit } from "@/lib/rate-limit";
+import { alertBillingEvent } from "@/lib/slack";
+import { sendSubscriptionConfirmationEmail } from "@/lib/email";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -47,17 +49,37 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: "Missing orgId in metadata" }, { status: 400 });
             }
 
-            // 2. Update Organization Subscription
-            await db.organization.update({
+            // Update Organization Subscription
+            const org = await db.organization.update({
                 where: { id: orgId },
                 data: {
                     subscriptionStatus: "active",
-                    planTier: "PRO", // Upgrade tier
+                    planTier: "PRO",
                     stripeCustomerId: session.customer as string,
                     subscriptionId: session.subscription as string,
                 },
+                include: { members: { include: { user: true }, where: { role: "OWNER" } } }
             });
             console.log(`Org ${orgId} upgraded to Pro via Stripe`);
+
+            // Send alerts and emails
+            const ownerEmail = org.members[0]?.user?.email;
+            if (ownerEmail) {
+                await sendSubscriptionConfirmationEmail(
+                    ownerEmail,
+                    "Pro",
+                    session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : "N/A",
+                    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
+                );
+            }
+
+            // Slack alert for new subscription
+            await alertBillingEvent({
+                event: "subscription_created",
+                orgName: org.name,
+                planName: "Pro",
+                amount: session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : undefined
+            });
         }
 
         if (event.type === "invoice.payment_succeeded") {
@@ -87,8 +109,15 @@ export async function POST(req: Request) {
                         where: { id: org.id },
                         data: {
                             subscriptionStatus: "canceled",
-                            planTier: "FREE" // Downgrade
+                            planTier: "FREE"
                         }
+                    });
+
+                    // Alert on cancellation
+                    await alertBillingEvent({
+                        event: "subscription_cancelled",
+                        orgName: org.name,
+                        planName: "Pro → Free"
                     });
                 }
             }
@@ -96,7 +125,7 @@ export async function POST(req: Request) {
 
         // Handle failed payment - mark as past_due
         if (event.type === "invoice.payment_failed") {
-            const invoice = event.data.object as any; // Stripe Invoice type varies by version
+            const invoice = event.data.object as any;
             const subscriptionId = invoice.subscription as string | null;
 
             if (subscriptionId) {
@@ -107,6 +136,13 @@ export async function POST(req: Request) {
                         data: { subscriptionStatus: "past_due" }
                     });
                     console.log(`Org ${org.id} marked as past_due due to payment failure`);
+
+                    // Critical alert for payment failure
+                    await alertBillingEvent({
+                        event: "payment_failed",
+                        orgName: org.name,
+                        planName: "Pro"
+                    });
                 }
             }
         }
