@@ -8,15 +8,16 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
+          // Content Security Policy - Defense in Depth
           {
             key: 'Content-Security-Policy',
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.sentry.io https://js.stripe.com;
+              script-src 'self' 'unsafe-inline' https://*.sentry.io https://js.stripe.com;
               style-src 'self' 'unsafe-inline';
-              img-src 'self' blob: data: https://*.stripe.com;
+              img-src 'self' blob: data: https://*.stripe.com https://api.ipgeolocation.io;
               font-src 'self';
-              connect-src 'self' https://*.sentry.io https://api.stripe.com https://*.googleapis.com;
+              connect-src 'self' https://*.sentry.io https://api.stripe.com https://*.googleapis.com https://api.ipgeolocation.io https://ip-api.com;
               frame-src 'self' https://js.stripe.com;
               object-src 'none';
               base-uri 'self';
@@ -25,6 +26,41 @@ const nextConfig: NextConfig = {
               block-all-mixed-content;
               upgrade-insecure-requests;
             `.replace(/\s{2,}/g, ' ').trim()
+          },
+          // Prevent clickjacking
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          // Prevent MIME type sniffing
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          // Control referrer information
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin'
+          },
+          // Disable dangerous browser features
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+          },
+          // Force HTTPS
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
+          },
+          // XSS Protection (legacy browsers)
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          // DNS Prefetch Control
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
           }
         ],
       },
