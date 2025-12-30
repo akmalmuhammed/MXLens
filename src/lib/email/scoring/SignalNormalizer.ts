@@ -233,15 +233,17 @@ export class SignalNormalizer {
         const ipLink = urls.some(u => /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}(?:\/|$)/.test(u));
 
         // Hidden Text / Evasion Detection
-        // 1. White text on white background (simplified)
-        // 2. Font size 0 or 1px
-        // 3. Display none / Visibility hidden
-        const invisibleText =
-            /color:\s*(?:#fff|#ffffff|white|rgb\(255,\s*255,\s*255\))/i.test(html) ||
-            /font-size:\s*(?:0|1)px/i.test(html) ||
-            /display:\s*none/i.test(html) ||
-            /visibility:\s*hidden/i.test(html) ||
-            /opacity:\s*0(?!\.)/i.test(html);
+        // Only flag if hidden elements contain suspicious patterns (avoid FP on responsive design)
+        // 1. Look for font-size: 0 or 1px (almost always malicious)
+        // 2. Only flag display:none/visibility:hidden if combined with urgency or credential keywords
+        const hasZeroFont = /font-size:\s*(?:0|1)px/i.test(html);
+        const hasHiddenCSS = /display:\s*none|visibility:\s*hidden|opacity:\s*0(?!\.)/i.test(html);
+        const hasWhiteText = /color:\s*(?:#fff|#ffffff|white|rgb\(255,\s*255,\s*255\))/i.test(html);
+
+        // Zero-font is almost always malicious - flag immediately
+        // For other hidden patterns, only flag if body also has urgency OR credential keywords
+        const invisibleText = hasZeroFont ||
+            ((hasHiddenCSS || hasWhiteText) && (urgency.test(t) || credential.test(t)));
 
         return {
             hasUrgency: urgency.test(t),

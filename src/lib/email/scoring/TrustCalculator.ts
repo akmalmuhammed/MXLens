@@ -39,7 +39,28 @@ export class TrustCalculator {
             allPenalties.push(...attachmentResult.penalties);
         }
 
-        if (signals.bodyAnalysisEnabled && bodyResult.score < 40) {
+        // Authentication Trust Boost: Dampen body penalties when authentication is PERFECT
+        // DMARC Pass + p=reject means the sender is cryptographically verified
+        const isPerfectAuth = signals.dmarcResult === 'pass' && signals.dmarcPolicy === 'reject';
+
+        if (isPerfectAuth && signals.bodyAnalysisEnabled) {
+            // Reduce body penalty impact by 50% for verified senders
+            // This prevents legitimate financial/gov emails from being flagged
+            const bodyPenaltyReduction = (100 - bodyResult.score) * 0.5;
+            finalScore += bodyPenaltyReduction;
+
+            if (bodyPenaltyReduction > 0) {
+                allPenalties.push({
+                    reason: "Auth Trust Boost: DMARC p=reject verified sender (+dampened content penalties)",
+                    value: Math.round(bodyPenaltyReduction),
+                    source: 'header' as const
+                });
+            }
+        }
+
+        // Weak Link Rule: Cap score when body content is dangerous
+        // EXCEPTION: Skip for perfectly authenticated senders
+        if (signals.bodyAnalysisEnabled && bodyResult.score < 40 && !isPerfectAuth) {
             const cap = 45;
             if (finalScore > cap) {
                 allPenalties.push({
