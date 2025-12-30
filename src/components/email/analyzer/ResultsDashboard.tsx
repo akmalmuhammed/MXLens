@@ -26,6 +26,7 @@ import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifactsCard";
 import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
+import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -403,6 +404,11 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                         attachments={analysis.signals.attachments}
                                         fromDomain={analysis.signals.fromDomain}
                                     />
+
+                                    {/* Deceptive Links Analysis */}
+                                    <div className="mt-4">
+                                        <LinkAnalysisCard links={analysis.signals.urlAnalysis || []} />
+                                    </div>
 
                                     {/* Threat Intelligence Lookup (Auto-Scan) */}
                                     <div className="mt-4">

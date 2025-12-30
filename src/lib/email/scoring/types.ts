@@ -56,6 +56,15 @@ export interface NormalizedSignals {
     suspiciousLinks: boolean;
     rawIpLinks: boolean;
     extractedUrls: string[];
+    urlAnalysis: {  // From UrlAnalyzer
+        href: string;
+        display: string;
+        isMismatched: boolean;
+        isSubdomainTrick: boolean;
+        isLookalike: boolean;
+        riskScore: number;
+        details: string[];
+    }[];
     homoglyphDetected: boolean;
     brandInBody: string | null;
 

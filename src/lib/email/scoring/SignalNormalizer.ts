@@ -1,5 +1,6 @@
 import { AnalysisResult } from "../HeaderParser";
 import { NormalizedSignals, AttachmentSignal } from "./types";
+import { UrlAnalyzer } from "../analysis/UrlAnalyzer";
 
 export class SignalNormalizer {
     static async normalize(
@@ -36,15 +37,16 @@ export class SignalNormalizer {
         }
 
         // 3. Body Signals (if enabled)
-        let bodySignals = {
+        let bodySignals: Partial<NormalizedSignals> = {
             hasUrgency: false,
             hasCredentialHarvesting: false,
             hasHtmlForm: false,
             suspiciousLinks: false,
             rawIpLinks: false,
-            extractedUrls: [] as string[],
+            extractedUrls: [],
+            urlAnalysis: [], // Initialize empty
             homoglyphDetected: false,
-            brandInBody: null as string | null,
+            brandInBody: null,
             hasHiddenText: false
         };
 
@@ -185,8 +187,18 @@ export class SignalNormalizer {
             returnPathDomain: (headerResult.headers['Return-Path'] || "").replace(/[<>]/g, '').split('@')[1] || "",
 
             // Body
+            // Body
             bodyAnalysisEnabled: options.checkBody,
-            ...bodySignals,
+            hasUrgency: bodySignals.hasUrgency || false,
+            hasCredentialHarvesting: bodySignals.hasCredentialHarvesting || false,
+            hasHiddenText: bodySignals.hasHiddenText || false,
+            hasHtmlForm: bodySignals.hasHtmlForm || false,
+            suspiciousLinks: bodySignals.suspiciousLinks || false,
+            rawIpLinks: bodySignals.rawIpLinks || false,
+            extractedUrls: bodySignals.extractedUrls || [],
+            urlAnalysis: bodySignals.urlAnalysis || [],
+            homoglyphDetected: bodySignals.homoglyphDetected || false,
+            brandInBody: bodySignals.brandInBody || null,
 
             // Attachments
             attachmentAnalysisEnabled: options.checkAttachments,
@@ -196,7 +208,7 @@ export class SignalNormalizer {
             brandInFrom: null,
             isFreeEmailProvider: false,
             isHighValueRole: false
-        };
+        } as NormalizedSignals;
     }
 
     private static mapAuthStatus(status: string): any {
@@ -245,14 +257,22 @@ export class SignalNormalizer {
         const invisibleText = hasZeroFont ||
             ((hasHiddenCSS || hasWhiteText) && (urgency.test(t) || credential.test(t)));
 
+        // Advanced URL Analysis
+        const urlAnalysis = UrlAnalyzer.analyze(html);
+        const hasUrlMismatch = urlAnalysis.some(a => a.isMismatched);
+        const hasSubdomainTrick = urlAnalysis.some(a => a.isSubdomainTrick);
+        const hasLookalike = urlAnalysis.some(a => a.isLookalike);
+
         return {
             hasUrgency: urgency.test(t),
             hasCredentialHarvesting: credential.test(t),
             hasHiddenText: invisibleText,
             hasHtmlForm: hasForm,
-            suspiciousLinks: false,
+            // Suspicious links if: IP link found OR mismatch/subdomain-trick found
+            suspiciousLinks: ipLink || hasUrlMismatch || hasSubdomainTrick || hasLookalike,
             rawIpLinks: ipLink,
             extractedUrls: urls,
+            urlAnalysis, // NEW: Full details
             homoglyphDetected: false,
             brandInBody: null
         };
