@@ -23,8 +23,13 @@ export interface ThreatIntelResult {
     stats: VirusTotalStats;
     lastAnalysisDate: string;
     verdict: 'clean' | 'suspicious' | 'malicious' | 'unknown';
-    provider: 'VirusTotal';
+    provider: 'VirusTotal' | 'AbuseIPDB' | 'GoogleSafeBrowsing' | 'Whois/RDAP';
     error?: string;
+    domainAge?: {
+        days: number;
+        createdDate: string;
+        registrar?: string;
+    };
 }
 
 const VT_API_BASE = "https://www.virustotal.com/api/v3";

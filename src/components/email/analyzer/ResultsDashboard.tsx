@@ -12,7 +12,6 @@ import { AuthAlignment } from "../AuthAlignment";
 import { InteractiveHops } from "../InteractiveHops";
 import { AIAnalysisSummary } from "../AIAnalysisSummary";
 import { AnalysisRecommendations } from "../AnalysisRecommendations";
-import { ArtifactsPanel } from "../ArtifactsPanel";
 import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
 import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown, Gavel } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -24,6 +23,7 @@ import { fetchIPGeolocations } from "@/actions/geolocation";
 import { extractIPsFromHeaders } from "@/lib/threat-intel/geolocation";
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import { AttachmentAnalysisCard } from "@/components/analysis/AttachmentAnalysisCard";
+import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifactsCard";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -390,7 +390,14 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                 })()}
                             </div>
                             <div className="pt-4 border-t border-white/5">
-                                <ArtifactsPanel artifacts={analysis.header.artifacts} />
+                                <div className="pt-4 border-t border-white/5">
+                                    <ExtractedArtifactsCard
+                                        ips={analysis.header.artifacts.filter(a => a.type === 'ip').map(a => a.value)}
+                                        urls={analysis.signals.extractedUrls}
+                                        attachments={analysis.signals.attachments}
+                                        fromDomain={analysis.signals.fromDomain}
+                                    />
+                                </div>
                             </div>
                         </div>
                         <AIAnalysisSummary analysis={analysis.header} scoring={analysis.scoring} />

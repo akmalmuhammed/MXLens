@@ -1,0 +1,11 @@
+src/actions/analysis.ts(4,22): error TS2307: Cannot find module '@/auth' or its corresponding type declarations.
+src/actions/analysis.ts(5,20): error TS2307: Cannot find module '@/lib/db' or its corresponding type declarations.
+src/app/analysis/[id]/page.tsx(1,22): error TS2307: Cannot find module '@/auth' or its corresponding type declarations.
+src/app/analysis/[id]/page.tsx(2,20): error TS2307: Cannot find module '@/lib/db' or its corresponding type declarations.
+src/app/analysis/[id]/page.tsx(4,75): error TS2307: Cannot find module '@/components/ui/card' or its corresponding type declarations.
+src/app/analysis/[id]/page.tsx(5,23): error TS2307: Cannot find module '@/components/ui/badge' or its corresponding type declarations.
+src/app/analysis/[id]/page.tsx(9,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.
+src/app/analysis/[id]/page.tsx(11,36): error TS2307: Cannot find module '@/components/analysis/AnalystTriagePanel' or its corresponding type declarations.
+src/app/analysis/[id]/page.tsx(12,45): error TS2307: Cannot find module '@/components/analysis/AnalysisDetailClientWrapper' or its corresponding type declarations.
+src/components/analysis/AnalysisDetailClientWrapper.tsx(4,52): error TS2307: Cannot find module '@/components/email/analyzer/ResultsDashboard' or its corresponding type declarations.
+src/components/analysis/AnalysisDetailClientWrapper.tsx(5,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.

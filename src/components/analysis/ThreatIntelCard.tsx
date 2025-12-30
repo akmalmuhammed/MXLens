@@ -104,7 +104,7 @@ export const ThreatIntelCard = ({ ips, domains }: ThreatIntelCardProps) => {
                     <div className="space-y-3">
                         {results.map((result, i) => (
                             <motion.div
-                                key={result.target}
+                                key={`${result.provider}-${result.target}`}
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.1 }}
@@ -112,31 +112,51 @@ export const ThreatIntelCard = ({ ips, domains }: ThreatIntelCardProps) => {
                             >
                                 <div className="flex items-center gap-3 overflow-hidden">
                                     {result.verdict === 'malicious' ? (
-                                        <ShieldAlert className="w-4 h-4 text-red-500 shrink-0" />
+                                        <ShieldAlert className="w-5 h-5 text-red-500 shrink-0" />
                                     ) : result.verdict === 'suspicious' ? (
-                                        <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                                        <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
                                     ) : (
-                                        <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                                        <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0" />
                                     )}
 
                                     <div className="flex flex-col overflow-hidden">
-                                        <span className="text-sm font-medium truncate text-foreground/90 font-mono" title={result.target}>
-                                            {result.target}
-                                        </span>
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            <span className="uppercase">{result.type}</span>
-                                            <span>•</span>
-                                            <span className={
-                                                result.stats.malicious > 0 ? "text-red-400 font-bold" : "text-emerald-400"
-                                            }>
-                                                {result.stats.malicious}/{result.stats.malicious + result.stats.harmless} Engines
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium truncate text-foreground/90 font-mono" title={result.target}>
+                                                {result.target}
                                             </span>
+                                            {result.domainAge && (
+                                                <Badge variant="outline" className={`text-[10px] px-1.5 h-4 ${result.domainAge.days < 30 ? 'border-red-500/50 text-red-400 bg-red-500/10' : 'border-emerald-500/30 text-emerald-400'
+                                                    }`}>
+                                                    {result.domainAge.days < 30 ? 'FRESH' : `${Math.floor(result.domainAge.days / 365)}Y`}
+                                                </Badge>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <span className="uppercase text-[10px] font-bold bg-white/5 px-1 rounded">{result.provider}</span>
+
+                                            {result.domainAge ? (
+                                                <span>Created {new Date(result.domainAge.createdDate).toLocaleDateString()} ({result.domainAge.days}d ago)</span>
+                                            ) : result.provider === 'VirusTotal' ? (
+                                                <span className={result.stats.malicious > 0 ? "text-red-400 font-bold" : "text-emerald-400"}>
+                                                    {result.stats.malicious}/{result.stats.malicious + result.stats.harmless} Engines
+                                                </span>
+                                            ) : (
+                                                <span className={result.verdict === 'malicious' ? "text-red-400 font-bold" : "text-emerald-400"}>
+                                                    Score: {result.reputation}/100
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
 
                                 <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" asChild>
-                                    <a href={`https://www.virustotal.com/gui/${result.type === 'ip' ? 'ip-address' : 'domain'}/${result.target}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={
+                                        result.provider === 'VirusTotal' ? `https://www.virustotal.com/gui/${result.type === 'ip' ? 'ip-address' : 'domain'}/${result.target}` :
+                                            result.provider === 'AbuseIPDB' ? `https://www.abuseipdb.com/check/${result.target}` :
+                                                result.provider === 'GoogleSafeBrowsing' ? `https://transparencyreport.google.com/safe-browsing/search?url=${result.target}` :
+                                                    `https://who.is/whois/${result.target}`
+                                    } target="_blank" rel="noopener noreferrer">
                                         <ExternalLink className="w-4 h-4" />
                                     </a>
                                 </Button>

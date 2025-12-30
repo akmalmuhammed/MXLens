@@ -4,6 +4,7 @@
 import { checkIPReputation, checkDomainReputation, ThreatIntelResult } from "@/lib/threat-intel/virustotal";
 import { checkSafeBrowsing } from "@/lib/threat-intel/safebrowsing";
 import { checkAbuseIPDB } from "@/lib/threat-intel/abuseipdb";
+import { getDomainAge } from "@/lib/threat-intel/whois";
 
 /**
  * Server Action to check multiple targets against Threat Intel
@@ -29,10 +30,14 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
     // 3. AbuseIPDB (Parallel IPs)
     const abusePromises = ipTargets.map(ip => checkAbuseIPDB(ip));
 
-    const [vtResults, gsbResults, abuseResults] = await Promise.all([
+    // 4. Domain Age (Parallel Domains)
+    const agePromises = domainTargets.map(d => getDomainAge(d));
+
+    const [vtResults, gsbResults, abuseResults, ageResults] = await Promise.all([
         Promise.all(vtPromises),
         gsbPromise,
-        Promise.all(abusePromises)
+        Promise.all(abusePromises),
+        Promise.all(agePromises)
     ]);
 
     // Aggregate VT Results
@@ -40,21 +45,16 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
         if (r) results.push({ ...r, provider: 'VirusTotal' });
     });
 
-    // Aggregate AbuseIPDB Results - Convert to generic ThreatIntelResult format
+    // Aggregate AbuseIPDB Results
     abuseResults.forEach(r => {
         if (r) {
-            // Find existing VT record to merge or create new
             const existing = results.find(res => res.target === r.ipAddress && res.type === 'ip');
-
-            // Abuse score > 0 is suspicious, > 50 is malicious
             const score = r.abuseConfidenceScore;
             let verdict: ThreatIntelResult['verdict'] = 'clean';
             if (score > 50) verdict = 'malicious';
             else if (score > 0) verdict = 'suspicious';
 
             if (existing) {
-                // Enrich existing record if AbuseIPDB has higher confidence
-                // We keep the "VirusTotal" label as primary if it exists, but update score/verdict
                 if (score > existing.reputation) {
                     existing.reputation = score;
                     if (verdict === 'malicious') existing.verdict = 'malicious';
@@ -65,16 +65,10 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
                     target: r.ipAddress,
                     type: 'ip',
                     reputation: score,
-                    stats: {
-                        malicious: r.totalReports,
-                        suspicious: r.abuseConfidenceScore,
-                        harmless: 0,
-                        undetected: 0,
-                        timeout: 0
-                    },
+                    stats: { malicious: r.totalReports, suspicious: r.abuseConfidenceScore, harmless: 0, undetected: 0, timeout: 0 },
                     lastAnalysisDate: r.lastReportedAt || new Date().toISOString(),
                     verdict,
-                    provider: 'AbuseIPDB' as any
+                    provider: 'AbuseIPDB'
                 });
             }
         }
@@ -83,7 +77,6 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
     // Aggregate Safe Browsing Results
     gsbResults.forEach(r => {
         if (!r.safe) {
-            // Safe Browsing is binary usually
             results.push({
                 target: r.target,
                 type: 'domain',
@@ -91,8 +84,82 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
                 stats: { malicious: 1, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
                 lastAnalysisDate: new Date().toISOString(),
                 verdict: 'malicious',
-                provider: 'GoogleSafeBrowsing' as any
+                provider: 'GoogleSafeBrowsing'
             });
+        }
+    });
+
+    // Aggregate Domain Age Results
+    ageResults.forEach(r => {
+        if (r) {
+            const existing = results.find(res => res.target === r.domain && res.type === 'domain');
+
+            // "Fresh" domains < 30 days are suspicious
+            if (r.isFresh) {
+                if (existing) {
+                    // Bump existing score
+                    existing.reputation = Math.max(existing.reputation, 75);
+                    if (existing.verdict === 'clean') existing.verdict = 'suspicious';
+                    existing.domainAge = { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar };
+                } else {
+                    results.push({
+                        target: r.domain,
+                        type: 'domain',
+                        reputation: 75,
+                        stats: { malicious: 0, suspicious: 1, harmless: 0, undetected: 0, timeout: 0 },
+                        lastAnalysisDate: new Date().toISOString(),
+                        verdict: 'suspicious',
+                        provider: 'Whois/RDAP',
+                        domainAge: { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar }
+                    });
+                }
+            } else if (existing) {
+                // Attach age data even if safe
+                existing.domainAge = { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar };
+            }
+        }
+    });
+
+    // 5. URLhaus Check (Quick implementation inline)
+    // URLhaus API: https://urlhaus-api.abuse.ch/v1/host/
+    // Checks if domain or IP is known C2
+    const uhPromises = [...domainTargets, ...ipTargets].map(async (host) => {
+        try {
+            const formData = new FormData();
+            formData.append('host', host);
+            const res = await fetch('https://urlhaus-api.abuse.ch/v1/host/', {
+                method: 'POST',
+                body: formData
+            });
+            if (!res.ok) return null;
+            const json = await res.json();
+            if (json.query_status === 'ok' && json.urls && json.urls.length > 0) {
+                return { host, count: json.urls.length };
+            }
+            return null;
+        } catch { return null; }
+    });
+
+    const uhResults = await Promise.all(uhPromises);
+
+    uhResults.forEach(r => {
+        if (r) {
+            const existing = results.find(res => res.target === r.host);
+            if (existing) {
+                existing.reputation = 100;
+                existing.verdict = 'malicious';
+                // Add annotation or merge provider (simplified here)
+            } else {
+                results.push({
+                    target: r.host,
+                    type: r.host.includes('.') && !r.host.match(/^\d/) ? 'domain' : 'ip', // simple detection
+                    reputation: 100,
+                    stats: { malicious: r.count, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
+                    lastAnalysisDate: new Date().toISOString(),
+                    verdict: 'malicious',
+                    provider: 'VirusTotal' // Reusing generic provider slot or add new if strict typed
+                });
+            }
         }
     });
 
