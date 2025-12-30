@@ -11,6 +11,13 @@ export interface AttachmentSignal {
     macroDetected: boolean;               // True if vbaProject.bin found in content
     isScript: boolean;                    // .js, .ps1, .vbs, .jar
     dangerousFunctions: string[];         // e.g. ["eval", "WScript.Shell"]
+    // Phase 4: Enhanced Detection
+    isArchive: boolean;                   // .zip, .rar, .7z, .tar
+    isPasswordProtected: boolean;         // Archive requires password
+    isDiskImage: boolean;                 // .iso, .img, .vhd, .dmg
+    isShortcut: boolean;                  // .lnk, .url, .webloc
+    lnkTarget?: string;                   // Extracted target path from .lnk
+    nestedFiles?: string[];               // Files detected inside archives
 }
 
 export interface NormalizedSignals {

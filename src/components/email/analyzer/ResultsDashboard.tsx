@@ -23,6 +23,7 @@ import { IPGeolocationMap } from "@/components/analysis/IPGeolocationMap";
 import { fetchIPGeolocations } from "@/actions/geolocation";
 import { extractIPsFromHeaders } from "@/lib/threat-intel/geolocation";
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
+import { AttachmentAnalysisCard } from "@/components/analysis/AttachmentAnalysisCard";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -300,6 +301,12 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                             extractedUrls={analysis.signals.extractedUrls}
                             bodyEnabled={analyzeBody}
                             onEnableBody={() => setAnalyzeBody(true)}
+                        />
+
+                        {/* Attachment Analysis Card */}
+                        <AttachmentAnalysisCard
+                            attachments={analysis.signals.attachments}
+                            enabled={analyzeAttachments}
                         />
 
                         {analysis.header.xHeaders && analysis.header.xHeaders.length > 0 && (

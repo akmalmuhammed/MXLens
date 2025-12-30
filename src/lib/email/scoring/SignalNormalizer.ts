@@ -112,7 +112,14 @@ export class SignalNormalizer {
                     isMacroEnabled: ['docm', 'xlsm', 'pptm'].includes(ext),
                     macroDetected,
                     isScript: ['js', 'vbs', 'ps1', 'jar', 'py', 'sh', 'html', 'htm'].includes(ext),
-                    dangerousFunctions
+                    dangerousFunctions,
+                    // Phase 4: Enhanced Detection
+                    isArchive: ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'cab'].includes(ext) || magicType === 'zip',
+                    isPasswordProtected: this.isPasswordProtectedArchive(content, magicType || 'unknown'),
+                    isDiskImage: ['iso', 'img', 'vhd', 'vhdx', 'dmg'].includes(ext) || magicType === 'iso',
+                    isShortcut: ['lnk', 'url', 'webloc', 'desktop'].includes(ext),
+                    lnkTarget: ext === 'lnk' ? this.extractLnkTarget(content) : undefined,
+                    nestedFiles: this.detectNestedFiles(content, magicType || 'unknown', ext)
                 });
             }
         }
@@ -249,6 +256,17 @@ export class SignalNormalizer {
         if (head.startsWith("89504E47")) return "png";
         if (head.startsWith("FFD8FF")) return "jpg";
         if (head.startsWith("47494638")) return "gif";
+        // Phase 4: New formats
+        if (head.startsWith("526172211A0700")) return "rar"; // Rar!..
+        if (head.startsWith("377ABCAF271C")) return "7z"; // 7z
+        if (head.startsWith("4344303031")) return "iso"; // CD001 (ISO 9660)
+        if (head.startsWith("4C00000001140200")) return "lnk"; // Windows LNK
+
+        // Check for ISO at offset 32769 (after system area)
+        if (content.length > 32780) {
+            const isoHead = Array.from(content.slice(32769, 32774)).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join('');
+            if (isoHead === "4344303031") return "iso";
+        }
 
         return "unknown";
     }
@@ -322,5 +340,107 @@ export class SignalNormalizer {
         }
 
         return found;
+    }
+
+    /**
+     * Check if a ZIP archive is password protected
+     * ZIP files have a "general purpose bit flag" at byte 6 where bit 0 = encrypted
+     */
+    private static isPasswordProtectedArchive(content: Uint8Array | undefined, magicType: string): boolean {
+        if (!content || content.length < 10) return false;
+
+        // Only check ZIP-based files
+        if (magicType !== 'zip') return false;
+
+        // ZIP local file header: bytes 6-7 contain general purpose bit flag
+        // Bit 0 (0x01) = file is encrypted
+        if (content.length > 7 && (content[6] & 0x01) === 0x01) {
+            return true;
+        }
+
+        // Also check for "PBES" signature (encrypted ZIP variant)
+        const head = Array.from(content.slice(0, 30)).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join('');
+        if (head.includes('50424553')) return true; // "PBES"
+
+        return false;
+    }
+
+    /**
+     * Extract target path from Windows .lnk (shortcut) file
+     * LNK files have a specific structure with target path embedded
+     */
+    private static extractLnkTarget(content: Uint8Array | undefined): string | undefined {
+        if (!content || content.length < 76) return undefined;
+
+        // LNK magic: 4C 00 00 00 01 14 02 00
+        const lnkMagic = [0x4C, 0x00, 0x00, 0x00];
+        if (!lnkMagic.every((b, i) => content[i] === b)) return undefined;
+
+        try {
+            // Try to extract readable strings from the file
+            const decoder = new TextDecoder('utf-16le', { fatal: false });
+            const text = decoder.decode(content.slice(76, Math.min(content.length, 1000)));
+
+            // Look for common malicious patterns
+            const suspiciousPatterns = [
+                /powershell\.exe/i,
+                /cmd\.exe\s+\/c/i,
+                /mshta\.exe/i,
+                /wscript\.exe/i,
+                /cscript\.exe/i,
+                /regsvr32\.exe/i,
+                /rundll32\.exe/i,
+                /http[s]?:\/\//i
+            ];
+
+            for (const pattern of suspiciousPatterns) {
+                const match = text.match(pattern);
+                if (match) return match[0];
+            }
+
+            // Extract any executable path
+            const exeMatch = text.match(/[A-Z]:\\[^\x00]+\.exe/i);
+            if (exeMatch) return exeMatch[0];
+
+        } catch {
+            // Ignore parsing errors
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Detect files nested inside archives (ZIP format only for now)
+     * Returns list of dangerous file types found inside
+     */
+    private static detectNestedFiles(content: Uint8Array | undefined, magicType: string, ext: string): string[] | undefined {
+        if (!content || content.length < 30) return undefined;
+        if (magicType !== 'zip' && !['zip', 'docx', 'xlsx', 'pptx', 'jar', 'apk'].includes(ext)) return undefined;
+
+        const dangerousFiles: string[] = [];
+        const dangerousExtensions = ['exe', 'scr', 'bat', 'cmd', 'com', 'pif', 'js', 'vbs', 'ps1', 'lnk', 'iso', 'img'];
+
+        try {
+            // Scan for local file headers in ZIP
+            // Each local file header starts with PK\x03\x04 followed by file info
+            const text = new TextDecoder('utf-8', { fatal: false }).decode(content.slice(0, Math.min(content.length, 50000)));
+
+            // Extract filenames from ZIP structure (simplified)
+            const filenamePattern = /[\w\-. ]+\.(exe|scr|bat|cmd|com|pif|js|vbs|ps1|lnk|iso|img|msi|dll)/gi;
+            const matches = text.matchAll(filenamePattern);
+
+            for (const match of matches) {
+                const filename = match[0];
+                const ext = match[1].toLowerCase();
+                if (dangerousExtensions.includes(ext) && !dangerousFiles.includes(filename)) {
+                    dangerousFiles.push(filename);
+                    if (dangerousFiles.length >= 5) break; // Limit results
+                }
+            }
+        } catch {
+            // Ignore parsing errors
+        }
+
+        return dangerousFiles.length > 0 ? dangerousFiles : undefined;
     }
 }
