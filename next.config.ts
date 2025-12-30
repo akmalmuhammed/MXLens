@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
               style-src 'self' 'unsafe-inline';
               img-src 'self' blob: data: https://*.stripe.com https://api.ipgeolocation.io;
               font-src 'self';
-              connect-src 'self' https://*.sentry.io https://api.stripe.com https://*.googleapis.com https://api.ipgeolocation.io https://ip-api.com;
+              connect-src 'self' https://*.sentry.io https://api.stripe.com https://*.googleapis.com https://api.ipgeolocation.io https://ip-api.com https://ipinfo.io;
               frame-src 'self' https://js.stripe.com;
               object-src 'none';
               base-uri 'self';
