@@ -25,6 +25,7 @@ import { GeoLocation } from "@/lib/threat-intel/geolocation";
 
 import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifactsCard";
 import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
+import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -267,6 +268,14 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
 
                         <div className="space-y-4">
                             <h3 className="font-semibold text-xl font-heading text-foreground/90">Authentication Analysis</h3>
+
+                            {/* Infrastructure / Trust Chain Validation */}
+                            <InfrastructureCard
+                                fromDomain={analysis.signals.fromDomain}
+                                ipLocations={ipLocations}
+                                loading={loadingGeo}
+                            />
+
                             <AuthAlignment
                                 spf={analysis.header.auth.spf}
                                 dkim={analysis.header.auth.dkim}
