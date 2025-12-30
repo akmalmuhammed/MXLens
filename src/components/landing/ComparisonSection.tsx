@@ -47,7 +47,7 @@ export const ComparisonSection = () => {
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
     return (
-        <section className="py-24 relative" ref={ref}>
+        <section id="trust" className="py-24 relative" ref={ref}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -93,8 +93,8 @@ export const ComparisonSection = () => {
                                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                                 transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
                                 className={`grid grid-cols-4 gap-4 p-6 ${i !== comparisonData.length - 1
-                                        ? "border-b border-border/30"
-                                        : ""
+                                    ? "border-b border-border/30"
+                                    : ""
                                     }`}
                             >
                                 <div className="font-medium text-foreground">{row.feature}</div>
@@ -108,8 +108,8 @@ export const ComparisonSection = () => {
                                 </div>
                                 <div
                                     className={`flex items-center justify-center gap-2 text-sm font-medium ${row.mxlens.status === "good"
-                                            ? "text-accent"
-                                            : "text-muted-foreground"
+                                        ? "text-accent"
+                                        : "text-muted-foreground"
                                         }`}
                                 >
                                     <StatusIcon status={row.mxlens.status} />

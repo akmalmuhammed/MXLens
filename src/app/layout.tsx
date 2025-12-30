@@ -5,6 +5,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { ThemeProvider } from "@/components/theme-provider"
 import { SessionProvider } from "next-auth/react"
 import { Navbar } from "@/components/layout/Navbar";
+import { NavbarUtils } from "@/components/layout/NavbarUtils";
 import { auth } from "@/auth";
 
 const outfit = Outfit({
@@ -48,7 +49,9 @@ export default async function RootLayout({
             <a href="#main-content" className="skip-link">
               Skip to main content
             </a>
-            <Navbar />
+            <NavbarUtils>
+              <Navbar />
+            </NavbarUtils>
             <main id="main-content" className="min-h-screen" role="main">
               {children}
             </main>
