@@ -35,19 +35,23 @@ export const Navbar = () => {
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-4"
-                }`}
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-0"}`}
         >
-            {/* Promo Banner - Optional, visible only at top */}
+            {/* Promo Banner */}
             {!scrolled && isHome && (
-                <div className="absolute top-0 left-0 right-0 -z-10 h-full bg-transparent" />
+                <div className="w-full bg-secondary/20 backdrop-blur-sm border-b border-border/50 py-2 text-center">
+                    <p className="text-xs font-medium text-accent">
+                        <span className="inline-block w-2 h-2 rounded-full bg-accent mr-2 animate-pulse" />
+                        Limited Time: Premium free until March 2026 for early beta users
+                    </p>
+                </div>
             )}
 
             {/* Main Nav */}
             <nav
                 className={`mx-auto container rounded-full px-6 transition-all duration-300 ${scrolled
-                        ? "bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg h-16 flex items-center"
-                        : "bg-transparent h-20 flex items-center"
+                    ? "bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg h-16 flex items-center mt-0"
+                    : "bg-transparent h-20 flex items-center mt-2"
                     }`}
             >
                 <div className="flex items-center justify-between w-full">
