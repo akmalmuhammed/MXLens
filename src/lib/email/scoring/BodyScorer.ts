@@ -29,6 +29,11 @@ export class BodyScorer {
             penalties.push({ reason: "Raw IP Address Link", value: -40, source: 'body' as const });
         }
 
+        if (signals.hasHiddenText) {
+            score -= 30;
+            penalties.push({ reason: "Hidden Text / CSS Evasion Detected", value: -30, warning: true, source: 'body' as const });
+        }
+
         if (signals.homoglyphDetected) {
             score -= 60;
             penalties.push({ reason: "Homoglyph/Confusable Characters", value: -60, critical: true, source: 'body' as const });

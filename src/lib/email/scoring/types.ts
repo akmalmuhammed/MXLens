@@ -51,6 +51,7 @@ export interface NormalizedSignals {
     bodyAnalysisEnabled: boolean;
     hasUrgency: boolean;
     hasCredentialHarvesting: boolean;
+    hasHiddenText: boolean;
     hasHtmlForm: boolean;
     suspiciousLinks: boolean;
     rawIpLinks: boolean;

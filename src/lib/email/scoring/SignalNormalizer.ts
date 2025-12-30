@@ -231,9 +231,21 @@ export class SignalNormalizer {
         // Basic IP check: http://1.2.3.4
         const ipLink = urls.some(u => /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}(?:\/|$)/.test(u));
 
+        // Hidden Text / Evasion Detection
+        // 1. White text on white background (simplified)
+        // 2. Font size 0 or 1px
+        // 3. Display none / Visibility hidden
+        const invisibleText =
+            /color:\s*(?:#fff|#ffffff|white|rgb\(255,\s*255,\s*255\))/i.test(html) ||
+            /font-size:\s*(?:0|1)px/i.test(html) ||
+            /display:\s*none/i.test(html) ||
+            /visibility:\s*hidden/i.test(html) ||
+            /opacity:\s*0(?!\.)/i.test(html);
+
         return {
             hasUrgency: urgency.test(t),
             hasCredentialHarvesting: credential.test(t),
+            hasHiddenText: invisibleText,
             hasHtmlForm: hasForm,
             suspiciousLinks: false,
             rawIpLinks: ipLink,
