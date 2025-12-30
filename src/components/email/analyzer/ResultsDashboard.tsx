@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import DOMPurify from "isomorphic-dompurify";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, AlertTriangle, ShieldCheck } from "lucide-react";
@@ -27,6 +26,7 @@ import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifacts
 import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
+import { SafeEmailPreview } from "@/components/email/preview/SafeEmailPreview";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -463,21 +463,16 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                         </pre>
                     )}
                     {rawTab === 'safe_preview' && (
-                        <div className="bg-white text-black p-6 rounded-xl border h-[700px] overflow-y-auto shadow-inner">
+                        <div className="h-[700px]">
                             {analysis.emailContent.html ? (
-                                <div
-                                    className="prose max-w-none"
-                                    dangerouslySetInnerHTML={{
-                                        __html: DOMPurify.sanitize(analysis.emailContent.html, {
-                                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'pre', 'code', 'blockquote', 'img'],
-                                            ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'title', 'class', 'width', 'height'],
-                                            FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'object', 'embed', 'link', 'meta', 'base'],
-                                            ADD_ATTR: ['target'],
-                                        })
-                                    }}
-                                />
+                                <SafeEmailPreview html={analysis.emailContent.html} />
                             ) : (
-                                <div className="text-muted-foreground flex items-center justify-center h-full">No HTML content available to preview.</div>
+                                <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-950 border rounded-xl text-muted-foreground p-8 text-center">
+                                    <div className="space-y-2">
+                                        <p>No HTML Body found.</p>
+                                        <p className="text-xs max-w-sm mx-auto opacity-70">This email appears to be Plain Text only. Check the "Body (Text)" tab.</p>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}

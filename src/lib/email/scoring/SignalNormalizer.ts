@@ -94,6 +94,7 @@ export class SignalNormalizer {
                         const { extractLinksFromPdf } = await import('@/utils/pdf.client');
                         const pdfLinks = await extractLinksFromPdf(content.buffer);
                         if (pdfLinks && pdfLinks.length > 0) {
+                            if (!bodySignals.extractedUrls) bodySignals.extractedUrls = [];
                             bodySignals.extractedUrls.push(...pdfLinks);
                             bodySignals.extractedUrls = [...new Set(bodySignals.extractedUrls)]; // Unique
                             bodySignals.suspiciousLinks = bodySignals.suspiciousLinks || pdfLinks.some(u => u.startsWith('http'));
@@ -129,9 +130,24 @@ export class SignalNormalizer {
 
         // 5. Cross-Context Prep
         const fromArray = headerResult.headers['From'] ? (Array.isArray(headerResult.headers['From']) ? headerResult.headers['From'][0] : headerResult.headers['From']) : "";
-        const fromMatch = fromArray.match(/^(?:"?([^"<]+)"?\s)?(?:<?(.+@[^>]+)>?)$/);
-        const fromDisplayName = fromMatch ? (fromMatch[1] || "").trim() : "";
-        const fromEmail = fromMatch ? (fromMatch[2] || fromArray).trim() : fromArray;
+        // Safe parser for "Name <email>" format - ReDoS mitigated
+        // Regex Explanation:
+        // 1. Optional Name: "([^"<]+)"? -> Greedily captures name, bound by quotes or <
+        // 2. Email: <(.+@.+)> -> Captures email inside brackets
+        // 3. Fallback to just extracting the email if no brackets
+        let fromDisplayName = "";
+        let fromEmail = fromArray.trim();
+
+        if (fromArray.includes('<')) {
+            const parts = fromArray.split('<');
+            if (parts.length >= 2) {
+                fromDisplayName = parts[0].replace(/"/g, '').trim();
+                const emailPart = parts[1].split('>')[0];
+                if (emailPart) fromEmail = emailPart.trim();
+            }
+        } else {
+            fromEmail = fromArray.trim();
+        }
         const fromDomain = fromEmail.split('@')[1] || "";
 
         // Reply-To
@@ -239,7 +255,8 @@ export class SignalNormalizer {
             /action\s*=\s*["'][^"']{0,1000}["']/i.test(html);
 
         // Links
-        const urlRegex = /https?:\/\/[^\s<>"']+/g;
+        // Links - Bounded Repeat to prevent ReDoS on massive strings
+        const urlRegex = /https?:\/\/[^\s<>"']{1,2000}/g;
         const urls = (text.match(urlRegex) || []);
         // Basic IP check: http://1.2.3.4
         const ipLink = urls.some(u => /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}(?:\/|$)/.test(u));
