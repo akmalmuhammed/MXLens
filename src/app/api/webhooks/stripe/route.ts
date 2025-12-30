@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
+import * as Sentry from "@sentry/nextjs";
 
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -26,6 +27,13 @@ export async function POST(req: Request) {
         try {
             event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
         } catch (err: any) {
+            // Track signature verification failures for alerting
+            Sentry.captureException(err, {
+                tags: {
+                    "webhook.provider": "stripe",
+                    "webhook.error_type": "signature_verification"
+                }
+            });
             return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
         }
 
@@ -135,6 +143,19 @@ export async function POST(req: Request) {
 
     } catch (error) {
         console.error("Stripe Webhook Error:", error);
+
+        // Track webhook processing failures for alerting
+        // Alert rule: count() > 3 in 1 hour WHERE tags[webhook.provider]:stripe
+        Sentry.captureException(error, {
+            tags: {
+                "webhook.provider": "stripe",
+                "webhook.error_type": "processing_failure"
+            },
+            extra: {
+                eventType: "unknown" // Event type not available in catch block
+            }
+        });
+
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
