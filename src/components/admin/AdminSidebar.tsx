@@ -114,9 +114,11 @@ const navItems: NavItem[] = [
         icon: FileText,
     },
     {
-        title: "System Health",
-        href: "/admin/health",
+        title: "Monitoring",
+        href: "/admin/monitoring",
         icon: Activity,
+        badge: "Live",
+        badgeVariant: "default",
     },
     {
         title: "Settings",
