@@ -49,9 +49,7 @@ export function ExtractedArtifactsCard({ ips, urls, attachments, fromDomain }: E
                                     type="ip"
                                     onCopy={copyToClipboard}
                                     actions={[
-                                        { title: "VirusTotal IP", url: `https://www.virustotal.com/gui/ip-address/${ip}`, icon: ShieldAlert, color: "text-red-500" },
-                                        { title: "URLhaus Lookup", url: `https://urlhaus.abuse.ch/browse/search/?search=${ip}`, icon: ShieldAlert, color: "text-amber-500" },
-                                        { title: "IP Geolocation", url: `https://ipinfo.io/${ip}`, icon: Globe, color: "text-blue-500" }
+                                        { title: "VirusTotal IP", url: `https://www.virustotal.com/gui/ip-address/${ip}`, icon: ShieldAlert, color: "text-red-500" }
                                     ]}
                                 />
                             ))}
@@ -64,9 +62,7 @@ export function ExtractedArtifactsCard({ ips, urls, attachments, fromDomain }: E
                                     type="domain"
                                     onCopy={copyToClipboard}
                                     actions={[
-                                        { title: "VirusTotal Domain", url: `https://www.virustotal.com/gui/domain/${fromDomain}`, icon: ShieldAlert, color: "text-orange-500" },
-                                        { title: "URLhaus Lookup", url: `https://urlhaus.abuse.ch/browse/search/?search=${fromDomain}`, icon: ShieldAlert, color: "text-amber-500" },
-                                        { title: "Whois Lookup", url: `https://who.is/whois/${fromDomain}`, icon: Link2, color: "text-blue-400" }
+                                        { title: "VirusTotal Domain", url: `https://www.virustotal.com/gui/domain/${fromDomain}`, icon: ShieldAlert, color: "text-orange-500" }
                                     ]}
                                 />
                             )}
@@ -94,9 +90,7 @@ export function ExtractedArtifactsCard({ ips, urls, attachments, fromDomain }: E
                                             truncate
                                             actions={[
                                                 { title: "VirusTotal URL", url: `https://www.virustotal.com/gui/url/${btoa(url).replace(/=/g, '')}`, icon: ShieldAlert, color: "text-red-500" },
-                                                { title: "PhishTank Search", url: `https://www.phishtank.com/phish_search.php?phish_q=${encodeURIComponent(url)}`, icon: ShieldAlert, color: "text-blue-500" },
-                                                { title: "URLhaus Lookup", url: `https://urlhaus.abuse.ch/browse/search/?search=${encodeURIComponent(url)}`, icon: ShieldAlert, color: "text-amber-500" },
-                                                { title: "URLScan", url: `https://urlscan.io/`, icon: ExternalLink, color: "text-green-500" }
+                                                { title: "PhishTank Search", url: `https://www.phishtank.com/phish_search.php?phish_q=${encodeURIComponent(url)}`, icon: ShieldAlert, color: "text-blue-500" }
                                             ]}
                                         />
                                     );
@@ -123,8 +117,7 @@ export function ExtractedArtifactsCard({ ips, urls, attachments, fromDomain }: E
                                     type="hash"
                                     onCopy={copyToClipboard}
                                     actions={[
-                                        { title: "VirusTotal Hash", url: `https://www.virustotal.com/gui/file/${att.sha256}`, icon: ShieldAlert, color: "text-red-500" },
-                                        { title: "URLhaus Lookup", url: `https://urlhaus.abuse.ch/browse/search/?search=${att.sha256}`, icon: ShieldAlert, color: "text-amber-500" }
+                                        { title: "VirusTotal Hash", url: `https://www.virustotal.com/gui/file/${att.sha256}`, icon: ShieldAlert, color: "text-red-500" }
                                     ]}
                                 />
                             ) : null)}
