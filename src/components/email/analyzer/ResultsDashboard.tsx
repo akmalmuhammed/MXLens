@@ -24,6 +24,7 @@ import { extractIPsFromHeaders } from "@/lib/threat-intel/geolocation";
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 
 import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifactsCard";
+import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -393,6 +394,14 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                         attachments={analysis.signals.attachments}
                                         fromDomain={analysis.signals.fromDomain}
                                     />
+
+                                    {/* Threat Intelligence Lookup (Auto-Scan) */}
+                                    <div className="mt-4">
+                                        <ThreatIntelCard
+                                            ips={analysis.header.artifacts.filter(a => a.type === 'ip').map(a => a.value)}
+                                            domains={[analysis.signals.fromDomain].filter(Boolean) as string[]}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
