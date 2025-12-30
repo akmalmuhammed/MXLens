@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAdminAccessApi } from "@/lib/admin/admin-auth";
+import { requireAdminAccess } from "@/lib/admin/admin-auth";
 
 /**
  * Admin Monitoring API
@@ -47,7 +47,7 @@ interface MonitoringData {
 
 export async function GET() {
     try {
-        await requireAdminAccessApi();
+        await requireAdminAccess();
 
         const startTime = Date.now();
 
@@ -105,7 +105,7 @@ export async function GET() {
             }),
             db.analysisLog.count({
                 where: {
-                    verdict: { in: ["SUSPICIOUS", "DANGEROUS"] }
+                    verdict: { in: ["SUSPICIOUS", "MALICIOUS"] }
                 }
             })
         ]);
