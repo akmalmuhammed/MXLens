@@ -49,6 +49,25 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
     // Original input ref for re-analysis
     const [rawInput, setRawInput] = useState("");
 
+    // Session Storage Key
+    const SESSION_KEY = "mxlens_current_analysis";
+
+    // Restore from sessionStorage on mount
+    useEffect(() => {
+        try {
+            const cached = sessionStorage.getItem(SESSION_KEY);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                setAnalysis(parsed.analysis);
+                setRawInput(parsed.rawInput || "");
+                setAnalyzeBody(parsed.analyzeBody || false);
+                setAnalyzeAttachments(parsed.analyzeAttachments || false);
+            }
+        } catch (e) {
+            console.warn("Failed to restore analysis from session:", e);
+        }
+    }, []);
+
     const checkUsage = async (): Promise<boolean> => {
         try {
             const { checkAndTrackUsage } = await import("@/actions/analysis");
@@ -117,6 +136,24 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                 timestamp: Date.now()
             });
 
+            // Save to sessionStorage for refresh persistence
+            try {
+                sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+                    analysis: {
+                        header: headerRes,
+                        signals: signals,
+                        scoring: result,
+                        emailContent: { text: email.text || "", html: email.html || "" },
+                        timestamp: Date.now()
+                    },
+                    rawInput: content,
+                    analyzeBody: runBody,
+                    analyzeAttachments: runAttachments
+                }));
+            } catch (e) {
+                console.warn("Failed to cache analysis:", e);
+            }
+
             // Persist
             try {
                 const { saveAnalysis } = await import("@/actions/analysis");
@@ -177,6 +214,12 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
         setAnalysis(null);
         setRawInput("");
         setUsageStatus({ allowed: true });
+        // Clear sessionStorage cache
+        try {
+            sessionStorage.removeItem(SESSION_KEY);
+        } catch (e) {
+            console.warn("Failed to clear session cache:", e);
+        }
     };
 
     return (
