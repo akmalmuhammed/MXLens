@@ -2,6 +2,8 @@
 "use server";
 
 import { checkIPReputation, checkDomainReputation, ThreatIntelResult } from "@/lib/threat-intel/virustotal";
+import { checkSafeBrowsing } from "@/lib/threat-intel/safebrowsing";
+import { checkAbuseIPDB } from "@/lib/threat-intel/abuseipdb";
 
 /**
  * Server Action to check multiple targets against Threat Intel
