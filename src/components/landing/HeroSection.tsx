@@ -15,7 +15,7 @@ const badges = [
 
 export const HeroSection = () => {
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-12 pb-16">
+        <section className="relative min-h-screen flex flex-col justify-start pt-32 sm:pt-40 pb-16 overflow-hidden">
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 {/* Background image placeholder - replaced with gradient for now */}
@@ -58,7 +58,7 @@ export const HeroSection = () => {
                     >
                         <span className="text-foreground">Email Intelligence.</span>
                         <br />
-                        <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Zero Data Exfiltration.</span>
+                        <span className="bg-gradient-to-r from-primary via-purple-500 to-accent bg-clip-text text-transparent">Zero Data Exfiltration.</span>
                     </motion.h1>
 
                     {/* Subheadline */}
