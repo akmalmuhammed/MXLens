@@ -15,7 +15,7 @@ const badges = [
 
 export const HeroSection = () => {
     return (
-        <section className="relative min-h-screen flex flex-col justify-start pt-32 sm:pt-40 pb-16 overflow-hidden">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-16">
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 {/* Background image placeholder - replaced with gradient for now */}
@@ -30,9 +30,9 @@ export const HeroSection = () => {
             <OrbitalBackground />
 
             {/* Animated glow orbs */}
-            {/* Animated glow orbs - Optimized for performance but boosted visibility */}
+            {/* Animated glow orbs - Optimized for performance */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
 
             <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto text-center">
@@ -41,7 +41,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 mb-6"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 mb-8"
                     >
                         <Shield className="w-4 h-4 text-primary" />
                         <span className="text-sm font-mono text-primary">
@@ -54,11 +54,11 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.1 }}
-                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4"
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
                     >
                         <span className="text-foreground">Email Intelligence.</span>
                         <br />
-                        <span className="bg-gradient-to-r from-primary via-purple-500 to-accent bg-clip-text text-transparent">Zero Data Exfiltration.</span>
+                        <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Zero Data Exfiltration.</span>
                     </motion.h1>
 
                     {/* Subheadline */}
@@ -66,7 +66,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.2 }}
-                        className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
+                        className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
                     >
                         The first completely client-side analysis engine. Drag, drop, and
                         dissect suspicious emails without them ever leaving your browser.
@@ -78,7 +78,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.3 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10"
                     >
                         <Button className="group w-full sm:w-auto text-lg h-14 px-8 rounded-full shadow-glow" size="lg" asChild>
                             <Link href="/analyze">
