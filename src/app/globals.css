@@ -756,7 +756,7 @@
   }
 
   /* Pulse animation for live indicators */
-  @keyframes pulse-glow {
+  @keyframes pulse-shadow {
 
     0%,
     100% {
@@ -771,7 +771,7 @@
   }
 
   .pulse-live {
-    animation: pulse-glow 2s ease-in-out infinite;
+    animation: pulse-shadow 2s ease-in-out infinite;
   }
 
   /* Fade in animation */
