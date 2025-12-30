@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { ArchitectureSection } from "@/components/landing/ArchitectureSection";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { PricingSection } from "@/components/landing/PricingSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { CTASection } from "@/components/landing/CTASection";
@@ -17,6 +18,7 @@ export default function LandingPage() {
         <ArchitectureSection />
         <HowItWorksSection />
         <FeaturesSection />
+        <PricingSection />
         <ComparisonSection />
         <FAQSection />
         <CTASection />
