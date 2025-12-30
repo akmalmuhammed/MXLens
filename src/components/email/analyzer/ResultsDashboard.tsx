@@ -399,7 +399,15 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                     <div className="mt-4">
                                         <ThreatIntelCard
                                             ips={analysis.header.artifacts.filter(a => a.type === 'ip').map(a => a.value)}
-                                            domains={[analysis.signals.fromDomain].filter(Boolean) as string[]}
+                                            domains={[
+                                                // From Domain
+                                                analysis.signals.fromDomain,
+                                                // Extracted URL Domains
+                                                ...analysis.signals.extractedUrls.map(u => {
+                                                    try { return new URL(u).hostname; } catch { return ""; }
+                                                })
+                                            ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i) as string[]} // Unique
+                                            hashes={analysis.signals.attachments.map(a => a.sha256).filter(Boolean) as string[]}
                                         />
                                     </div>
                                 </div>

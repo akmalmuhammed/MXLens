@@ -1,7 +1,7 @@
 
 "use server";
 
-import { checkIPReputation, checkDomainReputation, ThreatIntelResult } from "@/lib/threat-intel/virustotal";
+import { checkIPReputation, checkDomainReputation, checkFileReputation, ThreatIntelResult } from "@/lib/threat-intel/virustotal";
 import { checkSafeBrowsing } from "@/lib/threat-intel/safebrowsing";
 import { checkAbuseIPDB } from "@/lib/threat-intel/abuseipdb";
 import { getDomainAge } from "@/lib/threat-intel/whois";
@@ -9,7 +9,7 @@ import { getDomainAge } from "@/lib/threat-intel/whois";
 /**
  * Server Action to check multiple targets against Threat Intel
  */
-export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: string }[]): Promise<ThreatIntelResult[]> {
+export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash', value: string }[]): Promise<ThreatIntelResult[]> {
     const results: ThreatIntelResult[] = [];
 
     // Batches for separate services
@@ -17,11 +17,13 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
     const uniqueTargets = Array.from(new Set(targets.map(t => JSON.stringify(t)))).map(s => JSON.parse(s));
     const ipTargets: string[] = uniqueTargets.filter((t: any) => t.type === 'ip').map((t: any) => t.value).slice(0, 5);
     const domainTargets: string[] = uniqueTargets.filter((t: any) => t.type === 'domain').map((t: any) => t.value).slice(0, 5);
+    const hashTargets: string[] = uniqueTargets.filter((t: any) => t.type === 'hash').map((t: any) => t.value).slice(0, 5);
 
     // 1. VirusTotal Checks (Parallel)
     const vtPromises = [
         ...ipTargets.map(ip => checkIPReputation(ip)),
-        ...domainTargets.map(d => checkDomainReputation(d))
+        ...domainTargets.map(d => checkDomainReputation(d)),
+        ...hashTargets.map(h => checkFileReputation(h))
     ];
 
     // 2. Google Safe Browsing (Batch)

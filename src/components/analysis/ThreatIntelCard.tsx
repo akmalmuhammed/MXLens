@@ -12,9 +12,10 @@ import { ThreatIntelResult } from "@/lib/threat-intel/virustotal";
 interface ThreatIntelCardProps {
     ips: string[];
     domains: string[];
+    hashes?: string[];
 }
 
-export const ThreatIntelCard = ({ ips, domains }: ThreatIntelCardProps) => {
+export const ThreatIntelCard = ({ ips, domains, hashes = [] }: ThreatIntelCardProps) => {
     const [results, setResults] = useState<ThreatIntelResult[]>([]);
     const [loading, setLoading] = useState(true);
     const [scanned, setScanned] = useState(false);
@@ -22,20 +23,21 @@ export const ThreatIntelCard = ({ ips, domains }: ThreatIntelCardProps) => {
     useEffect(() => {
         const scan = async () => {
             // Only scan if we haven't already and there are targets
-            if (scanned || (ips.length === 0 && domains.length === 0)) {
+            if (scanned || (ips.length === 0 && domains.length === 0 && hashes.length === 0)) {
                 setLoading(false);
                 return;
             }
 
             try {
-                const targets: { type: 'ip' | 'domain', value: string }[] = [
+                const targets: { type: 'ip' | 'domain' | 'hash', value: string }[] = [
                     ...ips.map(ip => ({ type: 'ip' as const, value: ip })),
-                    ...domains.map(d => ({ type: 'domain' as const, value: d }))
+                    ...domains.map(d => ({ type: 'domain' as const, value: d })),
+                    ...hashes.map(h => ({ type: 'hash' as const, value: h }))
                 ];
 
                 const uniqueTargets = Array.from(new Set(targets.map(t => JSON.stringify(t))))
                     .map(s => JSON.parse(s))
-                    .slice(0, 5); // Limit to top 5 for now
+                    .slice(0, 10); // Limit to top 10
 
                 const data = await checkThreatIntel(uniqueTargets);
                 setResults(data);
@@ -48,7 +50,7 @@ export const ThreatIntelCard = ({ ips, domains }: ThreatIntelCardProps) => {
         };
 
         scan();
-    }, [ips, domains, scanned]);
+    }, [ips, domains, hashes, scanned]);
 
     // Determine aggregate status
     const maliciousCount = results.filter(r => r.verdict === 'malicious').length;

@@ -102,6 +102,22 @@ export async function checkDomainReputation(domain: string): Promise<ThreatIntel
 }
 
 /**
+ * Check File Hash Reputation
+ */
+export async function checkFileReputation(hash: string): Promise<ThreatIntelResult | null> {
+    try {
+        const data = await fetchVT(`files/${hash}`);
+        if (!data) return null;
+
+        const stats = data.data.attributes.last_analysis_stats;
+        return formatResult(hash, 'hash', stats, data.data.attributes.last_analysis_date);
+    } catch (error) {
+        console.error(`[VT] Error checking file ${hash}:`, error);
+        return null;
+    }
+}
+
+/**
  * Helper to normalize VT stats into a ThreatIntelResult
  */
 function formatResult(
