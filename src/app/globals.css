@@ -328,21 +328,19 @@
   --popover: oklch(0.13 0.02 240);
   --popover-foreground: oklch(0.985 0 0);
 
-  /* Primary: Neon Cyan */
+  /* Primary: Cyan */
   --primary: oklch(0.85 0.15 190);
-  --primary-foreground: oklch(0.10 0.05 240);
-  /* Dark text on bright button */
+  --primary-foreground: oklch(0.145 0 0);
 
-  --secondary: oklch(0.20 0.05 150);
-  /* Dark Green tint */
+  --secondary: oklch(0.20 0.03 240);
   --secondary-foreground: oklch(0.985 0 0);
 
-  --muted: oklch(0.15 0.02 190);
-  --muted-foreground: oklch(0.70 0.05 190);
+  --muted: oklch(0.20 0.03 240);
+  --muted-foreground: oklch(0.70 0 0);
 
-  /* Accent: Matrix Green */
-  --accent: oklch(0.80 0.20 150);
-  --accent-foreground: oklch(0.10 0.05 240);
+  /* Accent: Electric Purple */
+  --accent: oklch(0.75 0.20 300);
+  --accent-foreground: oklch(0.985 0 0);
 
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: #FFFFFF;
@@ -350,28 +348,28 @@
   --success: #10B981;
   --success-foreground: #FFFFFF;
 
-  --border: oklch(0.25 0.02 190);
-  --input: oklch(0.25 0.02 190);
+  --border: oklch(0.30 0 0);
+  --input: oklch(0.30 0 0);
   --ring: oklch(0.85 0.15 190);
 
   --chart-1: oklch(0.85 0.15 190);
   /* Cyan */
-  --chart-2: oklch(0.80 0.20 150);
-  /* Green */
-  --chart-3: oklch(0.90 0.15 100);
-  /* Yellow/Lime */
-  --chart-4: oklch(0.60 0.10 240);
-  /* Blue */
-  --chart-5: oklch(0.70 0.15 300);
+  --chart-2: oklch(0.75 0.20 300);
   /* Purple */
+  --chart-3: oklch(0.70 0.15 150);
+  /* Green */
+  --chart-4: oklch(0.90 0.10 80);
+  /* Orange */
+  --chart-5: oklch(0.80 0.10 240);
+  /* Blue */
 
   --sidebar: oklch(0.10 0.01 240);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.85 0.15 190);
   --sidebar-primary-foreground: oklch(0.145 0 0);
-  --sidebar-accent: oklch(0.15 0.05 150);
+  --sidebar-accent: oklch(0.20 0.03 240);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.25 0.02 190);
+  --sidebar-border: oklch(0.30 0 0);
   --sidebar-ring: oklch(0.85 0.15 190);
 }
 

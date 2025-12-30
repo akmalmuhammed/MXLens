@@ -37,6 +37,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.23",
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.4.9",
     "class-variance-authority": "^0.7.1",
