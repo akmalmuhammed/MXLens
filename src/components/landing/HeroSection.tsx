@@ -15,7 +15,7 @@ const badges = [
 
 export const HeroSection = () => {
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-16">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-12 pb-16">
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 {/* Background image placeholder - replaced with gradient for now */}
@@ -30,9 +30,9 @@ export const HeroSection = () => {
             <OrbitalBackground />
 
             {/* Animated glow orbs */}
-            {/* Animated glow orbs - Optimized for performance */}
+            {/* Animated glow orbs - Optimized for performance but boosted visibility */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
 
             <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto text-center">
@@ -78,7 +78,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.3 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
                     >
                         <Button className="group w-full sm:w-auto text-lg h-14 px-8 rounded-full shadow-glow" size="lg" asChild>
                             <Link href="/analyze">
