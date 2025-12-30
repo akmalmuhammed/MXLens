@@ -45,32 +45,23 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
         if (r) results.push({ ...r, provider: 'VirusTotal' });
     });
 
-    // Aggregate AbuseIPDB Results
+    // Aggregate AbuseIPDB Results (Always separate row)
     abuseResults.forEach(r => {
         if (r) {
-            const existing = results.find(res => res.target === r.ipAddress && res.type === 'ip');
             const score = r.abuseConfidenceScore;
             let verdict: ThreatIntelResult['verdict'] = 'clean';
             if (score > 50) verdict = 'malicious';
             else if (score > 0) verdict = 'suspicious';
 
-            if (existing) {
-                if (score > existing.reputation) {
-                    existing.reputation = score;
-                    if (verdict === 'malicious') existing.verdict = 'malicious';
-                    else if (verdict === 'suspicious' && existing.verdict === 'clean') existing.verdict = 'suspicious';
-                }
-            } else {
-                results.push({
-                    target: r.ipAddress,
-                    type: 'ip',
-                    reputation: score,
-                    stats: { malicious: r.totalReports, suspicious: r.abuseConfidenceScore, harmless: 0, undetected: 0, timeout: 0 },
-                    lastAnalysisDate: r.lastReportedAt || new Date().toISOString(),
-                    verdict,
-                    provider: 'AbuseIPDB'
-                });
-            }
+            results.push({
+                target: r.ipAddress,
+                type: 'ip',
+                reputation: score,
+                stats: { malicious: r.totalReports, suspicious: r.abuseConfidenceScore, harmless: 0, undetected: 0, timeout: 0 },
+                lastAnalysisDate: r.lastReportedAt || new Date().toISOString(),
+                verdict,
+                provider: 'AbuseIPDB'
+            });
         }
     });
 
@@ -89,34 +80,20 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
         }
     });
 
-    // Aggregate Domain Age Results
+    // Aggregate Domain Age Results (Always separate row if available)
     ageResults.forEach(r => {
         if (r) {
-            const existing = results.find(res => res.target === r.domain && res.type === 'domain');
-
-            // "Fresh" domains < 30 days are suspicious
-            if (r.isFresh) {
-                if (existing) {
-                    // Bump existing score
-                    existing.reputation = Math.max(existing.reputation, 75);
-                    if (existing.verdict === 'clean') existing.verdict = 'suspicious';
-                    existing.domainAge = { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar };
-                } else {
-                    results.push({
-                        target: r.domain,
-                        type: 'domain',
-                        reputation: 75,
-                        stats: { malicious: 0, suspicious: 1, harmless: 0, undetected: 0, timeout: 0 },
-                        lastAnalysisDate: new Date().toISOString(),
-                        verdict: 'suspicious',
-                        provider: 'Whois/RDAP',
-                        domainAge: { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar }
-                    });
-                }
-            } else if (existing) {
-                // Attach age data even if safe
-                existing.domainAge = { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar };
-            }
+            // Always show domain age as a separate entry
+            results.push({
+                target: r.domain,
+                type: 'domain',
+                reputation: r.isFresh ? 75 : 10,
+                stats: { malicious: 0, suspicious: r.isFresh ? 1 : 0, harmless: r.isFresh ? 0 : 1, undetected: 0, timeout: 0 },
+                lastAnalysisDate: new Date().toISOString(),
+                verdict: r.isFresh ? 'suspicious' : 'clean',
+                provider: 'DomainAge',
+                domainAge: { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar }
+            });
         }
     });
 
