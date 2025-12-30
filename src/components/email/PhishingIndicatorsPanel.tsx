@@ -126,19 +126,22 @@ export function PhishingIndicatorsPanel({ penalties, extractedUrls, bodyEnabled,
                                             variant="ghost"
                                             size="icon"
                                             className="h-6 w-6"
-                                            title="VirusTotal Search"
-                                            onClick={() => window.open(`https://www.virustotal.com/gui/search/${encodeURIComponent(url)}`, '_blank')}
+                                            title="Analyze on VirusTotal"
+                                            onClick={async () => {
+                                                try {
+                                                    // Use SHA-256 hash of the URL helps avoid encoding issues and length limits
+                                                    const msgBuffer = new TextEncoder().encode(url);
+                                                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                                                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                                                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                                                    window.open(`https://www.virustotal.com/gui/search/${hashHex}`, '_blank');
+                                                } catch (e) {
+                                                    // Fallback to encoded URL if crypto fails
+                                                    window.open(`https://www.virustotal.com/gui/search/${encodeURIComponent(url)}`, '_blank');
+                                                }
+                                            }}
                                         >
                                             <ShieldAlert className="h-3 w-3 text-red-500 hover:text-red-600" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-6 w-6"
-                                            title="Open Link (Sandbox)"
-                                            onClick={() => window.open(url, '_blank')}
-                                        >
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
                                         </Button>
                                     </div>
                                 </div>
