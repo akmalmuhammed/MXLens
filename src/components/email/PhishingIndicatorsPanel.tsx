@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 
 interface PhishingIndicatorsPanelProps {
     penalties: ValidationPenalty[];
-    extractedUrls: string[];
+
     bodyEnabled: boolean;
     onEnableBody: () => void;
 }
 
-export function PhishingIndicatorsPanel({ penalties, extractedUrls, bodyEnabled, onEnableBody }: PhishingIndicatorsPanelProps) {
+export function PhishingIndicatorsPanel({ penalties, bodyEnabled, onEnableBody }: PhishingIndicatorsPanelProps) {
     if (!bodyEnabled) {
         return (
             <div className="border border-dashed p-8 rounded-lg text-center bg-muted/20">
@@ -29,7 +29,7 @@ export function PhishingIndicatorsPanel({ penalties, extractedUrls, bodyEnabled,
     // We treat 'header' risks as separate usually shown in Header Analysis, 
     // but if critical we might show them? For now focus on Phishing Analysis (Content/Cross).
 
-    if (bodyRisks.length === 0 && crossRisks.length === 0 && attachmentRisks.length === 0 && extractedUrls.length === 0) {
+    if (bodyRisks.length === 0 && crossRisks.length === 0 && attachmentRisks.length === 0) {
         return (
             <div className="p-8 text-center text-muted-foreground">
                 <ShieldAlert className="w-8 h-8 mx-auto opacity-20 mb-2" />
@@ -101,55 +101,7 @@ export function PhishingIndicatorsPanel({ penalties, extractedUrls, bodyEnabled,
                 </div>
             )}
 
-            {/* Extracted URLs */}
-            <div>
-                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                    <Link className="w-4 h-4 text-muted-foreground" /> Extracted Links
-                </h4>
-                <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
-                    {extractedUrls.length === 0 ? (
-                        <div className="p-3 text-sm text-muted-foreground italic">No links found in body.</div>
-                    ) : (
-                        extractedUrls.map((url, i) => {
-                            let domain = "";
-                            try {
-                                domain = new URL(url).hostname;
-                            } catch (e) { domain = url; }
 
-                            return (
-                                <div key={i} className="p-2 flex items-center justify-between hover:bg-muted/50 text-sm group">
-                                    <div className="truncate max-w-[65%] font-mono text-xs text-muted-foreground group-hover:text-foreground" title={url}>
-                                        {url}
-                                    </div>
-                                    <div className="flex items-center gap-1 opacity-100 shrink-0">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-6 w-6"
-                                            title="Analyze on VirusTotal"
-                                            onClick={async () => {
-                                                try {
-                                                    // Use SHA-256 hash of the URL helps avoid encoding issues and length limits
-                                                    const msgBuffer = new TextEncoder().encode(url);
-                                                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-                                                    const hashArray = Array.from(new Uint8Array(hashBuffer));
-                                                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                                                    window.open(`https://www.virustotal.com/gui/search/${hashHex}`, '_blank');
-                                                } catch (e) {
-                                                    // Fallback to encoded URL if crypto fails
-                                                    window.open(`https://www.virustotal.com/gui/search/${encodeURIComponent(url)}`, '_blank');
-                                                }
-                                            }}
-                                        >
-                                            <ShieldAlert className="h-3 w-3 text-red-500 hover:text-red-600" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    )}
-                </div>
-            </div>
 
         </div>
     );

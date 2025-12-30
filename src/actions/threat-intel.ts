@@ -142,6 +142,54 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain', value: 
 
     const uhResults = await Promise.all(uhPromises);
 
+    // 6. PhishTank Check (Public API)
+    // POST https://checkurl.phishtank.com/checkurl/
+    const ptPromises = [...domainTargets].map(async (domain) => {
+        // We can't easily check just "domain" against PhishTank, it expects full URLs usually.
+        // But for this purpose, we'll strip protocols and check "http://domain" and "https://domain"
+        // Or if we have full URLs extracted, we should use those. 
+        // For now, we only have domains/IPs passed to this function.
+        // Let's check "http://" + domain as a heuristic.
+        try {
+            const formData = new FormData();
+            formData.append('url', `http://${domain}`);
+            formData.append('format', 'json');
+            const res = await fetch('https://checkurl.phishtank.com/checkurl/', {
+                method: 'POST',
+                body: formData
+            });
+            if (!res.ok) return null;
+            const json = await res.json();
+            if (json.results && json.results.in_database) {
+                return { target: domain, valid: json.results.valid };
+            }
+            return null;
+        } catch { return null; }
+    });
+
+    const ptResults = await Promise.all(ptPromises);
+
+    // Merge PhishTank Results
+    ptResults.forEach(r => {
+        if (r && r.valid) {
+            const existing = results.find(res => res.target === r.target);
+            if (existing) {
+                existing.reputation = 100;
+                existing.verdict = 'malicious';
+            } else {
+                results.push({
+                    target: r.target,
+                    type: 'domain',
+                    reputation: 100,
+                    stats: { malicious: 1, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
+                    lastAnalysisDate: new Date().toISOString(),
+                    verdict: 'malicious',
+                    provider: 'VirusTotal' // Generic
+                });
+            }
+        }
+    });
+
     uhResults.forEach(r => {
         if (r) {
             const existing = results.find(res => res.target === r.host);

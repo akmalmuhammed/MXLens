@@ -140,7 +140,24 @@ export class SignalNormalizer {
             if (rtMatch) replyToDomain = rtMatch[1].trim();
         }
 
+        // Threading Signals
+        const subject = typeof headerResult.headers['Subject'] === 'string'
+            ? headerResult.headers['Subject']
+            : (Array.isArray(headerResult.headers['Subject']) ? headerResult.headers['Subject'][0] : "");
+
+        const inReplyTo = typeof headerResult.headers['In-Reply-To'] === 'string'
+            ? headerResult.headers['In-Reply-To']
+            : (Array.isArray(headerResult.headers['In-Reply-To']) ? headerResult.headers['In-Reply-To'][0] : null);
+
+        const references = typeof headerResult.headers['References'] === 'string'
+            ? headerResult.headers['References']
+            : (Array.isArray(headerResult.headers['References']) ? headerResult.headers['References'][0] : null);
+
         return {
+            // Threading
+            subject,
+            inReplyTo,
+            references,
             // Auth
             spfResult: spf,
             dkimResult: dkim,

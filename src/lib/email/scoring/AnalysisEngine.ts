@@ -1,3 +1,6 @@
+import { ThreadScorer } from "./ThreadScorer";
+import { ImpersonationScorer } from "./ImpersonationScorer";
+import { HomographDetector } from "./HomographDetector";
 import { SignalNormalizer } from "./SignalNormalizer";
 import { HeaderScorer } from "./HeaderScorer";
 import { BodyScorer } from "./BodyScorer";
@@ -25,6 +28,16 @@ export class AnalysisEngine {
         const crossScore = CrossContextScorer.score(signals);
         const attachmentScore = AttachmentScorer.score(signals);
 
+        // Advanced Phishing Scorers (New)
+        const threadScore = ThreadScorer.score(signals);
+        const impersonationScore = ImpersonationScorer.score(signals);
+        const homographScore = HomographDetector.score(signals);
+
+        // Update signals with homograph detection result for downstream logic
+        if (homographScore.penalties.length > 0) {
+            signals.homoglyphDetected = true;
+        }
+
         // 3. Run Detection Pipeline (New V2 Logic)
         const pipeline = new DetectionPipeline();
         const { results: pipelineResults, totalPenalty: pipelinePenalty, performance: pipelineTelemetry } = await pipeline.run({
@@ -34,6 +47,13 @@ export class AnalysisEngine {
             attachments: emailBody?.attachments || [], // Pass raw attachments for scanning
             options: options
         });
+
+        // Merge Advanced Scores into Header/Cross Components
+        // We do this to avoid changing the TrustCalculator signature while still applying penalties
+        headerScore.score = Math.min(headerScore.score, threadScore.score, impersonationScore.score, homographScore.score);
+        headerScore.penalties.push(...threadScore.penalties, ...impersonationScore.penalties, ...homographScore.penalties);
+
+
 
         // 4. Aggregate Trust (Legacy + Pipeline)
         const trustResult = TrustCalculator.calculate(

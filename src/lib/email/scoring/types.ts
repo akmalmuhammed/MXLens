@@ -43,6 +43,11 @@ export interface NormalizedSignals {
     replyToDomain: string | null;
     returnPathDomain: string;
 
+    // Threading Signals
+    subject: string;
+    inReplyTo: string | null;
+    references: string | null;
+
     bodyAnalysisEnabled: boolean;
     hasUrgency: boolean;
     hasCredentialHarvesting: boolean;

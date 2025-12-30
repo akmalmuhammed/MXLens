@@ -22,7 +22,7 @@ import { IPGeolocationMap } from "@/components/analysis/IPGeolocationMap";
 import { fetchIPGeolocations } from "@/actions/geolocation";
 import { extractIPsFromHeaders } from "@/lib/threat-intel/geolocation";
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
-import { AttachmentAnalysisCard } from "@/components/analysis/AttachmentAnalysisCard";
+
 import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifactsCard";
 import {
     DropdownMenu,
@@ -298,16 +298,12 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
 
                         <PhishingIndicatorsPanel
                             penalties={analysis.scoring.trust.penalties}
-                            extractedUrls={analysis.signals.extractedUrls}
+
                             bodyEnabled={analyzeBody}
                             onEnableBody={() => setAnalyzeBody(true)}
                         />
 
-                        {/* Attachment Analysis Card */}
-                        <AttachmentAnalysisCard
-                            attachments={analysis.signals.attachments}
-                            enabled={analyzeAttachments}
-                        />
+
 
                         {analysis.header.xHeaders && analysis.header.xHeaders.length > 0 && (
                             <div className="space-y-4">
