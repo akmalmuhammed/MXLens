@@ -24,6 +24,7 @@ import { GeoLocation } from "@/lib/threat-intel/geolocation";
 
 import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifactsCard";
 import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
+import { ThreatIntelView } from "@/components/email/analyzer/ThreatIntelView";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
 import { SafeEmailPreview } from "@/components/email/preview/SafeEmailPreview";
@@ -67,7 +68,7 @@ interface ResultsDashboardProps {
 
 export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, userPlan = "FREE" }: ResultsDashboardProps) {
     const { data: session } = useSession();
-    const [mode, setMode] = useState<"analyst" | "raw" | "it">("analyst");
+    const [mode, setMode] = useState<"analyst" | "raw" | "it" | "threat-intel">("analyst");
     const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
     const [triageStatus, setTriageStatus] = useState<string | null>(null);
     const [ipLocations, setIpLocations] = useState<GeoLocation[]>([]);
@@ -144,9 +145,10 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6 border-b border-border/40">
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full md:w-auto">
-                        <TabsList className="grid w-full grid-cols-3 h-10 bg-muted/50 p-1 rounded-xl border border-white/5">
-                            <TabsTrigger value="analyst" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Analyst</TabsTrigger>
-                            <TabsTrigger value="raw" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Raw</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-4 h-10 bg-muted/50 p-1 rounded-xl border border-white/5">
+                            <TabsTrigger value="analyst" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Analyst View</TabsTrigger>
+                            <TabsTrigger value="threat-intel" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Threat Intel</TabsTrigger>
+                            <TabsTrigger value="raw" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Raw Data</TabsTrigger>
                             <TabsTrigger value="it" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Quick IT</TabsTrigger>
                         </TabsList>
                     </Tabs>
@@ -434,26 +436,23 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                         />
                                     </div>
 
-                                    {/* Threat Intelligence Lookup (Auto-Scan) */}
-                                    <div className="mt-4">
-                                        <ThreatIntelCard
-                                            ips={analysis.header.artifacts.filter(a => a.type === 'ip').map(a => a.value)}
-                                            domains={[
-                                                // From Domain
-                                                analysis.signals.fromDomain,
-                                                // Extracted URL Domains
-                                                ...analysis.signals.extractedUrls.map(u => {
-                                                    try { return new URL(u).hostname; } catch { return ""; }
-                                                })
-                                            ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i) as string[]} // Unique
-                                            hashes={analysis.signals.attachments.map(a => a.sha256).filter(Boolean) as string[]}
-                                        />
-                                    </div>
+                                    {/* Link analysis moved to extraction card or link analysis view if needed */}
                                 </div>
                             </div>
                         </div>
                         <AIAnalysisSummary analysis={analysis.header} scoring={analysis.scoring} />
                     </div>
+                </div>
+            )}
+
+            {/* THREAT INTEL VIEW */}
+            {mode === "threat-intel" && (
+                <div className="max-w-[1600px] mx-auto">
+                    <ThreatIntelView
+                        analysis={analysis}
+                        ipLocations={ipLocations}
+                        loadingGeo={loadingGeo}
+                    />
                 </div>
             )}
 
