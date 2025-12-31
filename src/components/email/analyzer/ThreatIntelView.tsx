@@ -58,23 +58,27 @@ export function ThreatIntelView({ analysis, ipLocations, loadingGeo }: ThreatInt
             </div>
 
             {/* Network Infrastructure Layer */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                    <h3 className="flex items-center gap-2 font-semibold text-lg text-foreground/90">
-                        <Network className="w-5 h-5 text-blue-500" />
-                        Infrastructure Map
-                    </h3>
-                    <div className="bg-card border rounded-xl p-1 shadow-sm h-[400px]">
-                        <IPGeolocationMap locations={ipLocations} />
-                    </div>
+            <div className="space-y-4">
+                <h3 className="flex items-center gap-2 font-semibold text-lg text-foreground/90">
+                    <Network className="w-5 h-5 text-blue-500" />
+                    Global Infrastructure Map
+                </h3>
+                {/* Full Width Map */}
+                <div className="bg-card border rounded-xl p-1 shadow-sm h-[500px] w-full relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/5 pointer-events-none z-10" />
+                    <IPGeolocationMap locations={ipLocations} />
                 </div>
+            </div>
 
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-6">
                     <InfrastructureCard
                         fromDomain={analysis.signals.fromDomain}
                         ipLocations={ipLocations}
                         loading={loadingGeo}
                     />
+                </div>
+                <div className="space-y-6">
                     <ThreatIntelCard
                         ips={uniqueIps}
                         domains={uniqueDomains}

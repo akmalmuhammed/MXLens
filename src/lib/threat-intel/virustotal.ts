@@ -23,7 +23,7 @@ export interface ThreatIntelResult {
     stats: VirusTotalStats;
     lastAnalysisDate: string;
     verdict: 'clean' | 'suspicious' | 'malicious' | 'unknown';
-    provider: 'VirusTotal' | 'AbuseIPDB' | 'GoogleSafeBrowsing' | 'Whois/RDAP' | 'DomainAge' | 'URLhaus' | 'PhishTank';
+    provider: 'VirusTotal' | 'AbuseIPDB' | 'GoogleSafeBrowsing' | 'DomainAge' | 'PhishTank' | 'URLhaus';
     error?: string;
     domainAge?: {
         days: number;

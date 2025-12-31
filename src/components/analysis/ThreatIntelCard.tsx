@@ -83,7 +83,7 @@ export const ThreatIntelCard = ({ ips, domains, hashes = [] }: ThreatIntelCardPr
                         </div>
                         <div>
                             <CardTitle className="text-lg font-bold tracking-tight">Threat Intelligence</CardTitle>
-                            <CardDescription className="text-xs font-mono text-muted-foreground">REAL-TIME VIRUSTOTAL FEED</CardDescription>
+                            <CardDescription className="text-xs font-mono text-muted-foreground">VIRUSTOTAL • PHISHTANK • URLHAUS • ABUSEIPDB</CardDescription>
                         </div>
                     </div>
                     <Badge variant="outline" className={`font-mono uppercase ${statusColors[aggregateStatus]}`}>
@@ -156,8 +156,10 @@ export const ThreatIntelCard = ({ ips, domains, hashes = [] }: ThreatIntelCardPr
                                     <a href={
                                         result.provider === 'VirusTotal' ? `https://www.virustotal.com/gui/${result.type === 'ip' ? 'ip-address' : 'domain'}/${result.target}` :
                                             result.provider === 'AbuseIPDB' ? `https://www.abuseipdb.com/check/${result.target}` :
-                                                result.provider === 'GoogleSafeBrowsing' ? `https://transparencyreport.google.com/safe-browsing/search?url=${result.target}` :
-                                                    `https://who.is/whois/${result.target}`
+                                                result.provider === 'PhishTank' ? `https://www.phishtank.com/` :
+                                                    result.provider === 'URLhaus' ? `https://urlhaus.abuse.ch/browse/search/?search=${result.target}` :
+                                                        result.provider === 'GoogleSafeBrowsing' ? `https://transparencyreport.google.com/safe-browsing/search?url=${result.target}` :
+                                                            `https://who.is/whois/${result.target}`
                                     } target="_blank" rel="noopener noreferrer">
                                         <ExternalLink className="w-4 h-4" />
                                     </a>

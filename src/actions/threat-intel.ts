@@ -163,7 +163,7 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
                     stats: { malicious: 1, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
                     lastAnalysisDate: new Date().toISOString(),
                     verdict: 'malicious',
-                    provider: 'VirusTotal' // Generic
+                    provider: 'PhishTank'
                 });
             }
         }
@@ -184,7 +184,7 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
                     stats: { malicious: r.count, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
                     lastAnalysisDate: new Date().toISOString(),
                     verdict: 'malicious',
-                    provider: 'VirusTotal' // Reusing generic provider slot or add new if strict typed
+                    provider: 'URLhaus'
                 });
             }
         }
