@@ -23,7 +23,16 @@ export function MxRecordCard({ domain }: MxRecordCardProps) {
             .finally(() => setLoading(false));
     }, [domain]);
 
-    if (!domain) return null;
+    if (!domain) {
+        return (
+            <Card className="bg-card/50 border-white/5 border-dashed">
+                <CardContent className="p-4 text-xs text-muted-foreground flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    MX Analysis: No domain detected in From header.
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card className="bg-card/50 border-white/5">
