@@ -27,6 +27,7 @@ import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
 import { SafeEmailPreview } from "@/components/email/preview/SafeEmailPreview";
+import { MxRecordCard } from "@/components/analysis/MxRecordCard";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -408,6 +409,11 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                     {/* Deceptive Links Analysis */}
                                     <div className="mt-4">
                                         <LinkAnalysisCard links={analysis.signals.urlAnalysis || []} />
+                                    </div>
+
+                                    {/* MX Record Validation */}
+                                    <div className="mt-4">
+                                        <MxRecordCard domain={analysis.signals.fromDomain} />
                                     </div>
 
                                     {/* Threat Intelligence Lookup (Auto-Scan) */}
