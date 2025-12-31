@@ -64,8 +64,8 @@ export default auth(async (req) => {
     const isOnboarding = nextUrl.pathname.startsWith("/onboarding");
     const isAuthPage = nextUrl.pathname.startsWith("/auth");
 
-    // Check if we are on the admin subdomain
-    const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost";
+    // Check if we are on the admin subdomain (handle port for localhost)
+    const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname.startsWith("admin.localhost");
 
     // -------------------------------------------------------------------------
     // ADMIN SUBDOMAIN LOGIC (Using Better Auth with Proper Validation)

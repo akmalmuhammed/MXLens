@@ -1,5 +1,3 @@
-"use server";
-
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -51,10 +49,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ valid: false, reason: "Session expired" });
         }
 
-        // User must be a platform admin
-        if (!session.user.isPlatformAdmin) {
-            return NextResponse.json({ valid: false, reason: "User is not an admin" });
-        }
+        // Note: isPlatformAdmin check removed from here.
+        // Allow any authenticated admin panel user to have a valid session.
+        // Specific admin-only features should check isPlatformAdmin at the route level.
 
         // Session is valid
         return NextResponse.json({
