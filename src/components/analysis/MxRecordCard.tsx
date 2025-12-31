@@ -23,14 +23,12 @@ export function MxRecordCard({ domain, rawFrom }: MxRecordCardProps) {
 
         setStatus('loading');
         resolveMxRecords(domain)
-            .then(res => {
-                if (res.error) {
-                    setStatus('error');
-                } else if (!res.records || res.records.length === 0) {
+            .then(records => {
+                if (!records || records.length === 0) {
                     setStatus('missing');
                 } else {
                     setStatus('active');
-                    setRecords(res.records);
+                    setRecords(records);
                 }
             })
             .catch(() => setStatus('error'));
