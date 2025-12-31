@@ -1,4 +1,4 @@
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 
 export interface SanitizeOptions {
     blockImages?: boolean; // Default true, replaces src with data-src
@@ -39,7 +39,7 @@ export class SafeSanitizer {
             ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
 
             // 6. CSS Hooks
-            FORCE_BODY: true,
+            FORCE_BODY: false,
 
             // Custom Hooks for Image/Link handling
         });
