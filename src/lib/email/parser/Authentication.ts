@@ -93,32 +93,45 @@ export class AuthenticationAnalyzer {
         const details: string[] = [];
         let status: NonNullable<AnalysisResult['arc']>['status'] = 'none';
 
-        let arcAuthDetails = "";
-        if (arcResults) {
-            const val = Array.isArray(arcResults) ? arcResults[0] : arcResults;
-            arcAuthDetails = val;
-            details.push(`Results: ${val.substring(0, 100)}...`);
-            if (val.includes('arc=pass')) status = 'pass';
-            else if (val.includes('arc=fail')) status = 'fail';
+        // 1. Check Chain Validation (ARC-Seal)
+        // We look at the most recent seal (top of the list)
+        const seals = Array.isArray(arcSeal) ? arcSeal : [arcSeal];
+        const latestSeal = seals[0] || "";
+
+        if (latestSeal.includes('cv=pass')) {
+            status = 'pass';
+            details.push("Chain Validation: Pass (Trusted Forwarder)");
+        } else if (latestSeal.includes('cv=fail')) {
+            status = 'fail';
+            details.push("Chain Validation: Fail (Tampered Chain)");
+        } else {
+            status = 'none';
         }
 
-        if (arcSeal) {
-            const val = Array.isArray(arcSeal) ? arcSeal[0] : arcSeal;
-            if (val.includes('cv=pass')) {
-                if (status !== 'fail') status = 'pass';
-                details.push("Chain Validation: Pass");
-            } else if (val.includes('cv=fail')) {
-                status = 'fail';
-                details.push("Chain Validation: Fail");
+        // 2. Analyze Authentication Results (AAR)
+        // We want to find the result from the "Origin" (usually i=1)
+        const aarHeaders = Array.isArray(arcResults) ? arcResults : [arcResults];
+
+        // Find i=1 (Origin) and High index (Latest)
+        let originAar = "";
+
+        aarHeaders.forEach(h => {
+            if (typeof h === 'string' && h.includes('i=1;')) {
+                originAar = h;
             }
-        }
+        });
 
-        if (status === 'pass' && arcAuthDetails) {
-            const spfMatch = arcAuthDetails.match(/spf=([a-z]+)/i);
-            const dkimMatch = arcAuthDetails.match(/dkim=([a-z]+)/i);
+        if (status === 'pass' && originAar) {
+            // Extract Original SPF/DKIM from the first hop
+            const spfMatch = originAar.match(/spf=([a-z]+)/i);
+            const dkimMatch = originAar.match(/dkim=([a-z]+)/i);
+            const domainMatch = originAar.match(/smtp\.mailfrom=([\w.-]+)/i) || originAar.match(/header\.from=([\w.-]+)/i);
 
-            if (spfMatch) details.push(`Original SPF: ${spfMatch[1]}`);
-            if (dkimMatch) details.push(`Original DKIM: ${dkimMatch[1]}`);
+            if (spfMatch) details.push(`Origin SPF: ${spfMatch[1]}`);
+            if (dkimMatch) details.push(`Origin DKIM: ${dkimMatch[1]}`);
+            if (domainMatch) details.push(`Origin Domain: ${domainMatch[1]}`);
+        } else if (status === 'pass') {
+            details.push("ARC Valid, but Origin (i=1) header missing.");
         }
 
         return { status, details };

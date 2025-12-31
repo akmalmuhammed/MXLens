@@ -28,6 +28,7 @@ import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
 import { SafeEmailPreview } from "@/components/email/preview/SafeEmailPreview";
 import { MxRecordCard } from "@/components/analysis/MxRecordCard";
+import { AuthJourneyCard } from "@/components/analysis/AuthJourneyCard";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -412,7 +413,31 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                     </div>
 
                                     {/* MX Record Validation */}
-                                    <div className="mt-4">
+                                    <div className="space-y-6">
+                                        {/* Auth Journey (New) */}
+                                        <AuthJourneyCard
+                                            spf={analysis.auth.spf.status}
+                                            dkim={analysis.auth.dkim.status}
+                                            dmarc={analysis.auth.dmarc.status}
+                                            arcStatus={analysis.arc?.status || 'none'}
+                                            arcDetails={analysis.arc?.details || []}
+                                        />
+
+                                        <InfrastructureCard
+                                            spf={{
+                                                status: analysis.auth.spf.status === 'pass' ? 'pass' : 'fail',
+                                                details: analysis.auth.spf.explanation || ''
+                                            }}
+                                            dkim={{
+                                                status: analysis.auth.dkim.status === 'pass' ? 'pass' : 'fail',
+                                                details: analysis.auth.dkim.explanation || ''
+                                            }}
+                                            dmarc={{
+                                                status: analysis.auth.dmarc.status === 'pass' ? 'pass' : 'fail',
+                                                details: analysis.auth.dmarc.explanation || ''
+                                            }}
+                                            asn={analysis.signals.senderAsn}
+                                        />
                                         <MxRecordCard domain={analysis.signals.fromDomain} />
                                     </div>
 
