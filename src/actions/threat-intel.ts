@@ -108,16 +108,22 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
             formData.append('host', host);
             const res = await fetch('https://urlhaus-api.abuse.ch/v1/host/', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'User-Agent': 'MXLens-Security-Analyzer/1.0'
+                }
             });
-            if (!res.ok) return null;
+            if (!res.ok) {
+                return { host, count: 0, found: false, error: `API Error ${res.status}` };
+            }
             const json = await res.json();
             if (json.query_status === 'ok' && json.urls && json.urls.length > 0) {
                 return { host, count: json.urls.length, found: true };
             }
-            // Return clean result to show it was checked
             return { host, count: 0, found: false };
-        } catch { return null; }
+        } catch (e) {
+            return { host, count: 0, found: false, error: 'Connection Failed' };
+        }
     });
 
     const uhResults = await Promise.all(uhPromises);
@@ -136,15 +142,22 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
             formData.append('format', 'json');
             const res = await fetch('https://checkurl.phishtank.com/checkurl/', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'User-Agent': 'MXLens-Security-Analyzer/1.0'
+                }
             });
-            if (!res.ok) return null;
+            if (!res.ok) {
+                return { target: domain, valid: false, found: false, error: `API Error ${res.status}` };
+            }
             const json = await res.json();
             if (json.results && json.results.in_database) {
                 return { target: domain, valid: json.results.valid, found: true };
             }
             return { target: domain, valid: false, found: false };
-        } catch { return null; }
+        } catch {
+            return { target: domain, valid: false, found: false, error: 'Connection Failed' };
+        }
     });
 
     const ptResults = await Promise.all(ptPromises);
@@ -159,8 +172,9 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
                 reputation: r.found ? 100 : 0,
                 stats: { malicious: r.found ? 1 : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
                 lastAnalysisDate: new Date().toISOString(),
-                verdict: r.found ? 'malicious' : 'clean',
-                provider: 'PhishTank'
+                verdict: r.error ? 'unknown' : (r.found ? 'malicious' : 'clean'),
+                provider: 'PhishTank',
+                error: r.error
             });
         }
     });
@@ -174,8 +188,9 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
                 reputation: r.found ? 100 : 0,
                 stats: { malicious: r.found ? r.count : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
                 lastAnalysisDate: new Date().toISOString(),
-                verdict: r.found ? 'malicious' : 'clean',
-                provider: 'URLhaus'
+                verdict: r.error ? 'unknown' : (r.found ? 'malicious' : 'clean'),
+                provider: 'URLhaus',
+                error: r.error
             });
         }
     });
