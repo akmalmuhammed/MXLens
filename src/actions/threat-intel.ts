@@ -113,9 +113,10 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
             if (!res.ok) return null;
             const json = await res.json();
             if (json.query_status === 'ok' && json.urls && json.urls.length > 0) {
-                return { host, count: json.urls.length };
+                return { host, count: json.urls.length, found: true };
             }
-            return null;
+            // Return clean result to show it was checked
+            return { host, count: 0, found: false };
         } catch { return null; }
     });
 
@@ -140,9 +141,9 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
             if (!res.ok) return null;
             const json = await res.json();
             if (json.results && json.results.in_database) {
-                return { target: domain, valid: json.results.valid };
+                return { target: domain, valid: json.results.valid, found: true };
             }
-            return null;
+            return { target: domain, valid: false, found: false };
         } catch { return null; }
     });
 
@@ -150,19 +151,20 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
 
     // Merge PhishTank Results
     ptResults.forEach(r => {
-        if (r && r.valid) {
+        if (r) {
             const existing = results.find(res => res.target === r.target);
-            if (existing) {
+            if (existing && r.found) {
                 existing.reputation = 100;
                 existing.verdict = 'malicious';
-            } else {
+                existing.provider = 'PhishTank'; // Update provider to show hit
+            } else if (!existing) {
                 results.push({
                     target: r.target,
                     type: 'domain',
-                    reputation: 100,
-                    stats: { malicious: 1, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
+                    reputation: r.found ? 100 : 0,
+                    stats: { malicious: r.found ? 1 : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
                     lastAnalysisDate: new Date().toISOString(),
-                    verdict: 'malicious',
+                    verdict: r.found ? 'malicious' : 'clean',
                     provider: 'PhishTank'
                 });
             }
@@ -172,18 +174,18 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
     uhResults.forEach(r => {
         if (r) {
             const existing = results.find(res => res.target === r.host);
-            if (existing) {
+            if (existing && r.found) {
                 existing.reputation = 100;
                 existing.verdict = 'malicious';
-                // Add annotation or merge provider (simplified here)
-            } else {
+                existing.provider = 'URLhaus';
+            } else if (!existing) {
                 results.push({
                     target: r.host,
-                    type: r.host.includes('.') && !r.host.match(/^\d/) ? 'domain' : 'ip', // simple detection
-                    reputation: 100,
-                    stats: { malicious: r.count, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
+                    type: r.host.includes('.') && !r.host.match(/^\d/) ? 'domain' : 'ip',
+                    reputation: r.found ? 100 : 0,
+                    stats: { malicious: r.found ? r.count : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
                     lastAnalysisDate: new Date().toISOString(),
-                    verdict: 'malicious',
+                    verdict: r.found ? 'malicious' : 'clean',
                     provider: 'URLhaus'
                 });
             }

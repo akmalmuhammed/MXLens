@@ -1,11 +1,11 @@
 import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
-import { IPGeolocationMap } from "@/components/analysis/IPGeolocationMap";
+import { ActionTooltip } from "@/components/ui/action-tooltip";
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
 import { NormalizedSignals } from "@/lib/email/scoring/types";
-import { Globe, ShieldAlert, Network, FileSearch } from "lucide-react";
+import { Globe, ShieldAlert, FileSearch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ThreatIntelViewProps {
@@ -54,19 +54,6 @@ export function ThreatIntelView({ analysis, ipLocations, loadingGeo }: ThreatInt
                         <span className="text-[10px] uppercase text-muted-foreground font-bold">Domains</span>
                         <span className="font-mono font-bold text-lg">{uniqueDomains.length}</span>
                     </div>
-                </div>
-            </div>
-
-            {/* Network Infrastructure Layer */}
-            <div className="space-y-4">
-                <h3 className="flex items-center gap-2 font-semibold text-lg text-foreground/90">
-                    <Network className="w-5 h-5 text-blue-500" />
-                    Global Infrastructure Map
-                </h3>
-                {/* Full Width Map */}
-                <div className="bg-card border rounded-xl p-1 shadow-sm h-[500px] w-full relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/5 pointer-events-none z-10" />
-                    <IPGeolocationMap locations={ipLocations} />
                 </div>
             </div>
 
