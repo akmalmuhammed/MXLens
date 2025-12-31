@@ -1,7 +1,7 @@
 import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
-import { ActionTooltip } from "@/components/ui/action-tooltip";
+
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
 import { NormalizedSignals } from "@/lib/email/scoring/types";
