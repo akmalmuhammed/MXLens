@@ -57,15 +57,15 @@ export function ThreatIntelView({ analysis, ipLocations, loadingGeo }: ThreatInt
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-6">
+            <div className="flex flex-col gap-6">
+                <div className="w-full">
                     <InfrastructureCard
                         fromDomain={analysis.signals.fromDomain}
                         ipLocations={ipLocations}
                         loading={loadingGeo}
                     />
                 </div>
-                <div className="space-y-6">
+                <div className="w-full">
                     <ThreatIntelCard
                         ips={uniqueIps}
                         domains={uniqueDomains}

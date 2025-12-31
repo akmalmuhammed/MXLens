@@ -4,6 +4,7 @@
 import { checkIPReputation, checkDomainReputation, checkFileReputation, ThreatIntelResult } from "@/lib/threat-intel/virustotal";
 import { checkSafeBrowsing } from "@/lib/threat-intel/safebrowsing";
 import { checkAbuseIPDB } from "@/lib/threat-intel/abuseipdb";
+import { checkMalwareBazaar, checkThreatFox } from "@/lib/threat-intel/abuse-ch";
 import { getDomainAge } from "@/lib/threat-intel/whois";
 
 /**
@@ -35,11 +36,19 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
     // 4. Domain Age (Parallel Domains)
     const agePromises = domainTargets.map(d => getDomainAge(d));
 
-    const [vtResults, gsbResults, abuseResults, ageResults] = await Promise.all([
+    // 5. MalwareBazaar (Parallel Hashes)
+    const mbPromises = hashTargets.map(h => checkMalwareBazaar(h));
+
+    // 6. ThreatFox (Parallel IPs & Domains)
+    const tfPromises = [...ipTargets, ...domainTargets].map(t => checkThreatFox(t));
+
+    const [vtResults, gsbResults, abuseResults, ageResults, mbResults, tfResults] = await Promise.all([
         Promise.all(vtPromises),
         gsbPromise,
         Promise.all(abusePromises),
-        Promise.all(agePromises)
+        Promise.all(agePromises),
+        Promise.all(mbPromises),
+        Promise.all(tfPromises)
     ]);
 
     // Aggregate VT Results
@@ -47,7 +56,7 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
         if (r) results.push({ ...r, provider: 'VirusTotal' });
     });
 
-    // Aggregate AbuseIPDB Results (Always separate row)
+    // Aggregate AbuseIPDB Results
     abuseResults.forEach(r => {
         if (r) {
             const score = r.abuseConfidenceScore;
@@ -82,10 +91,9 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
         }
     });
 
-    // Aggregate Domain Age Results (Always separate row if available)
+    // Aggregate Domain Age Results
     ageResults.forEach(r => {
         if (r) {
-            // Always show domain age as a separate entry
             results.push({
                 target: r.domain,
                 type: 'domain',
@@ -95,6 +103,42 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
                 verdict: r.isFresh ? 'suspicious' : 'clean',
                 provider: 'DomainAge',
                 domainAge: { days: r.ageDays, createdDate: r.createdDate, registrar: r.registrar }
+            });
+        }
+    });
+
+    // Aggregate MalwareBazaar Results
+    mbResults.forEach((r, idx) => {
+        if (r) {
+            results.push({
+                target: hashTargets[idx],
+                type: 'hash',
+                reputation: 100,
+                stats: { malicious: 1, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
+                lastAnalysisDate: new Date().toISOString(),
+                verdict: 'malicious',
+                provider: 'MalwareBazaar',
+                error: r.signature ? `Signature: ${r.signature}` : undefined
+            });
+        }
+    });
+
+    // Aggregate ThreatFox Results
+    tfResults.forEach((r, idx) => {
+        // ThreatFox returns an array of IOCs if found, or null/empty array if clean
+        if (r && r.length > 0) {
+            const ioc = r[0]; // Take the first match
+            const target = [...ipTargets, ...domainTargets][idx];
+
+            results.push({
+                target: target,
+                type: ioc.ioc.includes('.') && !ioc.ioc.match(/^\d/) ? 'domain' : 'ip',
+                reputation: ioc.confidence_level || 100,
+                stats: { malicious: 1, suspicious: 0, harmless: 0, undetected: 0, timeout: 0 },
+                lastAnalysisDate: ioc.first_seen,
+                verdict: 'malicious',
+                provider: 'ThreatFox',
+                error: `Malware: ${ioc.malware_alias}`
             });
         }
     });
