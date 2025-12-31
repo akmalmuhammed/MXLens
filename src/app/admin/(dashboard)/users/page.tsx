@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Users as UsersIcon, Search, Shield, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { UserActionsMenu } from "@/components/admin/UserActionsMenu";
 
 interface User {
     id: string;
@@ -156,6 +157,9 @@ export default function UsersPage() {
                                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                                     Last Active
                                 </th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
@@ -198,6 +202,9 @@ export default function UsersPage() {
                                     </td>
                                     <td className="px-4 py-3 text-right font-mono text-sm">{user.orgs}</td>
                                     <td className="px-4 py-3 text-sm text-muted-foreground">{user.lastActive}</td>
+                                    <td className="px-4 py-3 text-right">
+                                        <UserActionsMenu userId={user.id} userName={user.name || "Unknown"} status={user.status} />
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

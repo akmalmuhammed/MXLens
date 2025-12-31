@@ -1,0 +1,8 @@
+ERROR: BOOM_MOCK
+STACK: Error: BOOM_MOCK
+    at Object.<anonymous> (C:/Users/akmal/.gemini/antigravity/scratch/mxlens/tests/unit/admin-actions.test.ts:26:117)
+    at Object.Mock [as deleteMany] (file:///C:/Users/akmal/.gemini/antigravity/scratch/mxlens/node_modules/@vitest/spy/dist/index.js:285:34)
+    at Module.suspendUser (C:/Users/akmal/.gemini/antigravity/scratch/mxlens/src/actions/admin/emergency.ts:52:22)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at C:/Users/akmal/.gemini/antigravity/scratch/mxlens/tests/unit/admin-actions.test.ts:105:32
+    at file:///C:/Users/akmal/.gemini/antigravity/scratch/mxlens/node_modules/@vitest/runner/dist/index.js:915:20

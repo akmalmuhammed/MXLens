@@ -8,6 +8,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { NavbarUtils } from "@/components/layout/NavbarUtils";
 import { auth } from "@/auth";
 import { PostHogProvider } from "@/providers/PostHogProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -57,6 +58,7 @@ export default async function RootLayout({
               <main id="main-content" className="min-h-screen" role="main">
                 {children}
               </main>
+              <Toaster />
             </PostHogProvider>
           </SessionProvider>
         </ThemeProvider>

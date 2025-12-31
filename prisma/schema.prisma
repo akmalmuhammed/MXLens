@@ -52,6 +52,13 @@ enum AuditAction {
   API_KEY_CREATE
   API_KEY_REVOKE
   SUBSCRIPTION_CHANGE
+  
+  // Platform Security Actions
+  USER_SUSPEND
+  USER_UNSUSPEND
+  SYSTEM_LOCKDOWN
+  IP_BLOCK
+  IP_UNBLOCK
 }
 
 enum AnalysisClassification {

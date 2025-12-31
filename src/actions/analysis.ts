@@ -3,6 +3,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { checkAbuse } from "@/lib/security/abuse-detector";
 import "server-only";
 
 export interface UsageResult {
@@ -26,6 +27,14 @@ export async function checkAndTrackUsage(): Promise<UsageResult> {
     if (!session?.user?.id || !session?.user?.orgId) {
         console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] No session or orgId - returning guest");
         return { allowed: false, remaining: 0, reason: "Authentication required", isGuest: true };
+    }
+
+    // 0. Security Check (Redis Fast Path)
+    try {
+        await checkAbuse(session.user.id);
+    } catch (error: any) {
+        console.error("Abuse/RateLimit check failed:", error.message);
+        return { allowed: false, remaining: 0, reason: error.message };
     }
 
     // New: Check ORGANIZATION Status
@@ -258,6 +267,7 @@ export async function addComment(id: string, content: string) {
         });
         return { success: true, comment };
     } catch (error) {
+
         console.error("Failed to add comment:", error);
         return { error: "Failed to add comment" };
     }

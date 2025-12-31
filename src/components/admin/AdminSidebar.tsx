@@ -8,6 +8,7 @@ import {
     Building2,
     Users,
     Shield,
+    ShieldAlert,
     CreditCard,
     Link2,
     AlertTriangle,
@@ -73,6 +74,7 @@ const navItems: NavItem[] = [
         children: [
             { title: "Global Feed", href: "/admin/analyses" },
             { title: "Malicious", href: "/admin/analyses/malicious" },
+            { title: "Abuse Prevention", href: "/admin/abuse" }, // Added Abuse Prevention link
             { title: "Patterns", href: "/admin/analyses/patterns" },
         ],
     },
