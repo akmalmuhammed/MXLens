@@ -42,6 +42,7 @@ export interface NormalizedSignals {
     fromDisplayName: string;
     replyToDomain: string | null;
     returnPathDomain: string;
+    senderAsn?: string | null;
 
     // Threading Signals
     subject: string;

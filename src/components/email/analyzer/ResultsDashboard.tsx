@@ -416,25 +416,25 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                     <div className="space-y-6">
                                         {/* Auth Journey (New) */}
                                         <AuthJourneyCard
-                                            spf={analysis.auth.spf.status}
-                                            dkim={analysis.auth.dkim.status}
-                                            dmarc={analysis.auth.dmarc.status}
-                                            arcStatus={analysis.arc?.status || 'none'}
-                                            arcDetails={analysis.arc?.details || []}
+                                            spf={analysis.header.auth.spf.status}
+                                            dkim={analysis.header.auth.dkim.status}
+                                            dmarc={analysis.header.auth.dmarc.status}
+                                            arcStatus={analysis.header.arc?.status || 'none'}
+                                            arcDetails={analysis.header.arc?.details || []}
                                         />
 
                                         <InfrastructureCard
                                             spf={{
-                                                status: analysis.auth.spf.status === 'pass' ? 'pass' : 'fail',
-                                                details: analysis.auth.spf.explanation || ''
+                                                status: analysis.header.auth.spf.status === 'pass' ? 'pass' : 'fail',
+                                                details: analysis.header.auth.spf.explanation || ''
                                             }}
                                             dkim={{
-                                                status: analysis.auth.dkim.status === 'pass' ? 'pass' : 'fail',
-                                                details: analysis.auth.dkim.explanation || ''
+                                                status: analysis.header.auth.dkim.status === 'pass' ? 'pass' : 'fail',
+                                                details: analysis.header.auth.dkim.explanation || ''
                                             }}
                                             dmarc={{
-                                                status: analysis.auth.dmarc.status === 'pass' ? 'pass' : 'fail',
-                                                details: analysis.auth.dmarc.explanation || ''
+                                                status: analysis.header.auth.dmarc.status === 'pass' ? 'pass' : 'fail',
+                                                details: analysis.header.auth.dmarc.explanation || ''
                                             }}
                                             asn={analysis.signals.senderAsn}
                                         />
