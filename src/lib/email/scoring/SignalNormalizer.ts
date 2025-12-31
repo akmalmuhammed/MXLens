@@ -148,6 +148,15 @@ export class SignalNormalizer {
         } else {
             fromEmail = fromArray.trim();
         }
+
+        // Fallback: If no @ symbol found, try to find *any* email-like string pattern in the From header
+        if (!fromEmail.includes('@') && fromArray.length > 3) {
+            const fallbackMatch = fromArray.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+            if (fallbackMatch) {
+                fromEmail = fallbackMatch[1];
+            }
+        }
+
         const fromDomain = fromEmail.split('@')[1] || "";
 
         // Reply-To

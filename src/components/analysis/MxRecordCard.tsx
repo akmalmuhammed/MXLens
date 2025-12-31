@@ -8,27 +8,47 @@ import { Network, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface MxRecordCardProps {
     domain: string;
+    rawFrom?: string;
 }
 
-export function MxRecordCard({ domain }: MxRecordCardProps) {
-    const [records, setRecords] = useState<MxRecord[] | null>(null);
-    const [loading, setLoading] = useState(true);
+export function MxRecordCard({ domain, rawFrom }: MxRecordCardProps) {
+    const [status, setStatus] = useState<'loading' | 'active' | 'missing' | 'error'>('loading');
+    const [records, setRecords] = useState<any[]>([]);
 
     useEffect(() => {
-        if (!domain) return;
+        if (!domain) {
+            setStatus('missing'); // If no domain, it's missing
+            return;
+        }
 
-        setLoading(true);
+        setStatus('loading');
         resolveMxRecords(domain)
-            .then(data => setRecords(data))
-            .finally(() => setLoading(false));
+            .then(res => {
+                if (res.error) {
+                    setStatus('error');
+                } else if (!res.records || res.records.length === 0) {
+                    setStatus('missing');
+                } else {
+                    setStatus('active');
+                    setRecords(res.records);
+                }
+            })
+            .catch(() => setStatus('error'));
     }, [domain]);
 
     if (!domain) {
         return (
             <Card className="bg-card/50 border-white/5 border-dashed">
-                <CardContent className="p-4 text-xs text-muted-foreground flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4" />
-                    MX Analysis: No domain detected in From header.
+                <CardContent className="p-4 text-xs text-muted-foreground flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        MX Analysis: No domain detected.
+                    </div>
+                    {rawFrom && (
+                        <div className="text-[10px] opacity-70 border-t border-white/5 pt-2 mt-1">
+                            Header: <span className="font-mono">{rawFrom.substring(0, 50)}</span>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         );

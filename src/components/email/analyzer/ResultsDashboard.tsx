@@ -428,7 +428,10 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                             ipLocations={ipLocations}
                                             loading={loadingGeo}
                                         />
-                                        <MxRecordCard domain={analysis.signals.fromDomain} />
+                                        <MxRecordCard
+                                            domain={analysis.signals.fromDomain}
+                                            rawFrom={analysis.header.headers['From'] as string}
+                                        />
                                     </div>
 
                                     {/* Threat Intelligence Lookup (Auto-Scan) */}
