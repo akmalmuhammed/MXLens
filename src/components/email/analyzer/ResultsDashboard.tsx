@@ -354,9 +354,7 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                 )}
                             </div>
 
-                            <div className="pt-8">
-                                <AnalysisRecommendations verdict={analysis.scoring.verdict.verdict} />
-                            </div>
+
                         </div>
                     </div>
 

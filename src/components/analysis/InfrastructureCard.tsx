@@ -41,14 +41,15 @@ export function InfrastructureCard({ fromDomain, ipLocations, loading }: Infrast
         );
     }
 
-    if (!verdict || verdict.status === 'NEUTRAL') return null;
+    if (!verdict) return null;
 
-    const isPass = verdict.status === 'PASS';
+    // Default to NEUTRAL/PASS style if neutral
+    const isPass = verdict.status === 'PASS' || verdict.status === 'NEUTRAL';
     const isCritical = verdict.riskLevel === 'CRITICAL';
 
     return (
         <Card className={`relative overflow-hidden backdrop-blur-sm border ${isPass ? 'bg-green-500/10 border-green-500/20' :
-                isCritical ? 'bg-red-500/10 border-red-500/30' : 'bg-amber-500/10 border-amber-500/20'
+            isCritical ? 'bg-red-500/10 border-red-500/30' : 'bg-amber-500/10 border-amber-500/20'
             }`}>
             {/* Background Scanline Effect */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -77,7 +78,7 @@ export function InfrastructureCard({ fromDomain, ipLocations, loading }: Infrast
 
                     <div>
                         <h4 className={`font-bold text-lg mb-1 ${isPass ? 'text-foreground' : 'text-red-400'}`}>
-                            {isPass ? 'Authorized Infrastructure' : 'Infrastructure Mismatch'}
+                            {verdict.status === 'NEUTRAL' ? 'Standard Infrastructure' : (isPass ? 'Authorized Infrastructure' : 'Infrastructure Mismatch')}
                         </h4>
                         <p className="text-sm text-muted-foreground leading-relaxed">
                             {verdict.details}

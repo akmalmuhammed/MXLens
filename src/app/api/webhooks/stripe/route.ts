@@ -7,7 +7,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import { rateLimit } from "@/lib/rate-limit";
 import { alertBillingEvent } from "@/lib/slack";
-import { sendSubscriptionConfirmationEmail } from "@/lib/email";
+import { sendSubscriptionConfirmationEmail, sendUpcomingBillingEmail } from "@/lib/email";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -171,6 +171,34 @@ export async function POST(req: Request) {
                         }
                     });
                     console.log(`Org ${org.id} subscription updated to ${subscription.status}`);
+                }
+            }
+        }
+
+        // Handle upcoming invoice (proactive billing notification)
+        if (event.type === "invoice.upcoming") {
+            const invoice = event.data.object as Stripe.Invoice;
+            const customerId = invoice.customer as string;
+
+            if (customerId) {
+                const org = await db.organization.findFirst({
+                    where: { stripeCustomerId: customerId },
+                    include: { members: { include: { user: true }, where: { role: "OWNER" } } }
+                });
+
+                if (org) {
+                    const ownerEmail = org.members[0]?.user?.email;
+                    const amountDue = invoice.amount_due ? `$${(invoice.amount_due / 100).toFixed(2)}` : "N/A";
+                    const billingDate = invoice.due_date
+                        ? new Date(invoice.due_date * 1000).toLocaleDateString()
+                        : new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString();
+
+                    if (ownerEmail) {
+                        // Send proactive billing email
+                        await sendUpcomingBillingEmail(ownerEmail, org.name, amountDue, billingDate);
+                    }
+
+                    console.log(`Upcoming invoice notification sent for org ${org.id}`);
                 }
             }
         }

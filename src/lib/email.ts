@@ -285,3 +285,65 @@ export async function sendSubscriptionConfirmationEmail(email: string, planName:
     }
 }
 
+export async function sendUpcomingBillingEmail(email: string, orgName: string, amount: string, billingDate: string) {
+    try {
+        await getResend().emails.send({
+            from: FROM_EMAIL,
+            to: email,
+            subject: `Upcoming payment for ${orgName} - MXLens`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #0f172a; color: #e2e8f0;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #0891b2; margin: 0;">🛡️ MXLens</h1>
+                        <p style="color: #64748b; margin-top: 5px;">Email Security Intelligence</p>
+                    </div>
+                    
+                    <h2 style="color: #f1f5f9;">Payment Reminder 💳</h2>
+                    <p style="color: #94a3b8; line-height: 1.6;">
+                        This is a friendly reminder that your subscription payment will be processed soon.
+                    </p>
+                    
+                    <div style="background-color: #1e293b; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                        <table style="width: 100%; color: #94a3b8;">
+                            <tr>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #334155;">Organization</td>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #334155; text-align: right; color: #f1f5f9; font-weight: bold;">${orgName}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #334155;">Amount</td>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #334155; text-align: right; color: #f1f5f9; font-weight: bold;">${amount}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0;">Billing Date</td>
+                                <td style="padding: 10px 0; text-align: right; color: #f1f5f9; font-weight: bold;">${billingDate}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <p style="color: #94a3b8; line-height: 1.6;">
+                        No action is needed if your payment method is up to date. If you need to update your payment details, please visit your billing settings.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${APP_URL}/dashboard/billing" 
+                           style="background-color: #0891b2; color: white; padding: 14px 28px; 
+                                  text-decoration: none; border-radius: 8px; font-weight: bold;
+                                  display: inline-block;">
+                            Manage Payment Method
+                        </a>
+                    </div>
+                    
+                    <hr style="border: none; border-top: 1px solid #334155; margin: 30px 0;">
+                    
+                    <p style="color: #64748b; font-size: 12px; text-align: center;">
+                        Questions about billing? Contact <a href="mailto:billing@mxlens.com" style="color: #0891b2;">billing@mxlens.com</a>
+                    </p>
+                </div>
+            `,
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('[EMAIL_ERROR] Upcoming billing email failed:', error);
+        return { error: 'Failed to send upcoming billing email' };
+    }
+}

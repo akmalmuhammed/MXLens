@@ -9,11 +9,48 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-// Helper to check for Better Auth admin session cookie
-function hasAdminSession(request: NextRequest): boolean {
-    // Better Auth uses "__Secure-admin.session_token" for HTTPS cookies
-    const sessionCookie = request.cookies.get("__Secure-admin.session_token");
-    return !!sessionCookie?.value;
+/**
+ * Validate admin session against the database via API call.
+ * Edge runtime cannot directly access Prisma, so we validate via an API route.
+ * 
+ * SECURITY FIX: Previously only checked if cookie existed, now we verify:
+ * 1. Token exists in database
+ * 2. Session is not expired
+ * 3. User has admin privileges
+ */
+async function validateAdminSession(request: NextRequest): Promise<{ valid: boolean; userId?: string }> {
+    // Check for Better Auth session cookie
+    const sessionCookie = request.cookies.get("__Secure-admin.session_token")
+        || request.cookies.get("admin.session_token"); // Dev mode fallback
+
+    if (!sessionCookie?.value) {
+        return { valid: false };
+    }
+
+    try {
+        // Validate session via internal API endpoint (can access Prisma)
+        const baseUrl = process.env.BETTER_AUTH_URL || "https://admin.mxlens.com";
+        const response = await fetch(`${baseUrl}/api/admin/auth/validate-session`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": `${sessionCookie.name}=${sessionCookie.value}`
+            },
+            body: JSON.stringify({ token: sessionCookie.value }),
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            return { valid: false };
+        }
+
+        const data = await response.json();
+        return { valid: data.valid === true, userId: data.userId };
+    } catch (error) {
+        console.error("[MIDDLEWARE] Admin session validation error:", error);
+        // Fail closed: if we can't validate, deny access
+        return { valid: false };
+    }
 }
 
 export default auth(async (req) => {
@@ -29,30 +66,33 @@ export default auth(async (req) => {
     const isAdminSubdomain = hostname === "admin.mxlens.com" || hostname === "admin.localhost";
 
     // -------------------------------------------------------------------------
-    // ADMIN SUBDOMAIN LOGIC (Using Better Auth)
+    // ADMIN SUBDOMAIN LOGIC (Using Better Auth with Proper Validation)
     // -------------------------------------------------------------------------
     if (isAdminSubdomain) {
-        // Allow access to admin auth routes, API routes, and login/logout pages
-        if (nextUrl.pathname.startsWith("/admin/auth") || nextUrl.pathname.startsWith("/api")) {
+        // Allow access to admin auth routes, API routes, and static assets
+        if (nextUrl.pathname.startsWith("/admin/auth") ||
+            nextUrl.pathname.startsWith("/api") ||
+            nextUrl.pathname.startsWith("/_next")) {
             return NextResponse.next();
         }
 
-        // Check for Better Auth admin session
-        const hasSession = hasAdminSession(req);
+        // SECURITY FIX: Properly validate admin session against database
+        const sessionValidation = await validateAdminSession(req);
 
-        if (!hasSession) {
-            return NextResponse.redirect("https://admin.mxlens.com/admin/auth/signin");
+        if (!sessionValidation.valid) {
+            console.log("[MIDDLEWARE] Admin session invalid or expired, redirecting to signin");
+            return NextResponse.redirect(new URL("/admin/auth/signin", nextUrl));
         }
 
-        // User has admin session - allow access
+        // User has valid admin session - allow access
         // Rewrite root "/" to "/admin"
         if (nextUrl.pathname === "/") {
-            return NextResponse.rewrite("https://admin.mxlens.com/admin");
+            return NextResponse.rewrite(new URL("/admin", nextUrl));
         }
 
         // Rewrite other paths to /admin/...
         if (!nextUrl.pathname.startsWith("/admin")) {
-            return NextResponse.rewrite(`https://admin.mxlens.com/admin${nextUrl.pathname}`);
+            return NextResponse.rewrite(new URL(`/admin${nextUrl.pathname}`, nextUrl));
         }
 
         return NextResponse.next();
