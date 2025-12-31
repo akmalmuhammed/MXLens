@@ -73,7 +73,13 @@ export async function getDomainAge(domain: string): Promise<DomainAgeResult | nu
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            // 404 means domain potentially free or internal error. return null
+            // If 404, it might be a subdomain. Try stripping the first part if > 2 parts.
+            if (response.status === 404 && domain.split('.').length > 2) {
+                const parts = domain.split('.');
+                const parentDomain = parts.slice(1).join('.');
+                console.log(`[RDAP] ${domain} failed, retrying with parent: ${parentDomain}`);
+                return getDomainAge(parentDomain);
+            }
             return null;
         }
 
