@@ -424,19 +424,9 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                         />
 
                                         <InfrastructureCard
-                                            spf={{
-                                                status: analysis.header.auth.spf.status === 'pass' ? 'pass' : 'fail',
-                                                details: analysis.header.auth.spf.explanation || ''
-                                            }}
-                                            dkim={{
-                                                status: analysis.header.auth.dkim.status === 'pass' ? 'pass' : 'fail',
-                                                details: analysis.header.auth.dkim.explanation || ''
-                                            }}
-                                            dmarc={{
-                                                status: analysis.header.auth.dmarc.status === 'pass' ? 'pass' : 'fail',
-                                                details: analysis.header.auth.dmarc.explanation || ''
-                                            }}
-                                            asn={analysis.signals.senderAsn}
+                                            fromDomain={analysis.signals.fromDomain}
+                                            ipLocations={ipLocations}
+                                            loading={loadingGeo}
                                         />
                                         <MxRecordCard domain={analysis.signals.fromDomain} />
                                     </div>
