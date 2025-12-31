@@ -28,8 +28,10 @@ async function validateAdminSession(request: NextRequest): Promise<{ valid: bool
     }
 
     try {
-        // Validate session via internal API endpoint (can access Prisma)
-        const baseUrl = process.env.BETTER_AUTH_URL || "https://admin.mxlens.com";
+        // Validate session via internal API endpoint
+        // Use request.nextUrl.origin as fallback for localhost support
+        const baseUrl = process.env.BETTER_AUTH_URL || request.nextUrl.origin;
+
         const response = await fetch(`${baseUrl}/api/admin/auth/validate-session`, {
             method: "POST",
             headers: {
@@ -81,7 +83,9 @@ export default auth(async (req) => {
 
         if (!sessionValidation.valid) {
             console.log("[MIDDLEWARE] Admin session invalid or expired, redirecting to signin");
-            return NextResponse.redirect(new URL("/admin/auth/signin", nextUrl));
+            // Determine protocol (assume https in prod, http in dev)
+            const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+            return NextResponse.redirect(`${protocol}://${hostname}/admin/auth/signin`);
         }
 
         // User has valid admin session - allow access
