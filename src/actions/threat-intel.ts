@@ -152,43 +152,31 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
     // Merge PhishTank Results
     ptResults.forEach(r => {
         if (r) {
-            const existing = results.find(res => res.target === r.target);
-            if (existing && r.found) {
-                existing.reputation = 100;
-                existing.verdict = 'malicious';
-                existing.provider = 'PhishTank'; // Update provider to show hit
-            } else if (!existing) {
-                results.push({
-                    target: r.target,
-                    type: 'domain',
-                    reputation: r.found ? 100 : 0,
-                    stats: { malicious: r.found ? 1 : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
-                    lastAnalysisDate: new Date().toISOString(),
-                    verdict: r.found ? 'malicious' : 'clean',
-                    provider: 'PhishTank'
-                });
-            }
+            // Always add as a separate entry to show that PhishTank was checked
+            results.push({
+                target: r.target,
+                type: 'domain',
+                reputation: r.found ? 100 : 0,
+                stats: { malicious: r.found ? 1 : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
+                lastAnalysisDate: new Date().toISOString(),
+                verdict: r.found ? 'malicious' : 'clean',
+                provider: 'PhishTank'
+            });
         }
     });
 
     uhResults.forEach(r => {
         if (r) {
-            const existing = results.find(res => res.target === r.host);
-            if (existing && r.found) {
-                existing.reputation = 100;
-                existing.verdict = 'malicious';
-                existing.provider = 'URLhaus';
-            } else if (!existing) {
-                results.push({
-                    target: r.host,
-                    type: r.host.includes('.') && !r.host.match(/^\d/) ? 'domain' : 'ip',
-                    reputation: r.found ? 100 : 0,
-                    stats: { malicious: r.found ? r.count : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
-                    lastAnalysisDate: new Date().toISOString(),
-                    verdict: r.found ? 'malicious' : 'clean',
-                    provider: 'URLhaus'
-                });
-            }
+            // Always add as a separate entry to show that URLhaus was checked
+            results.push({
+                target: r.host,
+                type: r.host.includes('.') && !r.host.match(/^\d/) ? 'domain' : 'ip',
+                reputation: r.found ? 100 : 0,
+                stats: { malicious: r.found ? r.count : 0, suspicious: 0, harmless: r.found ? 0 : 1, undetected: 0, timeout: 0 },
+                lastAnalysisDate: new Date().toISOString(),
+                verdict: r.found ? 'malicious' : 'clean',
+                provider: 'URLhaus'
+            });
         }
     });
 
