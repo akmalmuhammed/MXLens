@@ -17,7 +17,10 @@ export function SafeEmailPreview({ html }: SafeEmailPreviewProps) {
 
     useEffect(() => {
         // Sanitize content whenever html or image preference changes
-        const safe = SafeSanitizer.sanitize(html, { blockImages: !allowImages });
+        const safe = SafeSanitizer.sanitize(html, {
+            blockImages: !allowImages,
+            disableLinks: true
+        });
         setSanitizedHtml(safe);
     }, [html, allowImages]);
 

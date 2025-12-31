@@ -2,6 +2,7 @@ import DOMPurify from 'isomorphic-dompurify';
 
 export interface SanitizeOptions {
     blockImages?: boolean; // Default true, replaces src with data-src
+    disableLinks?: boolean; // Default false, makes links unclickable
 }
 
 export class SafeSanitizer {
@@ -64,8 +65,18 @@ export class SafeSanitizer {
 
             // B. Handle Links (Safety)
             doc.querySelectorAll('a').forEach(a => {
-                a.setAttribute('target', '_blank');
-                a.setAttribute('rel', 'noopener noreferrer');
+                if (options.disableLinks) {
+                    // Disable link completely
+                    a.removeAttribute('href');
+                    a.removeAttribute('target');
+                    a.removeAttribute('rel');
+                    a.setAttribute('style', `${a.getAttribute('style') || ''}; pointer-events: none; cursor: default; text-decoration: line-through; opacity: 0.7;`);
+                    a.setAttribute('title', 'Link disabled for safety');
+                } else {
+                    // Just ensure it opens in new tab if enabled
+                    a.setAttribute('target', '_blank');
+                    a.setAttribute('rel', 'noopener noreferrer');
+                }
             });
 
             return doc.documentElement.outerHTML;
