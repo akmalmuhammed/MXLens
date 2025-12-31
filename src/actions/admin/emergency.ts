@@ -118,3 +118,92 @@ export async function unsuspendUser(targetUserId: string) {
     await logAuditAction(AuditAction.USER_UNSUSPEND, { targetUserId }, targetUserId);
     return { success: true, message: "User unsuspended." };
 }
+
+/**
+ * Emergency: Suspend an Entire Organization.
+ * 1. Block all org members via Redis
+ * 2. Revoke all org API keys
+ * 3. Update org subscription status to "suspended"
+ */
+export async function suspendOrganization(orgId: string, reason: string) {
+    await assertSuperAdmin();
+
+    console.log(`[EMERGENCY] Suspending Organization ${orgId}. Reason: ${reason}`);
+
+    // 1. Get all members of the organization
+    const members = await db.membership.findMany({
+        where: { orgId },
+        select: { userId: true }
+    });
+
+    // 2. Block all members via Redis
+    for (const member of members) {
+        await redis.set(`${KEYS.BLOCKLIST}:${member.userId}`, `Org suspended: ${reason}`);
+        // Also delete their sessions
+        await db.session.deleteMany({ where: { userId: member.userId } });
+    }
+
+    // 3. Revoke all org API keys
+    await db.apiKey.updateMany({
+        where: { orgId },
+        data: { isActive: false }
+    });
+
+    // 4. Mark org as suspended
+    await db.organization.update({
+        where: { id: orgId },
+        data: { subscriptionStatus: "suspended" }
+    });
+
+    // 5. Audit log
+    await logAuditAction(AuditAction.ORG_UPDATE, {
+        orgId,
+        reason,
+        action: "SUSPEND",
+        membersAffected: members.length
+    }, orgId);
+
+    revalidatePath("/admin/organizations");
+    return {
+        success: true,
+        message: `Organization suspended. ${members.length} members blocked.`,
+        membersAffected: members.length
+    };
+}
+
+/**
+ * Recover/Unsuspend an Organization
+ */
+export async function unsuspendOrganization(orgId: string) {
+    await assertSuperAdmin();
+
+    // 1. Get all members of the organization
+    const members = await db.membership.findMany({
+        where: { orgId },
+        select: { userId: true }
+    });
+
+    // 2. Unblock all members
+    for (const member of members) {
+        await redis.del(`${KEYS.BLOCKLIST}:${member.userId}`);
+    }
+
+    // 3. Restore org status (to previous status or 'active')
+    await db.organization.update({
+        where: { id: orgId },
+        data: { subscriptionStatus: "active" }
+    });
+
+    // 4. Audit log
+    await logAuditAction(AuditAction.ORG_UPDATE, {
+        orgId,
+        action: "UNSUSPEND",
+        membersAffected: members.length
+    }, orgId);
+
+    revalidatePath("/admin/organizations");
+    return {
+        success: true,
+        message: `Organization unsuspended. ${members.length} members unblocked.`
+    };
+}

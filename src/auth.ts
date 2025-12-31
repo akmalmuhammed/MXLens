@@ -54,16 +54,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const email = credentials.email as string;
                 const password = credentials.password as string;
 
+                // Import login logger dynamically to avoid circular deps
+                const { logLoginAttempt, clearLoginAttempts } = await import("@/lib/security/login-logger");
+
                 const user = await prisma.user.findUnique({
                     where: { email }
                 });
 
-                // If user exists but has no password (OAuth account), fail
-                if (!user || !user.hashedPassword) return null;
+                // User not found
+                if (!user) {
+                    await logLoginAttempt({ email, success: false, reason: "user_not_found" });
+                    return null;
+                }
+
+                // OAuth account with no password
+                if (!user.hashedPassword) {
+                    await logLoginAttempt({ email, success: false, reason: "no_password_oauth" });
+                    return null;
+                }
 
                 const passwordsMatch = await bcrypt.compare(password, user.hashedPassword);
 
                 if (passwordsMatch) {
+                    // Clear failed attempts on successful login
+                    await clearLoginAttempts(email);
+                    await logLoginAttempt({ email, success: true });
+
                     return {
                         id: user.id,
                         name: user.name,
@@ -72,6 +88,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     };
                 }
 
+                // Wrong password
+                await logLoginAttempt({ email, success: false, reason: "invalid_password" });
                 return null;
             },
         }),

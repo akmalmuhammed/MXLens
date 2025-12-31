@@ -203,6 +203,54 @@ export async function POST(req: Request) {
             }
         }
 
+        // Handle dispute created (chargeback initiated)
+        if (event.type === "charge.dispute.created") {
+            const dispute = event.data.object as Stripe.Dispute;
+            const chargeId = dispute.charge as string;
+            const amount = dispute.amount ? `$${(dispute.amount / 100).toFixed(2)}` : "N/A";
+
+            // Find the org via the charge's customer
+            const charge = await stripe.charges.retrieve(chargeId);
+            const customerId = charge.customer as string;
+
+            if (customerId) {
+                const org = await db.organization.findFirst({
+                    where: { stripeCustomerId: customerId }
+                });
+
+                if (org) {
+                    console.log(`[DISPUTE] Chargeback initiated for org ${org.id}: ${dispute.id}`);
+
+                    // Critical alert for dispute
+                    await alertBillingEvent({
+                        event: "payment_failed",
+                        orgName: `${org.name} - DISPUTE OPENED`,
+                        planName: "Pro",
+                        amount: amount
+                    });
+
+                    // Optionally: Auto-suspend org on dispute (uncomment if desired)
+                    // const { suspendOrganization } = await import("@/actions/admin/emergency");
+                    // await suspendOrganization(org.id, `Stripe dispute: ${dispute.id}`);
+                }
+            }
+        }
+
+        // Handle dispute closed (won or lost)
+        if (event.type === "charge.dispute.closed") {
+            const dispute = event.data.object as Stripe.Dispute;
+            const status = dispute.status; // "won", "lost", "warning_closed"
+
+            console.log(`[DISPUTE] Dispute ${dispute.id} closed with status: ${status}`);
+
+            // Alert on resolution
+            await alertBillingEvent({
+                event: status === "won" ? "payment_succeeded" : "payment_failed",
+                orgName: `Dispute Resolved: ${status.toUpperCase()}`,
+                planName: dispute.id
+            });
+        }
+
         return NextResponse.json({ received: true });
 
     } catch (error) {
