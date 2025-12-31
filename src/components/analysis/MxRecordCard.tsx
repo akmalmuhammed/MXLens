@@ -60,7 +60,7 @@ export function MxRecordCard({ domain, rawFrom }: MxRecordCardProps) {
                         <Network className="w-4 h-4" />
                         MX Authorization
                     </CardTitle>
-                    {!loading && (
+                    {status !== 'loading' && (
                         <Badge variant="outline" className={records && records.length > 0
                             ? "bg-green-500/10 text-green-500 border-green-500/20"
                             : "bg-red-500/10 text-red-500 border-red-500/20"
@@ -75,7 +75,7 @@ export function MxRecordCard({ domain, rawFrom }: MxRecordCardProps) {
                 </div>
             </CardHeader>
             <CardContent>
-                {loading ? (
+                {status === 'loading' ? (
                     <div className="space-y-2 animate-pulse">
                         <div className="h-4 bg-muted/20 rounded w-3/4"></div>
                         <div className="h-4 bg-muted/20 rounded w-1/2"></div>
