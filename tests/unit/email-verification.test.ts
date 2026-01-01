@@ -42,7 +42,8 @@ describe('Email Verification Actions', () => {
                 email: 'user@example.com',
                 token: 'expired-token',
                 expires: new Date(Date.now() - 1000), // Expired
-                type: 'EMAIL_VERIFICATION'
+                type: 'EMAIL_VERIFICATION',
+                createdAt: new Date()
             });
 
             const result = await verifyEmail('expired-token');
@@ -58,7 +59,8 @@ describe('Email Verification Actions', () => {
                 email: 'user@example.com',
                 token: 'valid-token',
                 expires: new Date(Date.now() + 86400000),
-                type: 'EMAIL_VERIFICATION'
+                type: 'EMAIL_VERIFICATION',
+                createdAt: new Date()
             });
 
             vi.mocked(db.user.findUnique).mockResolvedValue({
@@ -69,6 +71,8 @@ describe('Email Verification Actions', () => {
                 emailVerified: null,
                 image: null,
                 mfaEnabled: false,
+                isPlatformAdmin: false,
+                adminRole: null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
@@ -81,6 +85,8 @@ describe('Email Verification Actions', () => {
                 emailVerified: new Date(),
                 image: null,
                 mfaEnabled: false,
+                isPlatformAdmin: false,
+                adminRole: null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
@@ -105,6 +111,8 @@ describe('Email Verification Actions', () => {
                 emailVerified: null, // Not verified
                 image: null,
                 mfaEnabled: false,
+                isPlatformAdmin: false,
+                adminRole: null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
@@ -136,6 +144,8 @@ describe('Email Verification Actions', () => {
                 emailVerified: new Date(), // Already verified
                 image: null,
                 mfaEnabled: false,
+                isPlatformAdmin: false,
+                adminRole: null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });

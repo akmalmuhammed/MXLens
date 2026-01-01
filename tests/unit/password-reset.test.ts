@@ -70,6 +70,8 @@ describe('Password Reset Actions', () => {
                 emailVerified: new Date(),
                 image: null,
                 mfaEnabled: false,
+                isPlatformAdmin: false,
+                adminRole: null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
@@ -103,7 +105,8 @@ describe('Password Reset Actions', () => {
                 email: 'user@example.com',
                 token: 'expired-token',
                 expires: new Date(Date.now() - 1000), // Expired
-                type: 'PASSWORD_RESET'
+                type: 'PASSWORD_RESET',
+                createdAt: new Date()
             });
 
             const formData = createFormData({ token: 'expired-token', password: 'newpassword123' });
@@ -121,7 +124,8 @@ describe('Password Reset Actions', () => {
                 email: 'user@example.com',
                 token: 'valid-token',
                 expires: new Date(Date.now() + 3600000),
-                type: 'PASSWORD_RESET'
+                type: 'PASSWORD_RESET',
+                createdAt: new Date()
             });
 
             vi.mocked(db.user.findUnique).mockResolvedValue({
@@ -132,6 +136,8 @@ describe('Password Reset Actions', () => {
                 emailVerified: new Date(),
                 image: null,
                 mfaEnabled: false,
+                isPlatformAdmin: false,
+                adminRole: null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
@@ -144,6 +150,8 @@ describe('Password Reset Actions', () => {
                 emailVerified: new Date(),
                 image: null,
                 mfaEnabled: false,
+                isPlatformAdmin: false,
+                adminRole: null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });

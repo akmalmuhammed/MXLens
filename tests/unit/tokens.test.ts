@@ -21,7 +21,8 @@ describe('Token Utilities', () => {
                 email: 'test@example.com',
                 token: 'mock-uuid-token',
                 expires: new Date(Date.now() + 86400000),
-                type: 'EMAIL_VERIFICATION'
+                type: 'EMAIL_VERIFICATION',
+                createdAt: new Date()
             });
 
             const result = await generateVerificationToken('test@example.com');
@@ -43,7 +44,8 @@ describe('Token Utilities', () => {
                 email: 'user@example.com',
                 token: 'reset-token',
                 expires: new Date(Date.now() + 3600000),
-                type: 'PASSWORD_RESET'
+                type: 'PASSWORD_RESET',
+                createdAt: new Date()
             });
 
             const result = await generatePasswordResetToken('user@example.com');
@@ -62,7 +64,8 @@ describe('Token Utilities', () => {
                 email: 'test@example.com',
                 token: 'valid-token',
                 expires: futureDate,
-                type: 'EMAIL_VERIFICATION'
+                type: 'EMAIL_VERIFICATION',
+                createdAt: new Date()
             });
 
             const result = await getVerificationTokenByToken('valid-token');
@@ -91,7 +94,8 @@ describe('Token Utilities', () => {
                 email: 'test@example.com',
                 token: 'token',
                 expires: new Date(),
-                type: 'EMAIL_VERIFICATION'
+                type: 'EMAIL_VERIFICATION',
+                createdAt: new Date()
             });
 
             await deleteVerificationToken('token-id');
