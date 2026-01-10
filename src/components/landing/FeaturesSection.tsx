@@ -92,7 +92,7 @@ export const FeaturesSection = () => {
                             transition={{ duration: 0.6, delay: i * 0.1 }}
                             className="group"
                         >
-                            <div className="bg-background/50 backdrop-blur-sm border border-border/50 rounded-2xl h-full p-8 hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-glow">
+                            <div className="bg-background/50 backdrop-blur-sm border border-border/70 rounded-2xl h-full p-8 hover:border-primary/60 transition-all duration-300 shadow-sm hover:shadow-glow">
                                 {/* Icon */}
                                 <div className="mb-6">
                                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -143,7 +143,7 @@ export const FeaturesSection = () => {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={isInView ? { opacity: 1, scale: 1 } : {}}
                             transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
-                            className="flex items-start gap-4 p-6 rounded-lg bg-card/50 border border-border/50 hover:border-primary/30 transition-colors"
+                            className="flex items-start gap-4 p-6 rounded-lg bg-card/50 border border-border/70 hover:border-primary/50 transition-colors"
                         >
                             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                                 <threat.icon className="w-5 h-5 text-primary" />

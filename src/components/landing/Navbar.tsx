@@ -46,7 +46,7 @@ export const Navbar = () => {
             {/* Main Nav */}
             <nav
                 className={`mx-auto container rounded-full px-6 transition-all duration-300 ${scrolled
-                    ? "bg-background/90 backdrop-blur-md border border-border/50 shadow-lg h-16 flex items-center"
+                    ? "bg-background/90 backdrop-blur-md border border-border/70 shadow-lg h-16 flex items-center"
                     : "bg-transparent h-20 flex items-center"
                     }`}
             >
@@ -108,7 +108,7 @@ export const Navbar = () => {
                             initial={{ opacity: 0, height: 0, marginTop: 0 }}
                             animate={{ opacity: 1, height: "auto", marginTop: 16 }}
                             exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                            className="absolute top-full left-0 right-0 mx-4 rounded-xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl overflow-hidden md:hidden"
+                            className="absolute top-full left-0 right-0 mx-4 rounded-xl border border-border/70 bg-background/95 backdrop-blur-xl shadow-2xl overflow-hidden md:hidden"
                         >
                             <div className="p-4 flex flex-col gap-4">
                                 {navLinks.map((link) => (
@@ -121,7 +121,7 @@ export const Navbar = () => {
                                         {link.label}
                                     </Link>
                                 ))}
-                                <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
+                                <div className="flex flex-col gap-2 pt-4 border-t border-border/70">
                                     <Button variant="ghost" className="w-full" asChild>
                                         <Link href="/auth/signin">Login</Link>
                                     </Button>

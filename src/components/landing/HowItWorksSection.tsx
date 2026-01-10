@@ -65,7 +65,7 @@ export const HowItWorksSection = () => {
                                 transition={{ duration: 0.6, delay: i * 0.15 }}
                                 className="relative"
                             >
-                                <div className="glass-card bg-background/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 h-full relative group hover:border-primary/50 transition-colors shadow-sm">
+                                <div className="glass-card bg-background/50 backdrop-blur-sm border border-border/70 rounded-2xl p-8 h-full relative group hover:border-primary/60 transition-colors shadow-sm">
                                     {/* Step number */}
                                     <div className="absolute -top-4 left-8 px-3 py-1 bg-primary text-primary-foreground font-mono text-sm font-bold rounded">
                                         {item.step}
