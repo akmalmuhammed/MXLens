@@ -12,12 +12,13 @@ interface PhishingIndicatorsPanelProps {
 export function PhishingIndicatorsPanel({ penalties, bodyEnabled, onEnableBody }: PhishingIndicatorsPanelProps) {
     if (!bodyEnabled) {
         return (
-            <div className="border border-dashed p-8 rounded-lg text-center bg-muted/20">
-                <Lock className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
-                <h4 className="font-semibold text-muted-foreground">Body Analysis Disabled (Privacy Mode)</h4>
-                <p className="text-sm text-muted-foreground mb-4">Enable deeper inspection to detect phishing links, urgency patterns, and hidden forms.</p>
-                <Button variant="outline" onClick={onEnableBody} className="gap-2">
-                    <Eye className="w-4 h-4" /> Enable Body Analysis
+            <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/10">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Lock className="w-4 h-4 flex-shrink-0" />
+                    <span>Body analysis disabled — enable to detect phishing links & hidden forms</span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={onEnableBody} className="gap-1.5 text-xs h-7 px-2">
+                    <Eye className="w-3 h-3" /> Enable
                 </Button>
             </div>
         );
