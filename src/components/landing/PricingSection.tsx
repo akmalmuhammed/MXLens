@@ -100,7 +100,7 @@ export const PricingSection = () => {
 
                             <div className={`h-full flex flex-col p-8 rounded-2xl border backdrop-blur-sm transition-all duration-300 ${plan.highlight
                                     ? "bg-background/80 border-primary/50 shadow-glow"
-                                    : "bg-background/50 border-border/50 hover:border-primary/30"
+                                    : "bg-background/50 border-border/80 hover:border-primary/30"
                                 }`}>
                                 <div className="mb-8">
                                     <h3 className="text-xl font-bold text-foreground mb-2">{plan.name}</h3>

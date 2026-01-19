@@ -70,9 +70,9 @@ export const ComparisonSection = () => {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className="max-w-4xl mx-auto"
                 >
-                    <div className="glass-card bg-background/50 backdrop-blur-sm border border-border/70 rounded-2xl overflow-hidden shadow-lg">
+                    <div className="glass-card bg-background/50 backdrop-blur-sm border border-border rounded-2xl overflow-hidden shadow-lg">
                         {/* Header */}
-                        <div className="grid grid-cols-4 gap-4 p-6 border-b border-border/70 bg-muted/30">
+                        <div className="grid grid-cols-4 gap-4 p-6 border-b border-border bg-muted/30">
                             <div className="font-semibold text-muted-foreground"></div>
                             <div className="text-center font-semibold text-muted-foreground">
                                 MXToolbox
@@ -93,7 +93,7 @@ export const ComparisonSection = () => {
                                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                                 transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
                                 className={`grid grid-cols-4 gap-4 p-6 ${i !== comparisonData.length - 1
-                                    ? "border-b border-border/50"
+                                    ? "border-b border-border/80"
                                     : ""
                                     }`}
                             >

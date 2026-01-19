@@ -9,7 +9,7 @@ export default function CookiePolicyPage() {
 
                 <h3>Essential Cookies</h3>
                 <ul>
-                    <li><strong>sb-acces-token</strong> (Supabase): Used to keep you logged in.</li>
+                    <li><strong>session-token</strong> (Auth): Used to keep you logged in.</li>
                     <li><strong>theme</strong>: Used to remember your Light/Dark mode preference.</li>
                 </ul>
 
