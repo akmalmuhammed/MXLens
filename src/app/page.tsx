@@ -16,13 +16,13 @@ export default function LandingPage() {
       <Navbar />
       <main className="flex-grow">
         <HeroSection />
-        <SocialProof />
         <HowItWorksSection />
         <UseCasesSection />
         <DetectionCapabilitiesSection />
         <PricingSection />
         <ComparisonSection />
         <FAQSection />
+        <SocialProof />
         <CTASection />
       </main>
       <Footer />
