@@ -131,23 +131,48 @@ export async function logout() {
         "authjs.session-token",
         "__Secure-authjs.session-token",
         "next-auth.session-token",
-        "__Secure-next-auth.session-token"
+        "__Secure-next-auth.session-token",
+        // Also handle callback URL cookies
+        "authjs.callback-url",
+        "__Secure-authjs.callback-url",
+        // CSRF token
+        "authjs.csrf-token",
+        "__Secure-authjs.csrf-token"
     ];
 
-    cookieNames.forEach((name) => {
-        // 1. Expire on root domain (wildcard)
+    // Use production domain only in production
+    const domain = process.env.NODE_ENV === "production" ? ".mxlens.com" : undefined;
+
+    for (const name of cookieNames) {
+        // Delete the cookie explicitly
+        try {
+            cookieStore.delete(name);
+        } catch {
+            // Some cookies may not exist, ignore
+        }
+
+        // Also try to expire with domain (for production subdomain cookies)
+        if (domain) {
+            cookieStore.set(name, "", {
+                expires: new Date(0),
+                path: "/",
+                domain: domain,
+                httpOnly: true,
+                secure: true,
+                sameSite: "lax"
+            });
+        }
+
+        // Expire on host (no domain set) - works in both dev and prod
         cookieStore.set(name, "", {
             expires: new Date(0),
             path: "/",
-            domain: ".mxlens.com"
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax"
         });
-
-        // 2. Expire on host (no domain set)
-        cookieStore.set(name, "", {
-            expires: new Date(0),
-            path: "/"
-        });
-    });
+    }
 
     await signOut({ redirectTo: "/" });
 }
+
