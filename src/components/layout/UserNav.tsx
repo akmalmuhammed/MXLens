@@ -45,7 +45,7 @@ export function UserNav({ user }: UserNavProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href="/dashboard/settings">
+                    <Link href="/settings">
                         <DropdownMenuItem>
                             <User className="mr-2 h-4 w-4" />
                             <span>Profile</span>
@@ -57,7 +57,7 @@ export function UserNav({ user }: UserNavProps) {
                             <span>Billing</span>
                         </DropdownMenuItem>
                     </Link>
-                    <Link href="/dashboard/settings">
+                    <Link href="/settings">
                         <DropdownMenuItem>
                             <Settings className="mr-2 h-4 w-4" />
                             <span>Settings</span>
