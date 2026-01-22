@@ -142,66 +142,80 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 py-6 px-2">
             {/* Header Actions & Tabs */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6 border-b border-border/40">
-                <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="flex flex-col xl:flex-row items-center justify-between gap-4 pb-4 border-b border-border/40">
+                <div className="flex items-center gap-4 w-full xl:w-auto overflow-x-auto">
                     <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full md:w-auto">
-                        <TabsList className="grid w-full grid-cols-4 h-10 bg-muted/50 p-1 rounded-xl border border-white/5">
-                            <TabsTrigger value="analyst" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Analyst View</TabsTrigger>
-                            <TabsTrigger value="threat-intel" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Threat Intel</TabsTrigger>
-                            <TabsTrigger value="raw" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Raw Data</TabsTrigger>
-                            <TabsTrigger value="it" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-muted-foreground">Quick IT</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-4 h-9 bg-muted/50 p-1 rounded-lg border border-white/5 text-xs">
+                            <TabsTrigger value="analyst">Analyst View</TabsTrigger>
+                            <TabsTrigger value="threat-intel">Threat Intel</TabsTrigger>
+                            <TabsTrigger value="raw">Raw Data</TabsTrigger>
+                            <TabsTrigger value="it">Quick IT</TabsTrigger>
                         </TabsList>
                     </Tabs>
 
+                    {/* Compact Privacy Controls in Header */}
+                    <div className="hidden lg:block">
+                        <PrivacyControls
+                            analyzeBody={analyzeBody}
+                            setAnalyzeBody={setAnalyzeBody}
+                            analyzeAttachments={analyzeAttachments}
+                            setAnalyzeAttachments={setAnalyzeAttachments}
+                        />
+                    </div>
+                </div>
+
+                <div className="flex gap-2 items-center w-full md:w-auto ml-auto">
+                    {/* Mobile Privacy Controls */}
+                    <div className="lg:hidden mr-auto">
+                        <PrivacyControls
+                            analyzeBody={analyzeBody}
+                            setAnalyzeBody={setAnalyzeBody}
+                            analyzeAttachments={analyzeAttachments}
+                            setAnalyzeAttachments={setAnalyzeAttachments}
+                            minimal
+                        />
+                    </div>
+
                     {/* Status Badge */}
                     {triageStatus && (
-                        <div className={`px-3 py-1 rounded-full text-xs font-bold border ${triageStatus === 'CLOSED' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold border whitespace-nowrap ${triageStatus === 'CLOSED' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                             triageStatus === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
                                 'bg-amber-500/10 text-amber-500 border-amber-500/20'
                             }`}>
                             {triageStatus}
                         </div>
                     )}
+
+                    <div className="flex items-center gap-2">
+                        {/* Triage Button (Pro) */}
+                        {analysis.id && (
+                            <TriageDialog analysisId={analysis.id} onStatusChange={setTriageStatus} />
+                        )}
+
+                        {/* Save Report Dropdown */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm" className="gap-2 h-9">
+                                    Save <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuLabel>Export Options</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleDownloadJSON} className="gap-2 cursor-pointer">
+                                    <FileJson className="w-4 h-4 text-orange-500" /> JSON Data
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => window.print()} className="gap-2 cursor-pointer">
+                                    <FileText className="w-4 h-4 text-blue-500" /> PDF Report
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <Button variant="default" size="sm" onClick={onClear} className="h-9 shadow-lg shadow-primary/10 hover:shadow-primary/20 bg-primary/80 hover:bg-primary/90">
+                            New Analysis
+                        </Button>
+                    </div>
                 </div>
-
-                <div className="flex gap-2 items-center w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                    {/* Triage Button (Pro) */}
-                    {analysis.id && (
-                        <TriageDialog analysisId={analysis.id} onStatusChange={setTriageStatus} />
-                    )}
-
-                    {/* Save Report Dropdown */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="gap-2">
-                                Save Report <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuLabel>Export Options</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleDownloadJSON} className="gap-2 cursor-pointer">
-                                <FileJson className="w-4 h-4 text-orange-500" /> JSON Data
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => window.print()} className="gap-2 cursor-pointer">
-                                <FileText className="w-4 h-4 text-blue-500" /> PDF Report
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    <div className="w-px h-6 bg-border mx-2 hidden md:block" />
-
-                    <Button variant="default" size="sm" onClick={onClear} className="shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all bg-primary/80 hover:bg-primary/90">
-                        New Analysis
-                    </Button>
-                </div>
-            </div>
-
-            {/* Privacy Proof Banner */}
-            <div className="flex items-center justify-center gap-2 text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-4 py-2 rounded-lg">
-                <ShieldCheck className="w-4 h-4" />
-                <span className="font-medium">0 bytes of email data sent to server</span>
-                <span className="text-green-500/60">• All analysis performed client-side</span>
             </div>
 
             {/* --- IT MODE --- */}
@@ -251,17 +265,10 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
 
             {/* --- ANALYST MODE --- */}
             {mode === "analyst" && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Left Column */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <div className="bg-card/60 backdrop-blur-sm p-4 rounded-xl border border-border/50">
-                            <PrivacyControls
-                                analyzeBody={analyzeBody}
-                                setAnalyzeBody={setAnalyzeBody}
-                                analyzeAttachments={analyzeAttachments}
-                                setAnalyzeAttachments={setAnalyzeAttachments}
-                            />
-                        </div>
+                    <div className="lg:col-span-8 space-y-6">
+                        {/* Privacy Controls moved to header */}
 
                         <VerdictBanner
                             verdict={analysis.scoring.verdict.verdict}

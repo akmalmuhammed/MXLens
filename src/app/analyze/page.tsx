@@ -31,15 +31,12 @@ export default async function AnalyzePage() {
     }
 
     return (
-        <div className="container mx-auto py-8 min-h-screen space-y-8">
+        <div className="container mx-auto py-4 min-h-screen space-y-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl font-heading bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                <div className="flex items-baseline gap-4">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
                         Email Analysis Studio
                     </h1>
-                    <p className="text-muted-foreground mt-2 text-lg">
-                        Advanced forensic analysis with local-only privacy.
-                    </p>
                 </div>
 
                 {/* Privacy Trust Badge */}
