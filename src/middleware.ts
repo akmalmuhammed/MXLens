@@ -169,15 +169,15 @@ export default auth(async (req) => {
         // FIX: Removed unconditional redirect to /dashboard which caused infinite loop
         // If we are here, the user is authenticated and safe to proceed.
         // We only redirect if specifically on a path that NEEDS redirecting (like a completed onboarding flow),
-        // Otherwise, fall through to NextResponse.next()
+        // otherwise, fall through to NextResponse.next()
+    }
 
+    if (isLoggedIn && isAuthPage) {
+        return NextResponse.redirect(new URL("/dashboard", nextUrl));
+    }
 
-        if (isLoggedIn && isAuthPage) {
-            return NextResponse.redirect(new URL("/dashboard", nextUrl));
-        }
-
-        return NextResponse.next();
-    });
+    return NextResponse.next();
+});
 
 export const config = {
     matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
