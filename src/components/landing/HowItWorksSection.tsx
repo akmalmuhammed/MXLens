@@ -72,63 +72,59 @@ export const HowItWorksSection = () => {
                     </p>
                 </motion.div>
 
-                {/* Steps - Vertical Timeline */}
-                <div className="max-w-3xl mx-auto relative">
+                {/* Steps - Clean Vertical Layout */}
+                <div className="max-w-2xl mx-auto relative">
                     {/* Connection line */}
                     <motion.div
                         initial={{ scaleY: 0 }}
                         animate={isInView ? { scaleY: 1 } : {}}
                         transition={{ duration: 1, delay: 0.5 }}
-                        className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-primary origin-top hidden sm:block"
-                        style={{ transform: 'translateX(-50%)' }}
+                        className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-primary origin-top"
                     />
 
-                    <div className="space-y-8">
+                    <div className="space-y-6">
                         {steps.map((item, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
+                                initial={{ opacity: 0, x: -30 }}
                                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                                 transition={{ duration: 0.6, delay: 0.2 + i * 0.15 }}
-                                className={`relative flex items-center gap-6 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                                    }`}
+                                className="relative flex items-start gap-6 pl-4"
                             >
-                                {/* Step number bubble */}
+                                {/* Step icon bubble */}
                                 <motion.div
                                     initial={{ scale: 0 }}
                                     animate={isInView ? { scale: 1 } : {}}
                                     transition={{ duration: 0.4, delay: 0.3 + i * 0.15, type: "spring" }}
-                                    className={`absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center z-10 ${item.color === "accent"
+                                    className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${item.color === "accent"
                                             ? "bg-accent text-accent-foreground"
                                             : "bg-primary text-primary-foreground"
                                         }`}
                                 >
-                                    <item.icon className="w-7 h-7" />
+                                    <item.icon className="w-5 h-5" />
                                 </motion.div>
 
                                 {/* Card */}
-                                <div className={`flex-1 ml-24 md:ml-0 ${i % 2 === 0 ? "md:pr-24" : "md:pl-24"}`}>
-                                    <div className="bg-card/80 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary/50 transition-colors">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <span className="text-xs font-mono text-muted-foreground">
-                                                STEP {item.step}
-                                            </span>
-                                            <span className={`text-xs font-mono px-2 py-1 rounded ${item.color === "accent"
-                                                    ? "bg-accent/20 text-accent"
-                                                    : "bg-primary/20 text-primary"
-                                                }`}>
-                                                {item.time}
-                                            </span>
-                                        </div>
-                                        <h3 className="text-xl font-bold text-foreground mb-2">
-                                            {item.title}
-                                        </h3>
-                                        <p className="text-muted-foreground mb-3">{item.description}</p>
-                                        <p className={`text-sm font-medium ${item.color === "accent" ? "text-accent" : "text-primary"
+                                <div className="flex-1 bg-card/80 backdrop-blur-sm border border-border rounded-xl p-5 hover:border-primary/50 transition-colors">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-mono text-muted-foreground">
+                                            STEP {item.step}
+                                        </span>
+                                        <span className={`text-xs font-mono px-2 py-1 rounded ${item.color === "accent"
+                                                ? "bg-accent/20 text-accent"
+                                                : "bg-primary/20 text-primary"
                                             }`}>
-                                            → {item.highlight}
-                                        </p>
+                                            {item.time}
+                                        </span>
                                     </div>
+                                    <h3 className="text-lg font-bold text-foreground mb-1">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
+                                    <p className={`text-sm font-medium ${item.color === "accent" ? "text-accent" : "text-primary"
+                                        }`}>
+                                        → {item.highlight}
+                                    </p>
                                 </div>
                             </motion.div>
                         ))}
