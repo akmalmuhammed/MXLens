@@ -3,114 +3,156 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Upload, Zap, CheckCircle, Cpu, Network, FileOutput } from "lucide-react";
+import { Upload, Cpu, Layers, CheckCircle, Zap, Shield, Clock } from "lucide-react";
 
 const steps = [
     {
         icon: Upload,
-        step: "STEP 1",
-        title: "Upload",
+        step: "01",
+        title: "Drag Email",
         time: "2 sec",
-        description: "Drag .eml/.msg files or paste email content directly.",
-        detail: "Bulk: Select up to 50 emails at once",
+        description: "Drop .eml/.msg file — browser intercepts instantly",
+        highlight: "File stays on YOUR device",
+        color: "primary",
     },
     {
         icon: Cpu,
-        step: "STEP 2",
-        title: "Analysis",
-        time: "3 sec",
-        description: "WebAssembly engine processes locally in your browser.",
-        detail: "11+ modules run in parallel • Zero network requests",
+        step: "02",
+        title: "WASM Engine",
+        time: "1 sec",
+        description: "WebAssembly engine activates in your browser",
+        highlight: "Zero network requests",
+        color: "accent",
     },
     {
-        icon: FileOutput,
-        step: "STEP 3",
-        title: "Results",
-        time: "instant",
-        description: "Get Trust Score (0-100), intelligence summary, and evidence breakdown.",
-        detail: "Export PDF/JSON for reporting",
+        icon: Layers,
+        step: "03",
+        title: "85+ Rules Scan",
+        time: "2 sec",
+        description: "11 detection modules run in parallel locally",
+        highlight: "SPF, DKIM, DMARC, URLs, Headers, QR...",
+        color: "primary",
+    },
+    {
+        icon: CheckCircle,
+        step: "04",
+        title: "Explainable Verdict",
+        time: "Instant",
+        description: "Trust Score (0-100) with evidence breakdown",
+        highlight: "See WHY, not just a score",
+        color: "accent",
     },
 ];
 
 export const HowItWorksSection = () => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const isInView = useInView(ref, { once: true, margin: "-50px" });
 
     return (
-        <section id="how-it-works" className="py-24 relative" ref={ref}>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Section header */}
+        <section id="how-it-works" className="py-24 relative overflow-hidden" ref={ref}>
+            {/* Background */}
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-background" />
+
+            <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                        From Alert to Verdict in <span className="text-gradient">30 Seconds</span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+                        From Alert to Verdict in{" "}
+                        <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                            &lt;5 Seconds
+                        </span>
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-                        Three simple steps. Zero complexity.
+                        Not 15 minutes across 6 browser tabs.
                     </p>
                 </motion.div>
 
-                {/* Steps */}
-                <div className="relative">
+                {/* Steps - Vertical Timeline */}
+                <div className="max-w-3xl mx-auto relative">
                     {/* Connection line */}
-                    <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2" />
+                    <motion.div
+                        initial={{ scaleY: 0 }}
+                        animate={isInView ? { scaleY: 1 } : {}}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-primary origin-top hidden sm:block"
+                        style={{ transform: 'translateX(-50%)' }}
+                    />
 
-                    <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+                    <div className="space-y-8">
                         {steps.map((item, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.6, delay: i * 0.15 }}
-                                className="relative"
+                                initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
+                                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                                transition={{ duration: 0.6, delay: 0.2 + i * 0.15 }}
+                                className={`relative flex items-center gap-6 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                                    }`}
                             >
-                                <div className="glass-card bg-background/50 backdrop-blur-sm border border-border rounded-2xl p-8 h-full relative group hover:border-primary/60 transition-colors shadow-sm">
-                                    {/* Step label */}
-                                    <div className="absolute -top-4 left-8 px-3 py-1 bg-primary text-primary-foreground font-mono text-sm font-bold rounded">
-                                        {item.step}
-                                    </div>
+                                {/* Step number bubble */}
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={isInView ? { scale: 1 } : {}}
+                                    transition={{ duration: 0.4, delay: 0.3 + i * 0.15, type: "spring" }}
+                                    className={`absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center z-10 ${item.color === "accent"
+                                            ? "bg-accent text-accent-foreground"
+                                            : "bg-primary text-primary-foreground"
+                                        }`}
+                                >
+                                    <item.icon className="w-7 h-7" />
+                                </motion.div>
 
-                                    {/* Time badge */}
-                                    <div className="absolute -top-4 right-8 px-3 py-1 bg-accent/20 text-accent font-mono text-sm font-bold rounded border border-accent/30">
-                                        {item.time}
-                                    </div>
-
-                                    {/* Icon */}
-                                    <div className="mb-6 mt-4">
-                                        <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                            <item.icon className="w-7 h-7 text-primary" />
+                                {/* Card */}
+                                <div className={`flex-1 ml-24 md:ml-0 ${i % 2 === 0 ? "md:pr-24" : "md:pl-24"}`}>
+                                    <div className="bg-card/80 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary/50 transition-colors">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-xs font-mono text-muted-foreground">
+                                                STEP {item.step}
+                                            </span>
+                                            <span className={`text-xs font-mono px-2 py-1 rounded ${item.color === "accent"
+                                                    ? "bg-accent/20 text-accent"
+                                                    : "bg-primary/20 text-primary"
+                                                }`}>
+                                                {item.time}
+                                            </span>
                                         </div>
+                                        <h3 className="text-xl font-bold text-foreground mb-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-muted-foreground mb-3">{item.description}</p>
+                                        <p className={`text-sm font-medium ${item.color === "accent" ? "text-accent" : "text-primary"
+                                            }`}>
+                                            → {item.highlight}
+                                        </p>
                                     </div>
-
-                                    {/* Content */}
-                                    <h3 className="text-xl font-bold mb-3 text-foreground">
-                                        {item.title}
-                                    </h3>
-                                    <p className="text-muted-foreground mb-3">{item.description}</p>
-                                    <p className="text-sm text-primary/80 font-mono">{item.detail}</p>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
                 </div>
 
-                {/* Callout */}
+                {/* Bottom stats */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                    className="mt-16 max-w-3xl mx-auto"
+                    transition={{ duration: 0.6, delay: 1 }}
+                    className="mt-16 flex flex-wrap justify-center gap-8"
                 >
-                    <div className="bg-card/50 border border-primary/30 rounded-xl p-6 text-center">
-                        <p className="text-lg text-foreground italic mb-2">
-                            &ldquo;Unlike black-box AI, MXLens shows <span className="text-primary font-semibold">WHY</span>.
-                            You&apos;re still the analyst—we&apos;re just 83% faster.&rdquo;
-                        </p>
-                    </div>
+                    {[
+                        { icon: Zap, value: "<5s", label: "Total Analysis" },
+                        { icon: Shield, value: "85+", label: "Detection Rules" },
+                        { icon: Clock, value: "0", label: "Network Requests" },
+                    ].map((stat, i) => (
+                        <div key={i} className="text-center">
+                            <stat.icon className="w-6 h-6 text-accent mx-auto mb-2" />
+                            <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                            <p className="text-sm text-muted-foreground">{stat.label}</p>
+                        </div>
+                    ))}
                 </motion.div>
             </div>
         </section>

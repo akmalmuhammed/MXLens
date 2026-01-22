@@ -847,4 +847,14 @@
   .glitch-hover:hover {
     animation: glitch 0.3s ease-in-out;
   }
+
+  /* Gradient text animation */
+  .animate-gradient {
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  /* Glow pulse for CTAs */
+  .cta-glow {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
 }
