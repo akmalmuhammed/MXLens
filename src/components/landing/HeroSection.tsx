@@ -42,20 +42,20 @@ export const HeroSection = () => {
                     >
                         <Shield className="w-4 h-4 text-primary" />
                         <span className="text-sm font-mono text-primary">
-                            100% Client-Side • Zero Cloud Upload
+                            100% Client-Side Execution
                         </span>
                     </motion.div>
 
-                    {/* Headline */}
+                    {/* Headline - Original */}
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.1 }}
                         className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
                     >
-                        <span className="text-foreground">Analyze 50 Emails in 3 Minutes.</span>
+                        <span className="text-foreground">Email Intelligence.</span>
                         <br />
-                        <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Not 8 Hours.</span>
+                        <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Zero Data Exfiltration.</span>
                     </motion.h1>
 
                     {/* Subheadline */}
@@ -65,8 +65,9 @@ export const HeroSection = () => {
                         transition={{ duration: 0.7, delay: 0.2 }}
                         className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
                     >
-                        MXLens eliminates alert fatigue with bulk email analysis that runs 100% in
-                        your browser. <span className="font-semibold text-foreground">No cloud upload. No privacy risk. No waiting.</span>
+                        The first completely client-side analysis engine. Drag, drop, and
+                        dissect suspicious emails without them ever leaving your browser.
+                        <span className="font-semibold text-foreground"> No server uploads. No logs. No risk.</span>
                     </motion.p>
 
                     {/* CTA Buttons */}

@@ -16,6 +16,7 @@ const capabilities = [
     {
         icon: ShieldCheck,
         title: "Email Authentication",
+        ruleCount: 12,
         items: [
             "SPF/DKIM/DMARC validation",
             "Display name spoofing detection",
@@ -25,6 +26,7 @@ const capabilities = [
     {
         icon: FileWarning,
         title: "Content Threats",
+        ruleCount: 18,
         items: [
             "Phishing/typosquatting detection",
             "BEC patterns recognition",
@@ -34,6 +36,7 @@ const capabilities = [
     {
         icon: QrCode,
         title: "QR Code Phishing",
+        ruleCount: 8,
         items: [
             "Image extraction & scanning",
             "URL decoding from QR",
@@ -43,6 +46,7 @@ const capabilities = [
     {
         icon: Bug,
         title: "Advanced Threats",
+        ruleCount: 15,
         items: [
             "Homograph/IDN attacks",
             "Suspicious attachments",
@@ -52,6 +56,7 @@ const capabilities = [
     {
         icon: Globe,
         title: "Sender Intelligence",
+        ruleCount: 14,
         items: [
             "IP reputation checks",
             "Domain age analysis",
@@ -61,6 +66,7 @@ const capabilities = [
     {
         icon: Cpu,
         title: "Technical Analysis",
+        ruleCount: 18,
         items: [
             "Routing path inspection",
             "Timestamp anomalies",
@@ -68,6 +74,8 @@ const capabilities = [
         ],
     },
 ];
+
+const totalRules = capabilities.reduce((sum, cap) => sum + cap.ruleCount, 0);
 
 export const DetectionCapabilitiesSection = () => {
     const ref = useRef(null);
@@ -88,15 +96,12 @@ export const DetectionCapabilitiesSection = () => {
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                        What We Catch <span className="text-gradient">(11+ Modules)</span>
+                        What We Catch <span className="text-gradient">({totalRules}+ Rules)</span>
                     </h2>
-                    <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-                        Comprehensive detection powered by rule-based analysis.
-                    </p>
                 </motion.div>
 
                 {/* Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {capabilities.map((cap, i) => (
                         <motion.div
                             key={i}
@@ -106,13 +111,18 @@ export const DetectionCapabilitiesSection = () => {
                             className="group"
                         >
                             <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl h-full p-6 hover:border-primary/60 transition-all duration-300">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                        <cap.icon className="w-5 h-5 text-primary" />
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                            <cap.icon className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-foreground">
+                                            {cap.title}
+                                        </h3>
                                     </div>
-                                    <h3 className="text-lg font-bold text-foreground">
-                                        {cap.title}
-                                    </h3>
+                                    <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded">
+                                        {cap.ruleCount} rules
+                                    </span>
                                 </div>
                                 <ul className="space-y-2">
                                     {cap.items.map((item, j) => (
@@ -126,34 +136,6 @@ export const DetectionCapabilitiesSection = () => {
                         </motion.div>
                     ))}
                 </div>
-
-                {/* Accuracy note */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                    className="max-w-3xl mx-auto bg-card border border-border rounded-xl p-6"
-                >
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <p className="text-sm font-mono text-muted-foreground mb-2">ACCURACY</p>
-                            <p className="text-foreground">
-                                <span className="text-2xl font-bold">84%</span> <span className="text-muted-foreground">(rule-based)</span>
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                Target: 95%+ (ML, Q2 2026)
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm font-mono text-muted-foreground mb-2">WHAT MATTERS MORE</p>
-                            <ul className="space-y-1 text-sm text-foreground">
-                                <li>→ See <span className="text-primary font-semibold">WHY</span>, not just a score</li>
-                                <li>→ Validate every decision</li>
-                                <li>→ Learn from each analysis</li>
-                            </ul>
-                        </div>
-                    </div>
-                </motion.div>
             </div>
         </section>
     );

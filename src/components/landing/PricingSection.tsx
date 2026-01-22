@@ -15,7 +15,7 @@ const plans = [
         description: "For: Trying MXLens",
         features: [
             { text: "3 analyses/day (no signup)", included: true },
-            { text: "All 11+ detection modules", included: true },
+            { text: "All 85+ detection rules", included: true },
             { text: "View results only", included: true },
             { text: "Bulk upload", included: false },
             { text: "PDF/JSON export", included: false },
@@ -89,12 +89,24 @@ export const PricingSection = () => {
     const [minutes, setMinutes] = useState(10);
     const [rate, setRate] = useState(50);
 
-    const weeklyHoursBefore = (alerts * minutes * 5) / 60;
-    const weeklyHoursAfter = (alerts * 0.5 * 5) / 60; // 30 seconds per email with MXLens
-    const weeklySavings = (weeklyHoursBefore - weeklyHoursAfter) * rate;
+    // Calculations
+    const workdaysPerWeek = 5;
+    const minutesPerEmailWithMXLens = 0.5; // 30 seconds
+
+    const weeklyMinutesBefore = alerts * minutes * workdaysPerWeek;
+    const weeklyHoursBefore = weeklyMinutesBefore / 60;
+    const weeklyCostBefore = weeklyHoursBefore * rate;
+
+    const weeklyMinutesAfter = alerts * minutesPerEmailWithMXLens * workdaysPerWeek;
+    const weeklyHoursAfter = weeklyMinutesAfter / 60;
+    const weeklyCostAfter = weeklyHoursAfter * rate;
+
+    const weeklySavings = weeklyCostBefore - weeklyCostAfter;
     const yearlySavings = weeklySavings * 52;
-    const mxlensCost = 348;
-    const roi = ((yearlySavings - mxlensCost) / mxlensCost * 100).toFixed(0);
+    const mxlensCost = 29 * 12; // $348/year
+    const netSavings = yearlySavings - mxlensCost;
+    const roi = netSavings > 0 ? Math.round((netSavings / mxlensCost) * 100) : 0;
+    const paybackDays = yearlySavings > 0 ? Math.max(1, Math.round((mxlensCost / yearlySavings) * 365)) : 0;
 
     return (
         <section id="pricing" className="py-24 relative" ref={ref}>
@@ -197,54 +209,61 @@ export const PricingSection = () => {
 
                         <div className="grid md:grid-cols-3 gap-6 mb-8">
                             <div>
-                                <label className="text-sm text-muted-foreground mb-2 block">Email alerts/day</label>
+                                <label className="text-sm text-muted-foreground mb-2 block">Email alerts per day</label>
                                 <input
                                     type="number"
+                                    min="1"
                                     value={alerts}
-                                    onChange={(e) => setAlerts(Number(e.target.value))}
+                                    onChange={(e) => setAlerts(Math.max(1, Number(e.target.value)))}
                                     className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:border-primary focus:outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm text-muted-foreground mb-2 block">Minutes per email now</label>
+                                <label className="text-sm text-muted-foreground mb-2 block">Minutes per email (now)</label>
                                 <input
                                     type="number"
+                                    min="1"
                                     value={minutes}
-                                    onChange={(e) => setMinutes(Number(e.target.value))}
+                                    onChange={(e) => setMinutes(Math.max(1, Number(e.target.value)))}
                                     className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:border-primary focus:outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm text-muted-foreground mb-2 block">Your hourly rate ($)</label>
+                                <label className="text-sm text-muted-foreground mb-2 block">Hourly rate ($)</label>
                                 <input
                                     type="number"
+                                    min="1"
                                     value={rate}
-                                    onChange={(e) => setRate(Number(e.target.value))}
+                                    onChange={(e) => setRate(Math.max(1, Number(e.target.value)))}
                                     className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:border-primary focus:outline-none"
                                 />
                             </div>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-6 bg-muted/30 rounded-xl p-6">
-                            <div>
-                                <p className="text-sm text-muted-foreground mb-1">Currently</p>
-                                <p className="text-lg font-bold text-foreground">
-                                    {weeklyHoursBefore.toFixed(1)} hrs/week (${(weeklyHoursBefore * rate).toFixed(0)}/week)
-                                </p>
+                        <div className="bg-muted/30 rounded-xl p-6">
+                            <div className="grid md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <p className="text-sm text-muted-foreground mb-1">Currently spending</p>
+                                    <p className="text-lg font-bold text-foreground">
+                                        {weeklyHoursBefore.toFixed(1)} hrs/week <span className="text-muted-foreground font-normal">(${weeklyCostBefore.toLocaleString()}/week)</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground mb-1">With MXLens</p>
+                                    <p className="text-lg font-bold text-accent">
+                                        {weeklyHoursAfter.toFixed(1)} hrs/week <span className="text-muted-foreground font-normal">(${weeklyCostAfter.toLocaleString()}/week)</span>
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground mb-1">With MXLens</p>
-                                <p className="text-lg font-bold text-accent">
-                                    {weeklyHoursAfter.toFixed(1)} hrs/week (${(weeklyHoursAfter * rate).toFixed(0)}/week)
-                                </p>
-                            </div>
-                            <div className="md:col-span-2 pt-4 border-t border-border">
+
+                            <div className="pt-4 border-t border-border">
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
-                                        <p className="text-sm text-muted-foreground">You Save</p>
-                                        <p className="text-2xl font-bold text-accent">${weeklySavings.toFixed(0)}/week = ${yearlySavings.toFixed(0)}/year</p>
+                                        <p className="text-sm text-muted-foreground">Annual Savings</p>
+                                        <p className="text-2xl font-bold text-accent">${yearlySavings.toLocaleString()}/year</p>
                                         <p className="text-sm text-muted-foreground mt-1">
-                                            MXLens cost: ${mxlensCost}/year • <span className="text-primary font-bold">ROI: {roi}%</span>
+                                            MXLens Pro: ${mxlensCost}/year • <span className="text-primary font-bold">ROI: {roi.toLocaleString()}%</span>
+                                            {paybackDays > 0 && <span> • Pays for itself in {paybackDays} days</span>}
                                         </p>
                                     </div>
                                     <Button asChild>

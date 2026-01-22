@@ -15,7 +15,8 @@ const useCases = [
         scenario: "87 weekend email alerts waiting Monday morning",
         before: "87 × 10 min = 14.5 hours (2 workdays)",
         after: "Bulk upload = 4.5 minutes",
-        savings: "14 hours (95% reduction)",
+        metric: "95% reduction",
+        metricLabel: "Time Saved",
         cta: "Try Bulk Upload Free",
         href: "/analyze",
     },
@@ -26,7 +27,8 @@ const useCases = [
         scenario: "200+ user reports during phishing campaign",
         before: "One-by-one analysis = 33+ hours",
         after: "Pattern detection across all emails = 15 min",
-        savings: "33 hours (98% reduction)",
+        metric: "98% reduction",
+        metricLabel: "Time Saved",
         cta: "See Workflow",
         href: "/analyze",
     },
@@ -37,7 +39,8 @@ const useCases = [
         scenario: "CEO email flagged. Contains M&A details. Can't upload to VirusTotal.",
         before: "Limited manual checks, higher risk",
         after: "Full analysis locally, zero compliance risk",
-        savings: "GDPR violation avoided",
+        metric: "Zero",
+        metricLabel: "Data Exposure",
         cta: "Learn About Privacy",
         href: "#trust",
     },
@@ -48,7 +51,8 @@ const useCases = [
         scenario: "5 analysts, 5 different methods, inconsistent results",
         before: "Mixed tools (VirusTotal, manual, MXToolbox)",
         after: "Unified approach, shared rules, consistent verdicts",
-        savings: "100% Consistency",
+        metric: "100%",
+        metricLabel: "Consistency",
         cta: "Explore Team Features",
         href: "/pricing",
     },
@@ -136,8 +140,8 @@ export const UseCasesSection = () => {
 
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border">
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">Time Saved:</span>
-                                <span className="text-lg font-bold text-accent">{activeCase.savings}</span>
+                                <span className="text-sm text-muted-foreground">{activeCase.metricLabel}:</span>
+                                <span className="text-lg font-bold text-accent">{activeCase.metric}</span>
                             </div>
                             <Button asChild>
                                 <Link href={activeCase.href}>
