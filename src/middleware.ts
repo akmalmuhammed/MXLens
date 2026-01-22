@@ -138,7 +138,10 @@ export default auth(async (req) => {
     // MAIN DOMAIN LOGIC
     // -------------------------------------------------------------------------
     if (nextUrl.pathname.startsWith("/admin") && !isAdminSubdomain) {
-        return NextResponse.redirect(`https://admin.mxlens.com${nextUrl.pathname.replace('/admin', '')}`);
+        // Exclude localhost from redirect to allow local admin development
+        if (!hostname.includes("localhost") && !hostname.includes("127.0.0.1")) {
+            return NextResponse.redirect(`https://admin.mxlens.com${nextUrl.pathname.replace('/admin', '')}`);
+        }
     }
 
     if (isDashboard || isOnboarding) {
@@ -163,15 +166,18 @@ export default auth(async (req) => {
             return NextResponse.redirect(new URL("/onboarding/welcome", nextUrl));
         }
         // Default redirect for logged-in users accessing dashboard/onboarding
-        return NextResponse.redirect(new URL("/dashboard", nextUrl));
-    }
+        // FIX: Removed unconditional redirect to /dashboard which caused infinite loop
+        // If we are here, the user is authenticated and safe to proceed.
+        // We only redirect if specifically on a path that NEEDS redirecting (like a completed onboarding flow),
+        // Otherwise, fall through to NextResponse.next()
 
-    if (isLoggedIn && isAuthPage) {
-        return NextResponse.redirect(new URL("/dashboard", nextUrl));
-    }
 
-    return NextResponse.next();
-});
+        if (isLoggedIn && isAuthPage) {
+            return NextResponse.redirect(new URL("/dashboard", nextUrl));
+        }
+
+        return NextResponse.next();
+    });
 
 export const config = {
     matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
