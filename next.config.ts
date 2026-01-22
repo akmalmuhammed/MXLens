@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   /* config options here */
   eslint: {
     // Disable ESLint during production builds to unblock deployment
@@ -74,7 +74,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-};
+} as NextConfig;
 
 export default withSentryConfig(nextConfig, {
   // For all available options, see:
