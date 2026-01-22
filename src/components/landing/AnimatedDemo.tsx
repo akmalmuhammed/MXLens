@@ -31,9 +31,9 @@ const features = [
 ];
 
 const stages = [
-    { id: "drop", label: "Drop Email", icon: Mail },
-    { id: "scan", label: "Analyzing...", icon: Shield },
-    { id: "verdict", label: "Verdict Ready", icon: CheckCircle },
+    { id: "drop", label: "Drop Email", icon: Mail, duration: 2500 },
+    { id: "scan", label: "Analyzing...", icon: Shield, duration: 6000 },
+    { id: "verdict", label: "Verdict Ready", icon: CheckCircle, duration: 3000 },
 ];
 
 export const AnimatedDemo = () => {
@@ -42,41 +42,80 @@ export const AnimatedDemo = () => {
     const [activeFeatures, setActiveFeatures] = useState<number[]>([]);
 
     useEffect(() => {
-        const interval = setInterval(() => {
+        const advanceStage = () => {
             setStage((prev) => {
-                if (prev === 2) {
-                    setTimeout(() => {
-                        setScore(0);
-                        setActiveFeatures([]);
-                    }, 500);
-                    return 0;
+                const nextStage = (prev + 1) % 3;
+
+                if (nextStage === 0) {
+                    // Reset when going back to drop
+                    setScore(0);
+                    setActiveFeatures([]);
                 }
-                if (prev === 1) {
+                if (nextStage === 2) {
+                    // Set score when entering verdict
                     setScore(87);
                 }
-                return prev + 1;
-            });
-        }, 6000); // Increased from 3000ms to 6000ms for readability
 
-        return () => clearInterval(interval);
-    }, []);
+                return nextStage;
+            });
+        };
+
+        // Use current stage's duration
+        const timeout = setTimeout(advanceStage, stages[stage].duration);
+        return () => clearTimeout(timeout);
+    }, [stage]);
 
     // Animate features appearing during scan stage
     useEffect(() => {
         if (stage === 1) {
+            setActiveFeatures([]);
             features.forEach((_, i) => {
                 setTimeout(() => {
                     setActiveFeatures(prev => [...prev, i]);
-                }, i * 400); // Increased from 200ms to 400ms
+                }, i * 500); // Spaced out for readability
             });
         }
     }, [stage]);
 
     return (
         <div className="relative w-full max-w-lg mx-auto">
+            {/* Subtle orbital circles behind */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
+                    className="absolute w-[400px] h-[400px] rounded-full border border-primary/10"
+                />
+                <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+                    className="absolute w-[350px] h-[350px] rounded-full border border-accent/10"
+                />
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                    className="absolute w-[300px] h-[300px] rounded-full border border-primary/5"
+                />
+                {/* Orbiting dots */}
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
+                    className="absolute w-[380px] h-[380px]"
+                >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary/30" />
+                </motion.div>
+                <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
+                    className="absolute w-[320px] h-[320px]"
+                >
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-accent/40" />
+                </motion.div>
+            </div>
+
             {/* Demo container */}
             <motion.div
-                className="relative bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-6 overflow-hidden"
+                className="relative bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-6 overflow-hidden z-10"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
@@ -92,10 +131,10 @@ export const AnimatedDemo = () => {
                             animate={i === stage ? { scale: [1, 1.05, 1] } : {}}
                             transition={{ repeat: i === stage ? Infinity : 0, duration: 1.5 }}
                             className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-mono transition-all ${i === stage
-                                ? "bg-primary text-primary-foreground shadow-glow"
-                                : i < stage
-                                    ? "bg-accent/20 text-accent"
-                                    : "bg-muted text-muted-foreground"
+                                    ? "bg-primary text-primary-foreground shadow-glow"
+                                    : i < stage
+                                        ? "bg-accent/20 text-accent"
+                                        : "bg-muted text-muted-foreground"
                                 }`}
                         >
                             <s.icon className="w-3 h-3" />
@@ -113,6 +152,7 @@ export const AnimatedDemo = () => {
                                 initial={{ y: -50, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 exit={{ y: 50, opacity: 0 }}
+                                transition={{ duration: 0.3 }}
                                 className="flex flex-col items-center gap-4"
                             >
                                 <motion.div
@@ -142,6 +182,7 @@ export const AnimatedDemo = () => {
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.8, opacity: 0 }}
+                                transition={{ duration: 0.3 }}
                                 className="flex flex-col items-center gap-4 w-full"
                             >
                                 {/* Spinning scanner */}
@@ -199,6 +240,7 @@ export const AnimatedDemo = () => {
                                 initial={{ scale: 0.5, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.8, opacity: 0 }}
+                                transition={{ duration: 0.3 }}
                                 className="flex flex-col items-center gap-4"
                             >
                                 {/* Score circle */}
