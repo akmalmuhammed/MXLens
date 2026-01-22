@@ -31,23 +31,10 @@ export default async function AnalyzePage() {
     }
 
     return (
-        <div className="container mx-auto py-4 min-h-screen space-y-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="flex items-baseline gap-4">
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                        Email Analysis Studio
-                    </h1>
-                </div>
-
-                {/* Privacy Trust Badge */}
-                <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground bg-background/60 backdrop-blur-md px-4 py-2 rounded-full border shadow-sm">
-                    <span className="flex items-center gap-1.5"><EyeOff className="w-3.5 h-3.5 text-primary" /> Private Session</span>
-                    <span className="w-1 h-1 rounded-full bg-border" />
-                    <span className="flex items-center gap-1.5"><Cpu className="w-3.5 h-3.5 text-primary" /> Client-Side Processing</span>
-                    <span className="w-1 h-1 rounded-full bg-border" />
-                    <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-primary" /> SOC-2 Logic</span>
-                </div>
-            </div>
+        <div className="container mx-auto py-2 min-h-screen space-y-3">
+            <h1 className="text-xl font-bold tracking-tight text-foreground font-heading bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                Email Analysis Studio
+            </h1>
 
             <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl relative overflow-hidden min-h-[700px] transition-all">
                 {/* Decorative gradients */}

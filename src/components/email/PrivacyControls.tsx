@@ -11,32 +11,27 @@ interface PrivacyControlsProps {
 }
 
 export function PrivacyControls({ analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, minimal }: PrivacyControlsProps) {
-    // Compact Toolbar Mode (Default for Dashboard)
+    // Ultra-compact inline controls
     return (
-        <div className="flex items-center gap-4 text-xs bg-background/50 backdrop-blur-sm border rounded-lg px-3 py-1.5 shadow-sm">
-            <div className="flex items-center gap-1.5 text-muted-foreground border-r pr-3 mr-1">
-                <Shield className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="font-medium hidden sm:inline">Privacy Controls</span>
-            </div>
-
-            <label className="flex items-center gap-2 cursor-pointer select-none text-foreground hover:text-primary transition-colors">
+        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+            <label className="flex items-center gap-1.5 cursor-pointer select-none hover:text-foreground transition-colors">
                 <Switch
                     id="body-mode"
                     checked={analyzeBody}
                     onCheckedChange={setAnalyzeBody}
-                    className="scale-75 origin-left data-[state=checked]:bg-primary"
+                    className="scale-[0.65] origin-left"
                 />
-                <span>Analyze Body</span>
+                <span>Body</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer select-none text-foreground hover:text-primary transition-colors">
+            <label className="flex items-center gap-1.5 cursor-pointer select-none hover:text-foreground transition-colors">
                 <Switch
                     id="att-mode"
                     checked={analyzeAttachments}
                     onCheckedChange={setAnalyzeAttachments}
-                    className="scale-75 origin-left data-[state=checked]:bg-primary"
+                    className="scale-[0.65] origin-left"
                 />
-                <span>Scan Attachments</span>
+                <span>Attachments</span>
             </label>
         </div>
     );
