@@ -7,23 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Key, Plus, Copy, Trash2, Eye, EyeOff, AlertTriangle } from "lucide-react";
 
-// Mock data for now - in production this would come from the server
-const mockApiKeys = [
-    {
-        id: "1",
-        name: "CI Pipeline",
-        prefix: "mx_live_abc...",
-        createdAt: new Date("2024-12-01"),
-        lastUsed: new Date("2024-12-24"),
-    },
-    {
-        id: "2",
-        name: "Splunk Integration",
-        prefix: "mx_live_def...",
-        createdAt: new Date("2024-11-15"),
-        lastUsed: null,
-    }
-];
+// Mock data removed for production cleanup
+const mockApiKeys: any[] = [];
 
 export default function ApiKeysPage() {
     const [keys] = useState(mockApiKeys);
