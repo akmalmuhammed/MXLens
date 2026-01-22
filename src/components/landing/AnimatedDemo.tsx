@@ -56,7 +56,7 @@ export const AnimatedDemo = () => {
                 }
                 return prev + 1;
             });
-        }, 3000);
+        }, 6000); // Increased from 3000ms to 6000ms for readability
 
         return () => clearInterval(interval);
     }, []);
@@ -67,7 +67,7 @@ export const AnimatedDemo = () => {
             features.forEach((_, i) => {
                 setTimeout(() => {
                     setActiveFeatures(prev => [...prev, i]);
-                }, i * 200);
+                }, i * 400); // Increased from 200ms to 400ms
             });
         }
     }, [stage]);
@@ -92,10 +92,10 @@ export const AnimatedDemo = () => {
                             animate={i === stage ? { scale: [1, 1.05, 1] } : {}}
                             transition={{ repeat: i === stage ? Infinity : 0, duration: 1.5 }}
                             className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-mono transition-all ${i === stage
-                                    ? "bg-primary text-primary-foreground shadow-glow"
-                                    : i < stage
-                                        ? "bg-accent/20 text-accent"
-                                        : "bg-muted text-muted-foreground"
+                                ? "bg-primary text-primary-foreground shadow-glow"
+                                : i < stage
+                                    ? "bg-accent/20 text-accent"
+                                    : "bg-muted text-muted-foreground"
                                 }`}
                         >
                             <s.icon className="w-3 h-3" />
