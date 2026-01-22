@@ -3,29 +3,32 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Upload, Zap, CheckCircle } from "lucide-react";
+import { Upload, Zap, CheckCircle, Cpu, Network, FileOutput } from "lucide-react";
 
 const steps = [
     {
         icon: Upload,
-        step: "01",
-        title: "Upload Email",
-        description:
-            "Drag & drop any .eml or .msg file directly into the browser. Or paste headers manually.",
+        step: "STEP 1",
+        title: "Upload",
+        time: "2 sec",
+        description: "Drag .eml/.msg files or paste email content directly.",
+        detail: "Bulk: Select up to 50 emails at once",
     },
     {
-        icon: Zap,
-        step: "02",
-        title: "Instant Analysis",
-        description:
-            "Our WASM engine parses MIME structures and extracts artifacts in under 3 seconds locally.",
+        icon: Cpu,
+        step: "STEP 2",
+        title: "Analysis",
+        time: "3 sec",
+        description: "WebAssembly engine processes locally in your browser.",
+        detail: "11+ modules run in parallel • Zero network requests",
     },
     {
-        icon: CheckCircle,
-        step: "03",
-        title: "Verdict",
-        description:
-            "Get an immediate trust score, threat breakdown, and authentication analysis.",
+        icon: FileOutput,
+        step: "STEP 3",
+        title: "Results",
+        time: "instant",
+        description: "Get Trust Score (0-100), intelligence summary, and evidence breakdown.",
+        detail: "Export PDF/JSON for reporting",
     },
 ];
 
@@ -44,10 +47,10 @@ export const HowItWorksSection = () => {
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                        How It <span className="text-gradient">Works</span>
+                        From Alert to Verdict in <span className="text-gradient">30 Seconds</span>
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-                        A seamless, secure workflow designed for speed.
+                        Three simple steps. Zero complexity.
                     </p>
                 </motion.div>
 
@@ -66,9 +69,14 @@ export const HowItWorksSection = () => {
                                 className="relative"
                             >
                                 <div className="glass-card bg-background/50 backdrop-blur-sm border border-border rounded-2xl p-8 h-full relative group hover:border-primary/60 transition-colors shadow-sm">
-                                    {/* Step number */}
+                                    {/* Step label */}
                                     <div className="absolute -top-4 left-8 px-3 py-1 bg-primary text-primary-foreground font-mono text-sm font-bold rounded">
                                         {item.step}
+                                    </div>
+
+                                    {/* Time badge */}
+                                    <div className="absolute -top-4 right-8 px-3 py-1 bg-accent/20 text-accent font-mono text-sm font-bold rounded border border-accent/30">
+                                        {item.time}
                                     </div>
 
                                     {/* Icon */}
@@ -82,12 +90,28 @@ export const HowItWorksSection = () => {
                                     <h3 className="text-xl font-bold mb-3 text-foreground">
                                         {item.title}
                                     </h3>
-                                    <p className="text-muted-foreground">{item.description}</p>
+                                    <p className="text-muted-foreground mb-3">{item.description}</p>
+                                    <p className="text-sm text-primary/80 font-mono">{item.detail}</p>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
                 </div>
+
+                {/* Callout */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                    className="mt-16 max-w-3xl mx-auto"
+                >
+                    <div className="bg-card/50 border border-primary/30 rounded-xl p-6 text-center">
+                        <p className="text-lg text-foreground italic mb-2">
+                            &ldquo;Unlike black-box AI, MXLens shows <span className="text-primary font-semibold">WHY</span>.
+                            You&apos;re still the analyst—we&apos;re just 83% faster.&rdquo;
+                        </p>
+                    </div>
+                </motion.div>
             </div>
         </section>
     );

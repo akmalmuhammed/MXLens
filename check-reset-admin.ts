@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
+import * as fs from "fs";
 
 const prisma = new PrismaClient();
 const email = "port3000@test.com";
@@ -21,6 +22,28 @@ async function hashPasswordScrypt(password: string): Promise<string> {
 
 async function checkAndResetAdminPassword() {
     try {
+        // List ALL Admin Users
+        console.log("\n--- 🛡️  ADMIN USERS (admin_users) ---");
+        const allAdminUsers = await prisma.adminUser.findMany();
+        if (allAdminUsers.length === 0) console.log("No admin users found.");
+        else allAdminUsers.forEach(u => console.log(`- ${u.email} (ID: ${u.id}, Role: ${u.role})`));
+
+        // List ALL Regular Users
+        console.log("\n--- 👤 REGULAR USERS (User) ---");
+        const allUsers = await prisma.user.findMany({ take: 10 });
+        if (allUsers.length === 0) console.log("No regular users found.");
+        else allUsers.forEach(u => console.log(`- ${u.email} (Name: ${u.name})`));
+
+        // Write users to JSON file
+        const output = {
+            adminUsers: allAdminUsers,
+            regularUsers: allUsers
+        };
+        fs.writeFileSync("db_users.json", JSON.stringify(output, null, 2));
+        console.log("✅ Wrote users to db_users.json");
+
+        console.log("\n--------------------------------------------------");
+
         // Check if user exists in AdminUser table
         const adminUser = await prisma.adminUser.findUnique({
             where: { email },

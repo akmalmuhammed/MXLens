@@ -1,0 +1,11 @@
+{
+  "name": "PrismaClientInitializationError",
+  "clientVersion": "5.22.0"
+}
+PrismaClientInitializationError: 
+Invalid `prisma.adminUser.findMany()` invocation:
+
+
+Authentication failed against database server at `ep-morning-pine-agxe9knx-pooler.c-2.eu-central-1.aws.neon.tech`, the provided database credentials for `(not available)` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `ep-morning-pine-agxe9knx-pooler.c-2.eu-central-1.aws.neon.tech`.

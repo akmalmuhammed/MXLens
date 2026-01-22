@@ -1,16 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, Shield, Zap, Lock, Clock } from "lucide-react";
+import { ArrowRight, ChevronDown, Shield, Zap, Lock, Clock, CreditCard, FileCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OrbitalBackground } from "./OrbitalBackground";
 import Link from "next/link";
 
 const badges = [
-    { icon: Shield, label: "No signup • 3 free analyses" },
-    { icon: Lock, label: "Open Source Core" },
-    { icon: Zap, label: "Zero Data Retention" },
-    { icon: Clock, label: "<3s Analysis" },
+    { icon: FileCheck, label: "No signup required" },
+    { icon: CreditCard, label: "No credit card" },
+    { icon: Lock, label: "Works on confidential emails" },
 ];
 
 export const HeroSection = () => {
@@ -18,7 +17,6 @@ export const HeroSection = () => {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-16">
             {/* Background */}
             <div className="absolute inset-0 z-0">
-                {/* Background image placeholder - replaced with gradient for now */}
                 <div
                     className="absolute inset-0 bg-cover bg-center opacity-30 bg-gradient-to-br from-background via-primary/5 to-background"
                 />
@@ -30,7 +28,6 @@ export const HeroSection = () => {
             <OrbitalBackground />
 
             {/* Animated glow orbs */}
-            {/* Animated glow orbs - Optimized for performance */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
             <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
 
@@ -45,7 +42,7 @@ export const HeroSection = () => {
                     >
                         <Shield className="w-4 h-4 text-primary" />
                         <span className="text-sm font-mono text-primary">
-                            100% Client-Side Execution
+                            100% Client-Side • Zero Cloud Upload
                         </span>
                     </motion.div>
 
@@ -56,9 +53,9 @@ export const HeroSection = () => {
                         transition={{ duration: 0.7, delay: 0.1 }}
                         className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
                     >
-                        <span className="text-foreground">Email Intelligence.</span>
+                        <span className="text-foreground">Analyze 50 Emails in 3 Minutes.</span>
                         <br />
-                        <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Zero Data Exfiltration.</span>
+                        <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Not 8 Hours.</span>
                     </motion.h1>
 
                     {/* Subheadline */}
@@ -68,9 +65,8 @@ export const HeroSection = () => {
                         transition={{ duration: 0.7, delay: 0.2 }}
                         className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
                     >
-                        The first completely client-side analysis engine. Drag, drop, and
-                        dissect suspicious emails without them ever leaving your browser.
-                        <span className="font-semibold text-foreground"> No server uploads. No logs. No risk.</span>
+                        MXLens eliminates alert fatigue with bulk email analysis that runs 100% in
+                        your browser. <span className="font-semibold text-foreground">No cloud upload. No privacy risk. No waiting.</span>
                     </motion.p>
 
                     {/* CTA Buttons */}
@@ -82,7 +78,7 @@ export const HeroSection = () => {
                     >
                         <Button className="group w-full sm:w-auto text-lg h-14 px-8 rounded-full shadow-glow" size="lg" asChild>
                             <Link href="/analyze">
-                                Start Analysis (Local Only)
+                                Start Free Analysis
                                 <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                             </Link>
                         </Button>
@@ -111,8 +107,8 @@ export const HeroSection = () => {
                                 key={i}
                                 className="flex items-center gap-2 text-sm text-muted-foreground"
                             >
-                                <badge.icon className="w-4 h-4 text-primary" />
-                                <span>{badge.label}</span>
+                                <badge.icon className="w-4 h-4 text-accent" />
+                                <span>✓ {badge.label}</span>
                             </div>
                         ))}
                     </motion.div>

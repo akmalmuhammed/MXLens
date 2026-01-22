@@ -1,8 +1,9 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { ArchitectureSection } from "@/components/landing/ArchitectureSection";
+import { SocialProof } from "@/components/landing/SocialProof";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
-import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { UseCasesSection } from "@/components/landing/UseCasesSection";
+import { DetectionCapabilitiesSection } from "@/components/landing/DetectionCapabilitiesSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { FAQSection } from "@/components/landing/FAQSection";
@@ -15,9 +16,10 @@ export default function LandingPage() {
       <Navbar />
       <main className="flex-grow">
         <HeroSection />
-        <ArchitectureSection />
+        <SocialProof />
         <HowItWorksSection />
-        <FeaturesSection />
+        <UseCasesSection />
+        <DetectionCapabilitiesSection />
         <PricingSection />
         <ComparisonSection />
         <FAQSection />
