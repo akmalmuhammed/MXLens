@@ -120,6 +120,34 @@ export async function registerUser(formData: FormData) {
     }
 }
 
+import { cookies } from "next/headers";
+
 export async function logout() {
+    // Force expire all variations of session cookies
+    // This handles the mismatch between host-only and domain-scoped cookies
+    const cookieStore = await cookies();
+
+    const cookieNames = [
+        "authjs.session-token",
+        "__Secure-authjs.session-token",
+        "next-auth.session-token",
+        "__Secure-next-auth.session-token"
+    ];
+
+    cookieNames.forEach((name) => {
+        // 1. Expire on root domain (wildcard)
+        cookieStore.set(name, "", {
+            expires: new Date(0),
+            path: "/",
+            domain: ".mxlens.com"
+        });
+
+        // 2. Expire on host (no domain set)
+        cookieStore.set(name, "", {
+            expires: new Date(0),
+            path: "/"
+        });
+    });
+
     await signOut({ redirectTo: "/" });
 }
