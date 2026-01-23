@@ -99,24 +99,26 @@ export async function registerUser(formData: FormData) {
         return { error: "Registration failed. Please try again." };
     }
 
-    // Attempt Auto-Login
-    let autoLoginSuccess = false;
+    // Auto-Login after successful registration
+    // Using signIn with redirect:true (default) which properly establishes the session
+    // The redirect call inside signIn will throw NEXT_REDIRECT which is expected
     try {
         await signIn("credentials", {
             email: validEmail,
             password: validPassword,
-            redirect: false,
+            redirectTo: "/dashboard?welcome=true",
         });
-        autoLoginSuccess = true;
-    } catch (error) {
-        // Log error but don't crash, redirect to signin
-        console.error("Auto-login failed:", error);
-    }
+        // This line won't be reached due to redirect
+    } catch (error: any) {
+        // NEXT_REDIRECT is expected behavior when signIn succeeds
+        // It's thrown as an error because signIn triggers a redirect
+        if (error?.message?.includes("NEXT_REDIRECT") || error?.digest?.includes("NEXT_REDIRECT")) {
+            throw error; // Re-throw to let Next.js handle the redirect
+        }
 
-    if (autoLoginSuccess) {
-        redirect("/dashboard?welcome=true");
-    } else {
-        redirect("/auth/signin?success=true");
+        // Actual error - fallback to signin page
+        console.error("Auto-login failed:", error);
+        redirect("/auth/signin?registered=true");
     }
 }
 
