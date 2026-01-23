@@ -493,6 +493,7 @@ model AdminUser {
   image         String?
   role          String?   @default("user")
   isPlatformAdmin Boolean @default(false)
+  password      String?
   createdAt     DateTime
   updatedAt     DateTime
   
