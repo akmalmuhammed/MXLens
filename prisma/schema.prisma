@@ -480,6 +480,40 @@ model ReportConfig {
   @@index([orgId])
 }
 
+// -----------------------------------------------------------------------------
+// ISOLATED ADMIN AUTH (Custom Implementation)
+// -----------------------------------------------------------------------------
+
+model AdminUser {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          AdminRole @default(SUPER_ADMIN)
+  
+  sessions      AdminSession[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+
+  @@map("admin_sessions")
+}
+
 
 
 

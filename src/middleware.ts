@@ -29,44 +29,36 @@ export default auth(async (req) => {
     // -------------------------------------------------------------------------
     // ADMIN SUBDOMAIN LOGIC (Migration to NextAuth)
     // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // ADMIN SUBDOMAIN LOGIC (Isolated Auth)
+    // -------------------------------------------------------------------------
     if (isAdminSubdomain) {
-        // 1. Allow public admin assets/api
-        if (nextUrl.pathname.startsWith("/api") ||
+        // 1. Allow public admin assets/api/auth
+        if (nextUrl.pathname.startsWith("/api/admin/auth") ||
+            nextUrl.pathname.startsWith("/admin/auth") ||
             nextUrl.pathname.startsWith("/_next") ||
             nextUrl.pathname.startsWith("/static")) {
             return NextResponse.next();
         }
 
-        // 2. Auth Check
-        if (!isLoggedIn) {
-            // Redirect to main site login
-            // We use the main domain for login to share the cookie
-            // Construct main domain URL
-            const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-            const mainDomain = process.env.NODE_ENV === "production" ? "mxlens.com" : "localhost:3000";
+        // 2. Check for Admin Token
+        const adminToken = req.cookies.get("admin_token")?.value;
 
-            // Redirect to main login with callback back to admin
-            const loginUrl = new URL(`${protocol}://${mainDomain}/auth/signin`);
-            loginUrl.searchParams.set("callbackUrl", req.url);
-
+        if (!adminToken) {
+            // Redirect to admin login
+            const loginUrl = new URL("/admin/auth/signin", req.url);
+            loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
             return NextResponse.redirect(loginUrl);
         }
 
-        // 3. Permission Check
-        if (!user?.isPlatformAdmin) {
-            // Logged in but NOT an admin
-            console.log("[MIDDLEWARE] Access Denied: User is not a Platform Admin", user.email);
-            return new NextResponse("Access Denied: You do not have permission to access the Admin Panel.", { status: 403 });
-        }
+        // 3. Permitted - Access Granted (Token exists, let API verify validity)
 
-        // 4. Permitted - Access Granted
         // Rewrite root "/" to "/admin" for convenience
         if (nextUrl.pathname === "/") {
             return NextResponse.rewrite(new URL("/admin", nextUrl));
         }
 
         // Rewrite all other paths to be under /admin internal route
-        // e.g. admin.mxlens.com/users -> mxlens.com/admin/users
         if (!nextUrl.pathname.startsWith("/admin")) {
             return NextResponse.rewrite(new URL(`/admin${nextUrl.pathname}`, nextUrl));
         }

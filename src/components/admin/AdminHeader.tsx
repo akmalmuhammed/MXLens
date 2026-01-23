@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Bell,
     Search,
@@ -70,6 +70,28 @@ export function AdminHeader() {
     const [searchQuery, setSearchQuery] = useState("");
     const [notifications] = useState<Notification[]>(mockNotifications);
     const unreadCount = notifications.filter((n) => !n.read).length;
+    const [user, setUser] = useState<{ email: string; role: string } | null>(null);
+
+    // Fetch Admin Profile
+    useEffect(() => {
+        fetch("/api/admin/auth/me")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.user) setUser(data.user);
+            })
+            .catch((err) => console.error("Failed to fetch admin profile", err));
+    }, []);
+
+    async function handleLogout() {
+        try {
+            await fetch("/api/admin/auth/logout", { method: "POST" });
+            window.location.href = "/admin/auth/signin";
+        } catch (error) {
+            console.error("Logout failed", error);
+            // Fallback redirect
+            window.location.href = "/admin/auth/signin";
+        }
+    }
 
     return (
         <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-border bg-background/80 backdrop-blur-md px-6">
@@ -175,8 +197,8 @@ export function AdminHeader() {
                                 <Shield className="h-4 w-4" />
                             </div>
                             <div className="hidden md:block text-left">
-                                <p className="text-sm font-medium">Admin User</p>
-                                <p className="text-xs text-muted-foreground font-mono">Platform Admin</p>
+                                <p className="text-sm font-medium">{user?.email || "Admin User"}</p>
+                                <p className="text-xs text-muted-foreground font-mono">{user?.role || "Loading..."}</p>
                             </div>
                             <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
                         </Button>
@@ -193,11 +215,12 @@ export function AdminHeader() {
                             Settings
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive" asChild>
-                            <a href="/admin/auth/signout">
-                                <LogOut className="mr-2 h-4 w-4" />
-                                Logout
-                            </a>
+                        <DropdownMenuItem
+                            className="text-destructive focus:text-destructive cursor-pointer"
+                            onClick={handleLogout}
+                        >
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Logout
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
