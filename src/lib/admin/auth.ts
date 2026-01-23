@@ -57,6 +57,8 @@ export async function createAdminSession(userId: string, userAgent?: string, ip?
             expiresAt,
             userAgent,
             ipAddress: ip,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
     });
 
@@ -104,7 +106,7 @@ export async function verifyAdminSession(): Promise<AdminSessionData | null> {
         return {
             userId: session.user.id,
             email: session.user.email,
-            role: session.user.role,
+            role: session.user.role || "ADMIN",
         };
     } catch (e) {
         return null; // Invalid token
@@ -140,6 +142,17 @@ export async function requireAdmin() {
     const session = await verifyAdminSession();
     if (!session) {
         redirect("/admin/auth/signin");
+    }
+    return session;
+}
+
+/**
+ * Require Admin (for API Routes) - Throws Error instead of Redirecting
+ */
+export async function requireAdminApi() {
+    const session = await verifyAdminSession();
+    if (!session) {
+        throw new Error("Unauthorized");
     }
     return session;
 }

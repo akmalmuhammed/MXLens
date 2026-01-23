@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+
+import { requireAdminApi } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 
 // Generate a random password
@@ -14,7 +15,7 @@ function generatePassword(length = 12): string {
 
 export async function GET(request: NextRequest) {
     try {
-        await requireAdmin();
+        await requireAdminApi();
 
         const searchParams = request.nextUrl.searchParams;
         const page = parseInt(searchParams.get("page") || "1");
@@ -91,7 +92,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        await requireAdmin();
+        await requireAdminApi();
 
         const body = await request.json();
         const { orgId, name, email, role } = body;

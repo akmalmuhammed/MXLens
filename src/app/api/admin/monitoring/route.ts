@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireAdminApi } from "@/lib/admin/auth";
 
 /**
  * Admin Monitoring API
@@ -47,7 +47,7 @@ interface MonitoringData {
 
 export async function GET() {
     try {
-        await requireAdmin();
+        await requireAdminApi();
 
         const startTime = Date.now();
 

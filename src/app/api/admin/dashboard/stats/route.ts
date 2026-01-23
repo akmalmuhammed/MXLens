@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireAdminApi } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 
 export async function GET() {
     try {
-        await requireAdmin();
+        await requireAdminApi();
 
         // Get total counts
         const [

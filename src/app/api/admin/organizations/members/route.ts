@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+
+import { requireAdminApi } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 
 // POST: Add existing user to organization
 export async function POST(request: NextRequest) {
     try {
-        await requireAdmin();
+        await requireAdminApi();
 
         const body = await request.json();
         const { orgId, userId, role } = body;
