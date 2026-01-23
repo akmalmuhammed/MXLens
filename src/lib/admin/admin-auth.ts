@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { adminAuth } from "@/lib/admin-auth";
+import { auth } from "@/auth";
+// adminAuth import removed as it's deprecated
 
 export type AdminRole = "SUPER_ADMIN" | "SUPPORT_ADMIN" | "BILLING_ADMIN" | "READ_ONLY";
 
@@ -13,30 +13,30 @@ export interface AdminSession {
 }
 
 /**
- * Get the current admin session from Better Auth.
+ * Get the current admin session from NextAuth.
  * Returns null if user is not logged in or not a platform admin.
  */
 export async function getAdminSession(): Promise<AdminSession | null> {
     try {
-        // Get session from Better Auth using the API
-        const session = await adminAuth.api.getSession({
-            headers: {
-                cookie: (await cookies()).toString(),
-            },
-        });
+        const session = await auth();
 
         if (!session?.user?.id) {
             return null;
         }
 
-        // Query admin user from our isolated admin table
-        const adminUser = await db.adminUser.findUnique({
+        // Quick check from session token claims first
+        if (!session.user.isPlatformAdmin) {
+            return null;
+        }
+
+        // Double check against DB to ensure real-time revocation support
+        const adminUser = await db.user.findUnique({
             where: { id: session.user.id },
             select: {
                 id: true,
                 email: true,
                 name: true,
-                role: true,
+                adminRole: true,
                 isPlatformAdmin: true,
             },
         });
@@ -49,7 +49,7 @@ export async function getAdminSession(): Promise<AdminSession | null> {
             userId: adminUser.id,
             email: adminUser.email,
             name: adminUser.name,
-            adminRole: (adminUser.role as AdminRole) || "SUPER_ADMIN",
+            adminRole: (adminUser.adminRole as AdminRole) || "SUPER_ADMIN",
         };
     } catch (error) {
         console.error("Error getting admin session:", error);
@@ -77,7 +77,10 @@ export async function requireAdminAccessPage(): Promise<AdminSession> {
     const adminSession = await getAdminSession();
 
     if (!adminSession) {
-        redirect("/admin/auth/signin");
+        // Redirect to main auth login
+        const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+        const domain = process.env.NODE_ENV === "production" ? "mxlens.com" : "localhost:3000";
+        redirect(`${protocol}://${domain}/auth/signin`);
     }
 
     return adminSession;
