@@ -9,6 +9,7 @@ import { NavbarUtils } from "@/components/layout/NavbarUtils";
 import { auth } from "@/auth";
 import { PostHogProvider } from "@/providers/PostHogProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -59,6 +60,7 @@ export default async function RootLayout({
                 {children}
               </main>
               <Toaster />
+              <Analytics />
             </PostHogProvider>
           </SessionProvider>
         </ThemeProvider>
