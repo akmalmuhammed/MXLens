@@ -59,7 +59,7 @@ export default auth(async (req) => {
         }
 
         // Rewrite all other paths to be under /admin internal route
-        if (!nextUrl.pathname.startsWith("/admin")) {
+        if (!nextUrl.pathname.startsWith("/admin") && !nextUrl.pathname.startsWith("/api")) {
             return NextResponse.rewrite(new URL(`/admin${nextUrl.pathname}`, nextUrl));
         }
 
