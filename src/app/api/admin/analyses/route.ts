@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdminAccess } from "@/lib/admin/admin-auth";
+import { requireAdmin } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
     try {
-        await requireAdminAccess();
+        await requireAdmin();
 
         const searchParams = request.nextUrl.searchParams;
         const page = parseInt(searchParams.get("page") || "1");

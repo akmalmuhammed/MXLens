@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { requireAdminAccess } from "@/lib/admin/admin-auth";
+import { requireAdmin } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 
 export async function GET() {
     try {
-        await requireAdminAccess();
+        await requireAdmin();
 
         // Get recent analyses (threats and suspicious)
         const recentThreats = await db.analysisLog.findMany({
