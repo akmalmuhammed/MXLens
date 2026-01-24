@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import * as Sentry from "@sentry/nextjs";
+import { Logger } from "@/lib/logger";
 
 export default function AdminLayout({
     children,
@@ -11,6 +14,23 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const { data: session } = useSession();
+
+    useEffect(() => {
+        if (session?.user) {
+            // Identify user to Sentry
+            Sentry.setUser({
+                id: session.user.id,
+                email: session.user.email || undefined,
+                username: session.user.name || undefined,
+            });
+
+            Logger.info("Admin Dashboard Accessed", {
+                userId: session.user.id,
+                role: session.user.role
+            });
+        }
+    }, [session]);
 
     return (
         <div className="min-h-screen bg-background cyber-grid">

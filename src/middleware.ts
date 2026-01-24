@@ -45,20 +45,40 @@ export default auth(async (req) => {
         const adminToken = req.cookies.get("admin_token")?.value;
 
         if (!adminToken) {
+            // For API routes, return 401 instead of redirecting
+            if (nextUrl.pathname.startsWith("/api")) {
+                return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+                    status: 401,
+                    headers: { "Content-Type": "application/json" }
+                });
+            }
+
             // Redirect to admin login
             const loginUrl = new URL("/admin/auth/signin", req.url);
             loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
+
+            // Avoid redirect loop: If we are already on the login page (or trying to get there), don't redirect again.
+            // (Handled by Step 1, but double safety)
+            if (nextUrl.pathname === "/admin/auth/signin") {
+                return NextResponse.next();
+            }
+
             return NextResponse.redirect(loginUrl);
         }
 
-        // 3. Permitted - Access Granted (Token exists, let API verify validity)
+        // 3. Permitted - Access Granted
 
-        // Rewrite root "/" to "/admin" for convenience
+        // Rewrite root "/" to "/admin" so it hits the (dashboard) group
         if (nextUrl.pathname === "/") {
             return NextResponse.rewrite(new URL("/admin", nextUrl));
         }
 
-        // Rewrite all other paths to be under /admin internal route
+        // For other paths, logic depends on folder structure.
+        // If the user visits /users, and the folder is src/app/admin/(dashboard)/users,
+        // Next.js routing should handle `/admin/users` if we rewrite `/users` to `/admin/users`.
+        // BUT, if the user visits `/admin/users` directly, it works too.
+
+        // Let's rely on standard rewrites but be careful not to rewrite if already prefixed.
         if (!nextUrl.pathname.startsWith("/admin") && !nextUrl.pathname.startsWith("/api")) {
             return NextResponse.rewrite(new URL(`/admin${nextUrl.pathname}`, nextUrl));
         }
