@@ -58,7 +58,6 @@ export async function createAdminSession(userId: string, userAgent?: string, ip?
             userAgent,
             ipAddress: ip,
             createdAt: new Date(),
-            updatedAt: new Date(),
         },
     });
 
