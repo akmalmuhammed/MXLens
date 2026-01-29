@@ -54,7 +54,8 @@ export default auth(async (req) => {
             }
 
             // Redirect to admin login
-            const loginUrl = new URL("/admin/auth/signin", req.url);
+            const protocol = nextUrl.protocol;
+            const loginUrl = new URL("/admin/auth/signin", `${protocol}//${hostname}`);
             loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
 
             // Avoid redirect loop: If we are already on the login page (or trying to get there), don't redirect again.
