@@ -78,9 +78,10 @@ export async function requireAdminAccessPage(): Promise<AdminSession> {
 
     if (!adminSession) {
         // Redirect to main auth login
+        // Redirect to admin login
         const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-        const domain = process.env.NODE_ENV === "production" ? "mxlens.com" : "localhost:3000";
-        redirect(`${protocol}://${domain}/auth/signin`);
+        const domain = process.env.NODE_ENV === "production" ? "admin.mxlens.com" : "admin.localhost:3000";
+        redirect(`${protocol}://${domain}/admin/auth/signin`);
     }
 
     return adminSession;
