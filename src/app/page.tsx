@@ -7,7 +7,6 @@ import { DetectionCapabilitiesSection } from "@/components/landing/DetectionCapa
 import { PricingSection } from "@/components/landing/PricingSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { FAQSection } from "@/components/landing/FAQSection";
-import { SocialProof } from "@/components/landing/SocialProof";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 
@@ -24,7 +23,6 @@ export default function LandingPage() {
         <PricingSection />
         <ComparisonSection />
         <FAQSection />
-        <SocialProof />
         <CTASection />
       </main>
       <Footer />

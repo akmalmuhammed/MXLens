@@ -72,7 +72,7 @@ export const FeaturesSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.3 }}
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
@@ -89,7 +89,7 @@ export const FeaturesSection = () => {
                             key={i}
                             initial={{ opacity: 0, y: 40 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
-                            transition={{ duration: 0.6, delay: i * 0.1 }}
+                            transition={{ duration: 0.3, delay: i * 0.05 }}
                             className="group"
                         >
                             <div className="bg-background/50 backdrop-blur-sm border border-border rounded-2xl h-full p-8 hover:border-primary/60 transition-all duration-300 shadow-sm hover:shadow-glow">
@@ -128,7 +128,7 @@ export const FeaturesSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.3 }}
+                    transition={{ duration: 0.3, delay: 0.15 }}
                     className="text-center mb-12"
                 >
                     <h3 className="text-2xl sm:text-3xl font-bold mb-4">

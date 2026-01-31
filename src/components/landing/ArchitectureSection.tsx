@@ -30,7 +30,7 @@ export const ArchitectureSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.3 }}
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
@@ -47,7 +47,7 @@ export const ArchitectureSection = () => {
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.2 }}
+                        transition={{ duration: 0.3, delay: 0.1 }}
                         className="relative"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-destructive/10 to-transparent rounded-2xl" />
@@ -109,7 +109,7 @@ export const ArchitectureSection = () => {
                     <motion.div
                         initial={{ opacity: 0, x: 50 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.3 }}
+                        transition={{ duration: 0.3, delay: 0.15 }}
                         className="relative"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent rounded-2xl" />
@@ -182,7 +182,7 @@ export const ArchitectureSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.8 }}
+                    transition={{ duration: 0.3, delay: 0.4 }}
                     className="mt-12 text-center"
                 >
                     <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accent/10 border border-accent/30">

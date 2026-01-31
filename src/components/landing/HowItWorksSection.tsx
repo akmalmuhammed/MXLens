@@ -58,7 +58,7 @@ export const HowItWorksSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.3 }}
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
@@ -88,7 +88,7 @@ export const HowItWorksSection = () => {
                                 key={i}
                                 initial={{ opacity: 0, x: -30 }}
                                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                                transition={{ duration: 0.6, delay: 0.2 + i * 0.15 }}
+                                transition={{ duration: 0.3, delay: 0.1 + i * 0.1 }}
                                 className="relative flex items-start gap-6 pl-4"
                             >
                                 {/* Step icon bubble */}
@@ -97,8 +97,8 @@ export const HowItWorksSection = () => {
                                     animate={isInView ? { scale: 1 } : {}}
                                     transition={{ duration: 0.4, delay: 0.3 + i * 0.15, type: "spring" }}
                                     className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${item.color === "accent"
-                                            ? "bg-accent text-accent-foreground"
-                                            : "bg-primary text-primary-foreground"
+                                        ? "bg-accent text-accent-foreground"
+                                        : "bg-primary text-primary-foreground"
                                         }`}
                                 >
                                     <item.icon className="w-5 h-5" />
@@ -111,8 +111,8 @@ export const HowItWorksSection = () => {
                                             STEP {item.step}
                                         </span>
                                         <span className={`text-xs font-mono px-2 py-1 rounded ${item.color === "accent"
-                                                ? "bg-accent/20 text-accent"
-                                                : "bg-primary/20 text-primary"
+                                            ? "bg-accent/20 text-accent"
+                                            : "bg-primary/20 text-primary"
                                             }`}>
                                             {item.time}
                                         </span>
@@ -135,7 +135,7 @@ export const HowItWorksSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 1 }}
+                    transition={{ duration: 0.3, delay: 0.5 }}
                     className="mt-16 flex flex-wrap justify-center gap-8"
                 >
                     {[

@@ -117,7 +117,7 @@ export const PricingSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.3 }}
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
@@ -129,13 +129,13 @@ export const PricingSection = () => {
                 </motion.div>
 
                 {/* Pricing Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-16">
                     {plans.map((plan, i) => (
                         <motion.div
                             key={i}
                             initial={{ opacity: 0, y: 40 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
-                            transition={{ duration: 0.6, delay: i * 0.1 }}
+                            transition={{ duration: 0.3, delay: i * 0.05 }}
                             className="relative group"
                         >
                             {/* Highlight glow */}
@@ -152,8 +152,8 @@ export const PricingSection = () => {
                             )}
 
                             <div className={`h-full flex flex-col p-6 rounded-2xl border backdrop-blur-sm transition-all duration-300 ${plan.highlight
-                                    ? "bg-background/80 border-primary/50 shadow-glow"
-                                    : "bg-background/50 border-border/80 hover:border-primary/30"
+                                ? "bg-background/80 border-primary/50 shadow-glow"
+                                : "bg-background/50 border-border/80 hover:border-primary/30"
                                 }`}>
                                 <div className="mb-6">
                                     <h3 className="text-lg font-bold text-foreground mb-2">{plan.name}</h3>
@@ -198,7 +198,7 @@ export const PricingSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.5 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
                     className="max-w-4xl mx-auto"
                 >
                     <div className="bg-card border border-border rounded-2xl p-8">
@@ -260,10 +260,10 @@ export const PricingSection = () => {
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
                                         <p className="text-sm text-muted-foreground">Annual Savings</p>
-                                        <p className="text-2xl font-bold text-accent">${yearlySavings.toLocaleString()}/year</p>
+                                        <p className="text-2xl font-bold text-accent">${Math.round(yearlySavings).toLocaleString()}/year</p>
                                         <p className="text-sm text-muted-foreground mt-1">
                                             MXLens Pro: ${mxlensCost}/year • <span className="text-primary font-bold">ROI: {roi.toLocaleString()}%</span>
-                                            {paybackDays > 0 && <span> • Pays for itself in {paybackDays} days</span>}
+                                            {paybackDays > 0 && <span> • Pays for itself in {paybackDays} {paybackDays === 1 ? 'day' : 'days'}</span>}
                                         </p>
                                     </div>
                                     <Button asChild>

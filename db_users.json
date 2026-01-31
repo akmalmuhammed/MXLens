@@ -1,0 +1,54 @@
+{
+  "adminUsers": [
+    {
+      "id": "cmkrdj05z00003sybx0b1y5qa",
+      "name": "MXLens Super Admin",
+      "email": "admin@mxlens.com",
+      "passwordHash": "$2b$12$g3u2j3aNKomW.YTnfdy3tOrbp11svQMCPmsyoYs5/vQxHX0ab0tmS",
+      "role": "SUPER_ADMIN",
+      "createdAt": "2026-01-23T21:09:25.271Z",
+      "updatedAt": "2026-01-24T04:55:53.905Z"
+    }
+  ],
+  "regularUsers": [
+    {
+      "id": "cmkrfhhe10001zpg6cfi8nls3",
+      "name": "akmal",
+      "email": "akmal@mxlens.com",
+      "emailVerified": null,
+      "image": null,
+      "hashedPassword": "$2b$10$R4ZWt63JWkpwhyxupD3ZM.cSlMr7dlHXTV0V6O1tYusBIhfQVNzby",
+      "mfaEnabled": false,
+      "isPlatformAdmin": false,
+      "adminRole": null,
+      "createdAt": "2026-01-23T22:04:13.513Z",
+      "updatedAt": "2026-01-23T22:04:13.513Z"
+    },
+    {
+      "id": "cmkrg5oeu000130kf34agfg2y",
+      "name": "test",
+      "email": "test@mxlens.com",
+      "emailVerified": "2026-01-23T22:23:02.357Z",
+      "image": null,
+      "hashedPassword": "$2b$10$pjU8FW3Nz9a8HkOZLWfZm.0QoxSjRGQm2OGh28RmcCPnsYz.hw1h.",
+      "mfaEnabled": false,
+      "isPlatformAdmin": false,
+      "adminRole": null,
+      "createdAt": "2026-01-23T22:23:02.358Z",
+      "updatedAt": "2026-01-23T22:23:02.358Z"
+    },
+    {
+      "id": "cmkwpqejw00017psxgs7vkb0u",
+      "name": "ShLQDQBshJGdsHLmvUdf",
+      "email": "ofo.dop.uf.a.52@gmail.com",
+      "emailVerified": null,
+      "image": null,
+      "hashedPassword": "$2b$10$Tcr.QTXN1QW.VDZ0tQ6HGO3LXGyzPhNHnNJ0phcgXY.jNA4ZwLNBC",
+      "mfaEnabled": false,
+      "isPlatformAdmin": false,
+      "adminRole": null,
+      "createdAt": "2026-01-27T14:49:56.781Z",
+      "updatedAt": "2026-01-27T14:49:56.781Z"
+    }
+  ]
+}

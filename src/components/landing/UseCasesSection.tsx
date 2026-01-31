@@ -72,7 +72,7 @@ export const UseCasesSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.3 }}
                     className="text-center mb-12"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
@@ -87,7 +87,7 @@ export const UseCasesSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.1 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
                     className="flex flex-wrap justify-center gap-2 mb-8"
                 >
                     {useCases.map((useCase, i) => (
@@ -95,8 +95,8 @@ export const UseCasesSection = () => {
                             key={useCase.id}
                             onClick={() => setActiveTab(i)}
                             className={`px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 ${activeTab === i
-                                    ? "bg-primary text-primary-foreground shadow-glow"
-                                    : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+                                ? "bg-primary text-primary-foreground shadow-glow"
+                                : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
                                 }`}
                         >
                             <useCase.icon className="w-4 h-4" />

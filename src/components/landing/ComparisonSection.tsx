@@ -71,7 +71,7 @@ export const ComparisonSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.3 }}
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
@@ -86,7 +86,7 @@ export const ComparisonSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.7, delay: 0.2 }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
                     className="max-w-5xl mx-auto"
                 >
                     <div className="glass-card bg-background/50 backdrop-blur-sm border border-border rounded-2xl overflow-hidden shadow-lg">
@@ -148,7 +148,7 @@ export const ComparisonSection = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.6 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
                     className="max-w-3xl mx-auto mt-12"
                 >
                     <div className="bg-primary/10 border border-primary/30 rounded-xl p-6 text-center">

@@ -69,7 +69,7 @@ export const CTASection = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.3 }}
+                        transition={{ duration: 0.3, delay: 0.15 }}
                         className="flex flex-wrap items-center justify-center gap-4 text-sm"
                     >
                         <span className="text-muted-foreground">✓ No credit card</span>
@@ -81,7 +81,7 @@ export const CTASection = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.4 }}
+                        transition={{ duration: 0.3, delay: 0.2 }}
                         className="flex flex-wrap items-center justify-center gap-3 mt-8"
                     >
                         {badges.map((badge, i) => (

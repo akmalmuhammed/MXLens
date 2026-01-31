@@ -1,0 +1,21 @@
+﻿.next/types/validator.ts(25,44): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
+  Type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/dev/types/routes").LayoutRoutes'.
+    Type '"/admin/auth"' is not assignable to type 'LayoutRoutes'.
+.next/types/validator.ts(25,75): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
+  Type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/dev/types/routes").LayoutRoutes'.
+    Type '"/admin/auth"' is not assignable to type 'LayoutRoutes'.
+check-reset-admin.ts(50,24): error TS2353: Object literal may only specify known properties, and 'accounts' does not exist in type 'AdminUserInclude<DefaultArgs>'.
+check-reset-admin.ts(61,54): error TS2339: Property 'isPlatformAdmin' does not exist on type '{ id: string; email: string; name: string; passwordHash: string; role: AdminRole; createdAt: Date; updatedAt: Date; }'.
+check-reset-admin.ts(69,45): error TS2339: Property 'accounts' does not exist on type '{ id: string; email: string; name: string; passwordHash: string; role: AdminRole; createdAt: Date; updatedAt: Date; }'.
+check-reset-admin.ts(69,59): error TS7006: Parameter 'a' implicitly has an 'any' type.
+check-reset-admin.ts(72,26): error TS2339: Property 'adminAccount' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+check-reset-admin.ts(79,26): error TS2339: Property 'adminAccount' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+list-users.ts(16,99): error TS2339: Property 'isPlatformAdmin' does not exist on type '{ id: string; email: string; name: string; passwordHash: string; role: AdminRole; createdAt: Date; updatedAt: Date; }'.
+promote-admin.ts(27,17): error TS2322: Type '"admin"' is not assignable to type 'AdminRole | EnumAdminRoleFieldUpdateOperationsInput | undefined'.
+scripts/seed_better_admin.ts(1,27): error TS2307: Cannot find module '../src/lib/admin-auth' or its corresponding type declarations.
+scripts/seed_better_admin.ts(57,17): error TS2820: Type '"super_admin"' is not assignable to type 'AdminRole | EnumAdminRoleFieldUpdateOperationsInput | undefined'. Did you mean '"SUPER_ADMIN"'?
+scripts/verify-admin-login.ts(27,54): error TS2339: Property 'password' does not exist on type '{ sessions: { id: string; createdAt: Date; userId: string; token: string; expiresAt: Date; ipAddress: string | null; userAgent: string | null; }[]; } & { id: string; email: string; name: string; passwordHash: string; role: AdminRole; createdAt: Date; updatedAt: Date; }'.
+scripts/verify-admin-login.ts(28,50): error TS2339: Property 'password' does not exist on type '{ sessions: { id: string; createdAt: Date; userId: string; token: string; expiresAt: Date; ipAddress: string | null; userAgent: string | null; }[]; } & { id: string; email: string; name: string; passwordHash: string; role: AdminRole; createdAt: Date; updatedAt: Date; }'.
+scripts/verify-admin-login.ts(31,34): error TS2339: Property 'adminAccount' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+scripts/verify-admin-login.ts(44,14): error TS2339: Property 'password' does not exist on type '{ sessions: { id: string; createdAt: Date; userId: string; token: string; expiresAt: Date; ipAddress: string | null; userAgent: string | null; }[]; } & { id: string; email: string; name: string; passwordHash: string; role: AdminRole; createdAt: Date; updatedAt: Date; }'.
+scripts/verify-admin-login.ts(45,63): error TS2339: Property 'password' does not exist on type '{ sessions: { id: string; createdAt: Date; userId: string; token: string; expiresAt: Date; ipAddress: string | null; userAgent: string | null; }[]; } & { id: string; email: string; name: string; passwordHash: string; role: AdminRole; createdAt: Date; updatedAt: Date; }'.
