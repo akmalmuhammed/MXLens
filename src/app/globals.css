@@ -485,6 +485,24 @@
   }
 }
 
+/* Mobile Performance: Disable animations on small screens */
+@media (max-width: 768px) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Force Framer Motion elements to be visible */
+  [style*="opacity: 0"],
+  [style*="transform"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Screen Reader Only Utility */
 .sr-only {
   position: absolute;
