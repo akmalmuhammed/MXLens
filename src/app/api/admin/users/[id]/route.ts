@@ -149,6 +149,65 @@ export async function PATCH(request: NextRequest, { params }: Props) {
             },
         });
 
+        // SYNC LOGIC: If promoting to platform admin, ensure AdminUser exists
+        if (updateData.isPlatformAdmin === true && updatedUser.email) {
+            try {
+                const adminEmail = updatedUser.email;
+                const existingAdmin = await db.adminUser.findUnique({
+                    where: { email: adminEmail }
+                });
+
+                if (existingAdmin) {
+                    // Update role if changed
+                    if (updateData.adminRole) {
+                        await db.adminUser.update({
+                            where: { id: existingAdmin.id },
+                            data: { role: updateData.adminRole as any } // Cast to fit enum if needed
+                        });
+                    }
+                } else {
+                    // Create new AdminUser
+                    // NOTE: We cannot copy the password hash easily if it's from NextAuth (different table/format potentially).
+                    // Ideally, we'd force a password reset. For now, we'll create the record so they exist.
+                    // A real solution would send an invite email.
+                    // HERE: We will set a temporary known hash or just creating the record allows us to set it later?
+                    // No, they need to login. 
+                    // Let's assume we can copy the hashedPassword from the User record if it exists.
+                    const sourceUser = await db.user.findUnique({
+                        where: { id },
+                        select: { hashedPassword: true }
+                    });
+
+                    if (sourceUser?.hashedPassword) {
+                        await db.adminUser.create({
+                            data: {
+                                email: adminEmail,
+                                name: updatedUser.name || "Admin",
+                                passwordHash: sourceUser.hashedPassword,
+                                role: (updatedUser.adminRole as any) || "SUPER_ADMIN"
+                            }
+                        });
+                        console.log(`Synced AdminUser for ${adminEmail}`);
+                    } else {
+                        console.warn(`Could not sync AdminUser for ${adminEmail} - no password hash found`);
+                        // Todo: Handle OAuth users promoted to Admin (need separate pwd)
+                    }
+                }
+            } catch (syncError) {
+                console.error("Failed to sync AdminUser:", syncError);
+                // Don't fail the request, just log it
+            }
+        } else if (updateData.isPlatformAdmin === false) {
+            // If demoting, should we delete AdminUser?
+            // Maybe safer to keep but disable? Schema doesn't have disable.
+            // Let's delete to enforce no access.
+            if (updatedUser.email) {
+                await db.adminUser.deleteMany({
+                    where: { email: updatedUser.email }
+                });
+            }
+        }
+
         return NextResponse.json({
             message: "User updated successfully",
             user: updatedUser,

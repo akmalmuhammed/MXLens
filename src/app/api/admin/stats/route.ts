@@ -1,47 +1,48 @@
-import { auth } from "@/auth";
-import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { adminRateLimit } from "@/lib/rate-limit";
+import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/admin/auth";
 
-export async function GET(req: Request) {
-    const session = await auth();
-
-    // 1. Admin Authorization (RBAC)
-    if (!session?.user?.id || session.user.role !== "ADMIN") {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // 2. Rate Limiting (10 req/min for admin stats)
-    const ip = req.headers.get("x-forwarded-for") || "unknown";
+export async function GET() {
     try {
-        await adminRateLimit.check(10, ip);
-    } catch {
-        return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
-    }
+        await requireAdminApi();
 
-    try {
-        // 3. Aggregate Stats
-        const [totalUsers, totalOrganizations, totalAnalyses, recentLogs] = await db.$transaction([
-            db.user.count(),
+        // 1. Fetch Key Metrics
+        const [
+            totalOrgs,
+            activeOrgs,
+            enterpriseOrgs,
+            totalUsers,
+            activeUsers30d, // Logins in last 30d
+        ] = await Promise.all([
             db.organization.count(),
-            db.analysisLog.count(),
-            db.analysisLog.findMany({
-                take: 10,
-                orderBy: { createdAt: 'desc' },
-                include: { user: { select: { email: true } }, organization: { select: { name: true } } }
-            })
+            db.organization.count({ where: { subscriptionStatus: "active" } }),
+            db.organization.count({ where: { planTier: "ENTERPRISE" } }),
+            db.user.count(),
+            db.session.count({
+                where: { expires: { gt: new Date() } }, // Proxies active users
+            }),
         ]);
 
-        // 3. Subscription Stats (Looking at Orgs now)
+        // 2. Fetch Recent Activity (Logs)
+        const recentLogs = await db.analysisLog.findMany({
+            take: 10,
+            orderBy: { createdAt: 'desc' },
+            include: {
+                user: { select: { email: true } },
+                organization: { select: { name: true } }
+            }
+        });
+
+        // 3. Subscription Stats
         const proOrgs = await db.organization.count({ where: { planTier: { in: ['PRO', 'ENTERPRISE'] } } });
 
         return NextResponse.json({
             overview: {
                 totalUsers,
                 totalOrganizations,
-                totalAnalyses,
+                totalAnalyses: await db.analysisLog.count(), // Add this back
                 proOrgs,
-                conversionRate: totalOrganizations > 0 ? (proOrgs / totalOrganizations * 100).toFixed(1) + '%' : '0%'
+                conversionRate: totalOrgs > 0 ? (proOrgs / totalOrgs * 100).toFixed(1) + '%' : '0%'
             },
             recentActivity: recentLogs.map((log) => ({
                 user: log.user?.email || "API Key",
@@ -53,6 +54,7 @@ export async function GET(req: Request) {
         });
 
     } catch (error) {
+        console.error("Admin stats error:", error);
         return NextResponse.json({ error: "Stats aggregation failed" }, { status: 500 });
     }
 }
