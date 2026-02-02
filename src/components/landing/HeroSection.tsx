@@ -13,16 +13,8 @@ export const HeroSection = () => {
             {/* Particle Background */}
             <ParticleBackground />
 
-            {/* Gradient overlays */}
-            <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background z-[1]" />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 z-[1]" />
-
-            {/* Cyber grid */}
-            <div className="absolute inset-0 cyber-grid opacity-30 z-[1]" />
-
-            {/* Animated glow orbs */}
-            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] animate-pulse z-[1]" style={{ animationDuration: '4s' }} />
-            <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-accent/15 rounded-full blur-[100px] animate-pulse z-[1]" style={{ animationDuration: '4s', animationDelay: '2s' }} />
+            {/* Subtle overlay for content readability */}
+            <div className="absolute inset-0 bg-background/30 z-[1]" />
 
             <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">

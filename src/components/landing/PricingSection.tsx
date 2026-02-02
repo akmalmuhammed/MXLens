@@ -110,7 +110,7 @@ export const PricingSection = () => {
 
     return (
         <section id="pricing" className="py-24 relative" ref={ref}>
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/10 to-background" />
+            {/* Background removed for unified page flow */}
 
             <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}

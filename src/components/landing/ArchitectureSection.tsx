@@ -22,8 +22,7 @@ export const ArchitectureSection = () => {
 
     return (
         <section id="architecture" className="py-24 relative overflow-hidden" ref={ref}>
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-background" />
+            {/* Background removed for unified page flow */}
 
             <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}

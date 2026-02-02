@@ -83,9 +83,8 @@ export const DetectionCapabilitiesSection = () => {
 
     return (
         <section id="features" className="py-24 relative overflow-hidden" ref={ref}>
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/30 to-background" />
-            <div className="absolute top-1/2 left-0 w-1/2 h-96 bg-primary/5 blur-3xl rounded-full" />
+            {/* Subtle glow accent */}
+            <div className="absolute top-1/2 left-0 w-1/2 h-96 bg-primary/3 blur-3xl rounded-full" />
 
             <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}

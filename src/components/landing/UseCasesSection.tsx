@@ -66,7 +66,7 @@ export const UseCasesSection = () => {
     const activeCase = useCases[activeTab];
 
     return (
-        <section id="use-cases" className="py-24 relative bg-muted/20" ref={ref}>
+        <section id="use-cases" className="py-24 relative" ref={ref}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
