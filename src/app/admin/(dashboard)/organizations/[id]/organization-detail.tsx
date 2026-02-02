@@ -14,6 +14,10 @@ import {
     Copy,
     Check,
     UserPlus,
+    Save,
+    Edit2,
+    AlertTriangle,
+    Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,17 +85,57 @@ export function OrganizationDetail({ organization }: Props) {
     const [addUserOpen, setAddUserOpen] = useState(false);
     const [addExistingOpen, setAddExistingOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
     const [newUserResult, setNewUserResult] = useState<{
         email: string;
         tempPassword: string;
     } | null>(null);
     const [copied, setCopied] = useState(false);
 
+    // Editing states for organization
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [editName, setEditName] = useState(organization.name);
+    const [editPlanTier, setEditPlanTier] = useState(organization.planTier);
+    const [editStatus, setEditStatus] = useState(organization.subscriptionStatus || "active");
+
     // For adding existing users
     const [existingUsers, setExistingUsers] = useState<ExistingUser[]>([]);
     const [loadingUsers, setLoadingUsers] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<string>("");
     const [selectedRole, setSelectedRole] = useState<string>("ANALYST");
+
+    // Save organization changes
+    async function handleSaveOrg() {
+        setIsSaving(true);
+        setError(null);
+        setSuccess(null);
+
+        try {
+            const res = await fetch(`/api/admin/organizations/${organization.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: editName,
+                    planTier: editPlanTier,
+                    subscriptionStatus: editStatus,
+                }),
+            });
+
+            if (!res.ok) {
+                const result = await res.json();
+                throw new Error(result.error || "Failed to update organization");
+            }
+
+            setSuccess("Organization updated successfully!");
+            setIsEditing(false);
+            router.refresh();
+        } catch (err: any) {
+            setError(err.message || "Failed to update organization");
+        } finally {
+            setIsSaving(false);
+        }
+    }
 
     // Fetch existing users when dialog opens
     useEffect(() => {
@@ -257,10 +301,10 @@ export function OrganizationDetail({ organization }: Props) {
                     </div>
                     <span
                         className={`inline-flex items-center px-2 py-0.5 rounded text-sm font-medium border ${organization.planTier === "ENTERPRISE"
-                                ? "bg-primary/20 text-primary border-primary/30"
-                                : organization.planTier === "PRO"
-                                    ? "bg-secure/20 text-secure border-secure/30"
-                                    : "bg-muted text-muted-foreground border-border"
+                            ? "bg-primary/20 text-primary border-primary/30"
+                            : organization.planTier === "PRO"
+                                ? "bg-secure/20 text-secure border-secure/30"
+                                : "bg-muted text-muted-foreground border-border"
                             }`}
                     >
                         {organization.planTier}
@@ -505,10 +549,10 @@ export function OrganizationDetail({ organization }: Props) {
                                 <td className="px-4 py-3">
                                     <span
                                         className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${member.role === "OWNER"
-                                                ? "bg-primary/20 text-primary border-primary/30"
-                                                : member.role === "ADMIN"
-                                                    ? "bg-secure/20 text-secure border-secure/30"
-                                                    : "bg-muted text-muted-foreground border-border"
+                                            ? "bg-primary/20 text-primary border-primary/30"
+                                            : member.role === "ADMIN"
+                                                ? "bg-secure/20 text-secure border-secure/30"
+                                                : "bg-muted text-muted-foreground border-border"
                                             }`}
                                     >
                                         {member.role}
