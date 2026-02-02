@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
-// adminAuth import removed as it's deprecated
+import { verifyAdminSession } from "@/lib/admin/auth";
 
 export type AdminRole = "SUPER_ADMIN" | "SUPPORT_ADMIN" | "BILLING_ADMIN" | "READ_ONLY";
 
@@ -13,25 +12,21 @@ export interface AdminSession {
 }
 
 /**
- * Get the current admin session from NextAuth.
- * Returns null if user is not logged in or not a platform admin.
+ * Get the current admin session from admin_token cookie.
+ * Returns null if user is not logged in via admin auth.
  */
 export async function getAdminSession(): Promise<AdminSession | null> {
     try {
-        const session = await auth();
+        // Use the cookie-based admin session verification
+        const session = await verifyAdminSession();
 
-        if (!session?.user?.id) {
+        if (!session) {
             return null;
         }
 
-        // Quick check from session token claims first
-        if (!session.user.isPlatformAdmin) {
-            return null;
-        }
-
-        // Double check against DB to ensure real-time revocation support
+        // Fetch additional user details from DB
         const adminUser = await db.user.findUnique({
-            where: { id: session.user.id },
+            where: { id: session.userId },
             select: {
                 id: true,
                 email: true,
