@@ -18,6 +18,7 @@ const JWT_SECRET = new TextEncoder().encode(
 export type AdminSessionData = {
     userId: string;
     email: string;
+    name: string | null;
     role: string;
 };
 
@@ -105,9 +106,11 @@ export async function verifyAdminSession(): Promise<AdminSessionData | null> {
         return {
             userId: session.user.id,
             email: session.user.email,
-            role: session.user.role || "ADMIN",
+            name: session.user.name,
+            role: session.user.role || "SUPER_ADMIN",
         };
     } catch (e) {
+        console.error("Error verifying admin session:", e);
         return null; // Invalid token
     }
 }

@@ -32,7 +32,15 @@ interface DashboardStats {
     storageUsedTB: number;
 }
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+    await requireAdminAccessPage();
+
+    // We fetch stats client-side in the original code, but we should probably do it server-side.
+    // However, adhering to the "client component" structure requested, we'll keep the client logic separate.
+    return <AdminDashboardClient />;
+}
+
+function AdminDashboardClient() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);

@@ -11,10 +11,6 @@ export interface AdminSession {
     adminRole: AdminRole;
 }
 
-/**
- * Get the current admin session from admin_token cookie.
- * Returns null if user is not logged in via admin auth.
- */
 export async function getAdminSession(): Promise<AdminSession | null> {
     try {
         // Use the cookie-based admin session verification
@@ -24,27 +20,11 @@ export async function getAdminSession(): Promise<AdminSession | null> {
             return null;
         }
 
-        // Fetch additional user details from DB
-        const adminUser = await db.user.findUnique({
-            where: { id: session.userId },
-            select: {
-                id: true,
-                email: true,
-                name: true,
-                adminRole: true,
-                isPlatformAdmin: true,
-            },
-        });
-
-        if (!adminUser || !adminUser.isPlatformAdmin) {
-            return null;
-        }
-
         return {
-            userId: adminUser.id,
-            email: adminUser.email,
-            name: adminUser.name,
-            adminRole: (adminUser.adminRole as AdminRole) || "SUPER_ADMIN",
+            userId: session.userId,
+            email: session.email,
+            name: session.name,
+            adminRole: (session.role as AdminRole) || "SUPER_ADMIN",
         };
     } catch (error) {
         console.error("Error getting admin session:", error);
