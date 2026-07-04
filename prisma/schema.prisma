@@ -76,6 +76,8 @@ enum TriageStatus {
 
 enum IncidentSource {
   MANUAL_UPLOAD
+  API
+  GENERIC_WEBHOOK
   JIRA
   SERVICENOW
   GRAPH_API // Microsoft 365
@@ -87,6 +89,21 @@ enum IncidentSeverity {
   MEDIUM
   HIGH
   CRITICAL
+}
+
+enum AnalysisBatchStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  PARTIAL_FAILED
+  FAILED
+}
+
+enum AnalysisBatchItemStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
 }
 
 // -----------------------------------------------------------------------------
@@ -151,6 +168,7 @@ model Organization {
   invites       OrgInvite[]
   apiKeys       ApiKey[]
   analysisLogs  AnalysisLog[]
+  analysisBatches AnalysisBatch[]
   auditLogs     AuditLog[]
   
   // Enterprise Relations
@@ -203,7 +221,7 @@ model OrgInvite {
 model ApiKey {
   id            String    @id @default(cuid())
   name          String    // e.g. "CI Pipeline", "Splunk Integration"
-  keyPrefix     String    // "mx_live_..."
+  keyPrefix     String    @unique // "mxl_live_..."
   hashedKey     String    @unique
   lastUsedAt    DateTime?
   expiresAt     DateTime?
@@ -213,6 +231,8 @@ model ApiKey {
 
   orgId         String
   organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  analysisLogs  AnalysisLog[]
+  analysisBatches AnalysisBatch[]
   
   createdAt     DateTime  @default(now())
 
@@ -259,14 +279,71 @@ model AnalysisLog {
   // Optional: Who ran it? Can be null if API key
   userId        String?
   user          User?     @relation(fields: [userId], references: [id])
+  apiKeyId      String?
+  apiKey        ApiKey?   @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
   
   // Relations
   comments      AnalysisComment[]
+  batchItems    AnalysisBatchItem[]
 
   createdAt     DateTime  @default(now())
 
   @@index([orgId, createdAt]) // Dashboard Trend Queries
   @@index([verdict])          // Risk Stats
+  @@index([apiKeyId])
+}
+
+model AnalysisBatch {
+  id                String              @id @default(cuid())
+  status            AnalysisBatchStatus @default(QUEUED)
+  totalItems        Int
+  completedItems    Int                 @default(0)
+  failedItems       Int                 @default(0)
+  clientReferenceId String?
+
+  orgId             String
+  organization      Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  apiKeyId          String?
+  apiKey            ApiKey?             @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  items             AnalysisBatchItem[]
+
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([orgId, createdAt])
+  @@index([apiKeyId])
+  @@index([status])
+}
+
+model AnalysisBatchItem {
+  id                String                  @id @default(cuid())
+  batchId           String
+  batch             AnalysisBatch           @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  position          Int
+
+  status            AnalysisBatchItemStatus @default(QUEUED)
+  sourceType        String
+  sourceLabel       String?
+  filename          String?
+  externalId        String?
+  clientReferenceId String?
+
+  errorCode         String?
+  errorMessage      String?
+  resultSummary     Json?
+  processingMs      Int?
+
+  analysisLogId     String?
+  analysisLog       AnalysisLog?            @relation(fields: [analysisLogId], references: [id], onDelete: SetNull)
+
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  @@unique([batchId, position])
+  @@index([batchId, status])
+  @@index([analysisLogId])
 }
 
 // -----------------------------------------------------------------------------
