@@ -30,10 +30,14 @@ export class QuishingDetector implements Detector {
         if (context.attachments) {
             for (const att of context.attachments) {
                 if ((att.mimeType && att.mimeType.startsWith('image/')) ||
-                    /\.(png|jpg|jpeg|webp|gif|bmp)$/i.test(att.filename)) {
+                    /\.(png|jpg|jpeg|webp|gif|bmp)$/i.test(att.filename || '')) {
                     try {
                         if (att.content) {
-                            const blob = new Blob([att.content], { type: att.mimeType || 'image/png' });
+                            const bytes = this.toUint8Array(att.content);
+                            if (!bytes) continue;
+                            const copy = new Uint8Array(bytes.byteLength);
+                            copy.set(bytes);
+                            const blob = new Blob([copy.buffer], { type: att.mimeType || 'image/png' });
                             const url = URL.createObjectURL(blob);
                             imagesToScan.push(url);
                         }
@@ -77,6 +81,13 @@ export class QuishingDetector implements Detector {
             };
         }
 
+        return null;
+    }
+
+    private toUint8Array(content: string | ArrayBuffer | Uint8Array): Uint8Array | null {
+        if (content instanceof Uint8Array) return content;
+        if (content instanceof ArrayBuffer) return new Uint8Array(content);
+        if (typeof content === 'string') return new TextEncoder().encode(content);
         return null;
     }
 }

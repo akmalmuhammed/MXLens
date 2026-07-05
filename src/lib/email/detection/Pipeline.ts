@@ -47,20 +47,15 @@ export class DetectionPipeline {
             let result: DetectionResult | null = null;
 
             try {
-                // Feature: Individual Detector Timeout (ReDoS Protection) - 2000ms
-                const timeoutPromise = new Promise<null>((_, reject) =>
-                    setTimeout(() => reject(new Error(`Timeout (${detector.id})`)), 2000)
-                );
-
-                // @ts-ignore
-                result = await Promise.race([detector.detect(context), timeoutPromise]);
+                result = await this.runDetectorWithTimeout(detector, context, 2000);
 
                 if (result && result.triggered) {
-                    return result; // Value to be collected
+                    return { ...result, tags: detector.tags }; // Value to be collected
                 }
-            } catch (e: any) {
-                status = e.message && e.message.includes("Timeout") ? 'timeout' : 'error';
-                console.warn(`Detector ${detector.id} skipped - ${e}`);
+            } catch (e: unknown) {
+                const message = e instanceof Error ? e.message : String(e);
+                status = message.includes("Timeout") ? 'timeout' : 'error';
+                console.warn(`Detector ${detector.id} skipped - ${message}`);
             } finally {
                 const t1 = performance.now();
                 const duration = t1 - t0;
@@ -87,5 +82,19 @@ export class DetectionPipeline {
         });
 
         return { results, totalPenalty, performance: telemetry };
+    }
+
+    private async runDetectorWithTimeout(detector: Detector, context: DetectionContext, timeoutMs: number): Promise<DetectionResult | null> {
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+
+        try {
+            return await new Promise<DetectionResult | null>((resolve, reject) => {
+                timeout = setTimeout(() => reject(new Error(`Timeout (${detector.id})`)), timeoutMs);
+
+                Promise.resolve(detector.detect(context)).then(resolve, reject);
+            });
+        } finally {
+            if (timeout) clearTimeout(timeout);
+        }
     }
 }

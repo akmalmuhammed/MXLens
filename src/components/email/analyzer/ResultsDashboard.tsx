@@ -13,7 +13,7 @@ import { AIAnalysisSummary } from "../AIAnalysisSummary";
 import { AnalysisRecommendations } from "../AnalysisRecommendations";
 import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
 import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown, Gavel } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useUser } from "@clerk/nextjs";
 import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
 import { IncidentWorkbench } from "@/components/email/analyzer/IncidentWorkbench";
 import { getAnalysisTriageState } from "@/actions/analysis";
@@ -67,7 +67,6 @@ interface ResultsDashboardProps {
 }
 
 export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, userPlan = "FREE" }: ResultsDashboardProps) {
-    const { data: session } = useSession();
     const [mode, setMode] = useState<"analyst" | "raw" | "it" | "threat-intel">("analyst");
     const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
     const [triageStatus, setTriageStatus] = useState<string | null>(null);
@@ -541,7 +540,7 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
 }
 
 function TriageDialog({ analysisId, onStatusChange }: { analysisId: string, onStatusChange?: (status: string) => void }) {
-    const { data: session } = useSession();
+    const { isSignedIn, user } = useUser();
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [triageData, setTriageData] = useState<{
@@ -568,7 +567,7 @@ function TriageDialog({ analysisId, onStatusChange }: { analysisId: string, onSt
         }
     }, [isOpen, analysisId]);
 
-    if (!session?.user) return null;
+    if (!isSignedIn) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -593,7 +592,7 @@ function TriageDialog({ analysisId, onStatusChange }: { analysisId: string, onSt
                             initialStatus={triageData?.status || "OPEN"}
                             initialClassification={triageData?.classification || null}
                             initialComments={triageData?.comments || []}
-                            currentUserEmail={session.user.email || ""}
+                            currentUserEmail={user.primaryEmailAddress?.emailAddress || ""}
                             onStatusChange={(status) => {
                                 if (onStatusChange) onStatusChange(status);
                             }}

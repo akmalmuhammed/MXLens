@@ -1,4 +1,3 @@
-import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { verifyAdminSession } from "@/lib/admin/auth";
 
@@ -9,6 +8,15 @@ export interface AdminSession {
     email: string;
     name: string | null;
     adminRole: AdminRole;
+}
+
+function isDynamicServerUsageError(error: unknown): boolean {
+    return (
+        typeof error === "object" &&
+        error !== null &&
+        "digest" in error &&
+        String((error as { digest?: unknown }).digest).startsWith("DYNAMIC_SERVER_USAGE")
+    );
 }
 
 export async function getAdminSession(): Promise<AdminSession | null> {
@@ -27,6 +35,10 @@ export async function getAdminSession(): Promise<AdminSession | null> {
             adminRole: (session.role as AdminRole) || "SUPER_ADMIN",
         };
     } catch (error) {
+        if (isDynamicServerUsageError(error)) {
+            throw error;
+        }
+
         console.error("Error getting admin session:", error);
         return null;
     }

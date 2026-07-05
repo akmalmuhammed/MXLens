@@ -15,8 +15,8 @@ export function UsageBanner({ allowed, message }: UsageBannerProps) {
                 <AlertTriangle className="w-5 h-5" />
                 <span className="font-semibold">{message}</span>
             </div>
-            <Button size="sm" variant="default" onClick={() => window.location.href = "/auth/signup"}>
-                Create Free Account
+            <Button size="sm" variant="default" onClick={() => window.location.href = "/analyze"}>
+                Continue Free
             </Button>
         </div>
     );

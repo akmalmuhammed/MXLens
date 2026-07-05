@@ -24,41 +24,25 @@ export async function POST(request: NextRequest) {
 
         const now = new Date();
         const results = {
-            verificationTokens: 0,
             orgInvites: 0,
             adminSessions: 0,
-            userSessions: 0,
         };
 
-        // 1. Clean up expired VerificationTokens (email verification, password reset)
-        const deletedVerificationTokens = await db.verificationToken.deleteMany({
-            where: { expires: { lt: now } }
-        });
-        results.verificationTokens = deletedVerificationTokens.count;
-
-        // 2. Clean up expired OrgInvites
+        // 1. Clean up expired OrgInvites
         const deletedOrgInvites = await db.orgInvite.deleteMany({
             where: { expiresAt: { lt: now } }
         });
         results.orgInvites = deletedOrgInvites.count;
 
-        // 3. Clean up expired AdminSessions
+        // 2. Clean up expired AdminSessions
         const deletedAdminSessions = await db.adminSession.deleteMany({
             where: { expiresAt: { lt: now } }
         });
         results.adminSessions = deletedAdminSessions.count;
 
-        // 4. Clean up expired NextAuth Sessions
-        const deletedUserSessions = await db.session.deleteMany({
-            where: { expires: { lt: now } }
-        });
-        results.userSessions = deletedUserSessions.count;
-
         const totalDeleted =
-            results.verificationTokens +
             results.orgInvites +
-            results.adminSessions +
-            results.userSessions;
+            results.adminSessions;
 
         console.log(`[CLEANUP] Removed ${totalDeleted} expired records:`, results);
 

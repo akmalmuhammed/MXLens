@@ -1,5 +1,6 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -15,7 +16,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { logout } from "@/actions/auth";
 import { useState, useEffect } from "react";
 
 const sidebarItems = [
@@ -54,6 +54,7 @@ export function DashboardSidebar({
     planTier?: string;
 }) {
     const pathname = usePathname();
+    const { signOut } = useClerk();
     const dailyLimit = 10;
     const usagePercent = (dailyUsage / dailyLimit) * 100;
 
@@ -192,7 +193,7 @@ export function DashboardSidebar({
                 </div>
 
                 <button
-                    onClick={() => logout()}
+                    onClick={() => signOut({ redirectUrl: "/" })}
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"
                 >
                     <LogOut className="h-4 w-4" />

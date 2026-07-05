@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,14 @@ import { toast } from "sonner";
 import { Shield, Loader2 } from "lucide-react";
 
 export default function AdminSignIn() {
+    return (
+        <Suspense fallback={<AdminSignInShell />}>
+            <AdminSignInForm />
+        </Suspense>
+    );
+}
+
+function AdminSignInForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
@@ -99,6 +107,26 @@ export default function AdminSignIn() {
                         {loading ? <Loader2 className="animate-spin h-4 w-4" /> : "Authenticate"}
                     </Button>
                 </form>
+            </div>
+        </div>
+    );
+}
+
+function AdminSignInShell() {
+    return (
+        <div className="flex min-h-screen items-center justify-center bg-black text-white cyber-grid">
+            <div className="w-full max-w-md space-y-8 p-8 border border-white/10 rounded-xl bg-black/50 backdrop-blur-xl">
+                <div className="flex flex-col items-center justify-center text-center">
+                    <div className="h-12 w-12 rounded-full bg-cyan-500/10 flex items-center justify-center mb-4 ring-1 ring-cyan-500/50">
+                        <Shield className="h-6 w-6 text-cyan-400" />
+                    </div>
+                    <h2 className="text-2xl font-bold tracking-tight text-white">
+                        Admin Command
+                    </h2>
+                    <p className="text-sm text-gray-400 mt-2">
+                        Loading secure console...
+                    </p>
+                </div>
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 import { EmailHop } from "../HeaderParser";
 
 export class HopTracer {
-    static analyze(receivedHeaders: string | string[]): EmailHop[] {
+    static analyze(receivedHeaders?: string | string[]): EmailHop[] {
         if (!receivedHeaders) return [];
         const headers = Array.isArray(receivedHeaders) ? receivedHeaders : [receivedHeaders];
         const hops: EmailHop[] = [];

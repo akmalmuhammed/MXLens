@@ -3,7 +3,6 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { checkAbuse } from "@/lib/security/abuse-detector";
 import "server-only";
 
 export interface UsageResult {
@@ -14,78 +13,7 @@ export interface UsageResult {
 }
 
 export async function checkAndTrackUsage(): Promise<UsageResult> {
-    const session = await auth();
-
-    console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] Session state:", {
-        hasSession: !!session,
-        userId: session?.user?.id,
-        orgId: session?.user?.orgId,
-        orgSlug: session?.user?.orgSlug,
-        role: session?.user?.role
-    });
-
-    if (!session?.user?.id || !session?.user?.orgId) {
-        console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] No session or orgId - returning guest");
-        return { allowed: false, remaining: 0, reason: "Authentication required", isGuest: true };
-    }
-
-    // 0. Security Check (Redis Fast Path)
-    try {
-        await checkAbuse(session.user.id);
-    } catch (error: any) {
-        console.error("Abuse/RateLimit check failed:", error.message);
-        return { allowed: false, remaining: 0, reason: error.message };
-    }
-
-    // New: Check ORGANIZATION Status
-    const org = await db.organization.findUnique({
-        where: { id: session.user.orgId },
-        select: { planTier: true, subscriptionStatus: true }
-    });
-
-    console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] Org lookup:", {
-        orgId: session.user.orgId,
-        found: !!org,
-        planTier: org?.planTier,
-        subscriptionStatus: org?.subscriptionStatus
-    });
-
-    if (!org) {
-        console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] ERROR: Organization not found!");
-        return { allowed: false, remaining: 0, reason: "Organization not found", isGuest: false };
-    }
-
-    // Simple Quota Logic (Can be expanded later)
-    const LIMITS: Record<string, number> = {
-        FREE: 10,
-        PRO: 1000,
-        ENTERPRISE: 100000
-    };
-
-    const limit = LIMITS[org.planTier as string] || 10;
-
-    // Count today's logs for this org
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const usageCount = await db.analysisLog.count({
-        where: {
-            orgId: session.user.orgId,
-            createdAt: { gte: today }
-        }
-    });
-
-    console.log("[MXLENS_DEBUG] [ANALYSIS/checkAndTrackUsage] Usage:", {
-        limit,
-        usageCount,
-        remaining: limit - usageCount
-    });
-
-    if (usageCount >= limit) {
-        return { allowed: false, remaining: 0, reason: "Daily limit reached for your Team." };
-    }
-
-    return { allowed: true, remaining: limit - usageCount };
+    return { allowed: true, remaining: Number.MAX_SAFE_INTEGER, isGuest: false };
 }
 
 export async function saveAnalysis(data: {

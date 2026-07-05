@@ -1,10 +1,10 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { cn } from "@/lib/utils";
-import { useSession } from "next-auth/react";
 import * as Sentry from "@sentry/nextjs";
 import { Logger } from "@/lib/logger";
 
@@ -14,23 +14,21 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const { data: session } = useSession();
+    const { user, isSignedIn } = useUser();
 
     useEffect(() => {
-        if (session?.user) {
-            // Identify user to Sentry
+        if (isSignedIn && user) {
             Sentry.setUser({
-                id: session.user.id,
-                email: session.user.email || undefined,
-                username: session.user.name || undefined,
+                id: user.id,
+                email: user.primaryEmailAddress?.emailAddress || undefined,
+                username: user.fullName || user.username || undefined,
             });
 
             Logger.info("Admin Dashboard Accessed", {
-                userId: session.user.id,
-                role: session.user.role
+                clerkUserId: user.id
             });
         }
-    }, [session]);
+    }, [isSignedIn, user]);
 
     return (
         <div className="min-h-screen bg-background cyber-grid">

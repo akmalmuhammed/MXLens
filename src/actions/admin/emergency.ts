@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth"; // Assuming NextAuth v5 or similar setup
+import { auth } from "@/auth";
 import { logAuditAction } from "@/lib/audit";
 
 import { AuditAction } from "@prisma/client";
@@ -40,24 +40,17 @@ export async function assertSuperAdmin() {
 
 /**
  * Emergency: Suspend a User immediately.
- * 1. Wipe all active sessions.
- * 2. Add to Redis Blocklist (checked by middleware).
+ * 1. Add to Redis Blocklist (checked by runtime guards).
+ * 2. Record audit trail.
  */
 export async function suspendUser(targetUserId: string, reason: string) {
     await assertSuperAdmin();
 
     console.log(`[EMERGENCY] Suspending User ${targetUserId}. Reason: ${reason}`);
 
-    // 1. Database: Delete Sessions
-    await db.session.deleteMany({
-        where: { userId: targetUserId }
-    });
-
-    // 2. Redis: Add to Blocklist (Permanent ban until removed)
+    // Redis: Add to Blocklist (Permanent ban until removed)
     // We store the reason as value
     await redis.set(`${KEYS.BLOCKLIST}:${targetUserId}`, reason);
-
-    // 3. Optional: Add 'banned' tag to user metadata if exists, generally we rely on Redis for fast rejection
 
     await logAuditAction(AuditAction.USER_SUSPEND, { targetUserId, reason }, targetUserId);
 
@@ -139,8 +132,6 @@ export async function suspendOrganization(orgId: string, reason: string) {
     // 2. Block all members via Redis
     for (const member of members) {
         await redis.set(`${KEYS.BLOCKLIST}:${member.userId}`, `Org suspended: ${reason}`);
-        // Also delete their sessions
-        await db.session.deleteMany({ where: { userId: member.userId } });
     }
 
     // 3. Revoke all org API keys

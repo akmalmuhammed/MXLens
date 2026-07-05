@@ -1,11 +1,13 @@
-import { AnalysisResult } from "../HeaderParser";
-import { NormalizedSignals } from "../scoring/types";
+import type { AnalysisResult } from "../HeaderParser";
+import type { NormalizedSignals, ParsedEmailAttachment, ParsedEmailBody } from "../scoring/types";
+
+export type DetectionTag = 'auth' | 'content' | 'link' | 'malware' | 'identity';
 
 export interface DetectionContext {
     header: AnalysisResult;
     signals: NormalizedSignals;
-    emailBody?: { text: string; html: string };
-    attachments?: any[]; // Raw PostalMime attachments for deep scanning
+    emailBody?: ParsedEmailBody;
+    attachments?: ParsedEmailAttachment[]; // Raw PostalMime attachments for deep scanning
     options: { checkBody: boolean; checkAttachments: boolean };
 }
 
@@ -15,13 +17,14 @@ export interface DetectionResult {
     penalty: number; // Score deduction (e.g. -10)
     name: string;
     reason: string;
-    metadata?: any;
+    tags?: DetectionTag[];
+    metadata?: unknown;
 }
 
 export interface Detector {
     id: string;
     name: string;
     description: string;
-    tags: ('auth' | 'content' | 'link' | 'malware' | 'identity')[];
+    tags: DetectionTag[];
     detect(context: DetectionContext): Promise<DetectionResult | null> | DetectionResult | null;
 }

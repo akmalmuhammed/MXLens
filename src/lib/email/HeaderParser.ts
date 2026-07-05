@@ -2,6 +2,8 @@ import PostalMime from 'postal-mime';
 import { AuthenticationAnalyzer, AuthStatus } from './parser/Authentication';
 import { HopTracer } from './parser/Hops';
 import { ArtifactExtractor } from './parser/Artifacts';
+import { getHeaderValue } from './parser/HeaderUtils';
+import type { HeaderMap } from './parser/HeaderUtils';
 
 export interface EmailHop {
     from: string;
@@ -16,10 +18,17 @@ export interface EmailHop {
 
 export type { AuthStatus }; // Re-export for compatibility
 
+interface ParsedAttachment {
+    filename?: string | null;
+    mimeType?: string | null;
+    content?: string | Uint8Array | ArrayBuffer;
+    size?: number;
+}
+
 export interface AnalysisResult {
     verdict: 'likely_legit' | 'suspicious' | 'high_risk' | 'neutral';
     score: number; // 0-100
-    headers: Record<string, any>;
+    headers: HeaderMap;
     rawHeaders: string;
     auth: {
         spf: AuthStatus;
@@ -79,11 +88,11 @@ export class HeaderParser {
                         return decoded;
                     }
                     return match;
-                } catch (e) {
+                } catch {
                     return match;
                 }
             });
-        } catch (e) {
+        } catch {
             return val;
         }
     }
@@ -91,7 +100,7 @@ export class HeaderParser {
     static async parse(rawInput: string): Promise<AnalysisResult> {
         const parser = new PostalMime();
         const email = await parser.parse(rawInput);
-        const headerMap: Record<string, any> = {};
+        const headerMap: HeaderMap = {};
 
         const process = (v: string) => {
             if (v && v.includes('=?') && v.includes('?=')) {
@@ -100,17 +109,20 @@ export class HeaderParser {
             return v;
         };
 
+        const appendHeader = (key: string, value: string) => {
+            const current = headerMap[key];
+            if (Array.isArray(current)) {
+                current.push(value);
+            } else if (typeof current === 'string') {
+                headerMap[key] = [current, value];
+            } else {
+                headerMap[key] = value;
+            }
+        };
+
         email.headers.forEach(h => {
             const cleanVal = process(h.value);
-            if (headerMap[h.key]) {
-                if (Array.isArray(headerMap[h.key])) {
-                    headerMap[h.key].push(cleanVal);
-                } else {
-                    headerMap[h.key] = [headerMap[h.key], cleanVal];
-                }
-            } else {
-                headerMap[h.key] = cleanVal;
-            }
+            appendHeader(h.key, cleanVal);
         });
 
         if (Object.keys(headerMap).length === 0) {
@@ -123,32 +135,21 @@ export class HeaderParser {
                     currentKey = match[1];
                     let val = match[2];
                     val = this.decodeHeaderValue(val);
-
-                    if (headerMap[currentKey]) {
-                        if (Array.isArray(headerMap[currentKey])) {
-                            headerMap[currentKey].push(val);
-                        } else {
-                            headerMap[currentKey] = [headerMap[currentKey], val];
-                        }
-                    } else {
-                        headerMap[currentKey] = val;
-                    }
+                    appendHeader(currentKey, val);
                 } else if (/^\s+/.test(line) && currentKey) {
-                    let val = line.trim();
-                    if (Array.isArray(headerMap[currentKey])) {
-                        const arr = headerMap[currentKey];
+                    const val = line.trim();
+                    const current = headerMap[currentKey];
+                    if (Array.isArray(current)) {
+                        const arr = current;
                         arr[arr.length - 1] += " " + val;
-                    } else {
-                        headerMap[currentKey] += " " + val;
+                    } else if (typeof current === 'string') {
+                        headerMap[currentKey] = `${current} ${val}`;
                     }
                 }
             });
         }
 
-        const getHeader = (key: string) => {
-            const k = Object.keys(headerMap).find(k => k.toLowerCase() === key.toLowerCase());
-            return k ? headerMap[k] : undefined;
-        };
+        const getHeader = (key: string) => getHeaderValue(headerMap, key);
 
         // Delegate to sub-modules
         const auth = AuthenticationAnalyzer.analyze(getHeader('Authentication-Results'));
@@ -180,28 +181,29 @@ export class HeaderParser {
         };
     }
 
-    private static async analyzeAttachments(attachments: any[]): Promise<AnalysisResult['attachments']> {
+    private static async analyzeAttachments(attachments: ParsedAttachment[]): Promise<AnalysisResult['attachments']> {
         if (!attachments || attachments.length === 0) return [];
         const results: AnalysisResult['attachments'] = [];
 
         for (const att of attachments) {
             let hash = "";
-            if (att.content && (att.content instanceof Uint8Array || att.content instanceof ArrayBuffer)) {
-                hash = await this.calculateHash(att.content);
+            const content = this.toUint8Array(att.content);
+            if (content) {
+                hash = await this.calculateHash(content);
             }
             results.push({
                 filename: att.filename || 'unknown',
                 mimeType: att.mimeType || 'application/octet-stream',
-                size: att.content ? att.content.length : 0,
+                size: att.size || content?.byteLength || (typeof att.content === 'string' ? att.content.length : 0),
                 hash
             });
         }
         return results;
     }
 
-    private static async calculateHash(content: BufferSource): Promise<string> {
+    private static async calculateHash(content: Uint8Array): Promise<string> {
         try {
-            const hashBuffer = await crypto.subtle.digest('SHA-256', content);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', this.toArrayBuffer(content));
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         } catch (e) {
@@ -210,7 +212,21 @@ export class HeaderParser {
         }
     }
 
-    private static analyzeXHeaders(headers: any): AnalysisResult['xHeaders'] {
+    private static toUint8Array(content: ParsedAttachment['content']): Uint8Array | undefined {
+        if (!content) return undefined;
+        if (content instanceof Uint8Array) return content;
+        if (content instanceof ArrayBuffer) return new Uint8Array(content);
+        if (typeof content === 'string') return new TextEncoder().encode(content);
+        return undefined;
+    }
+
+    private static toArrayBuffer(content: Uint8Array): ArrayBuffer {
+        const copy = new Uint8Array(content.byteLength);
+        copy.set(content);
+        return copy.buffer;
+    }
+
+    private static analyzeXHeaders(headers: HeaderMap): AnalysisResult['xHeaders'] {
         const interesting = [
             { key: 'X-Spam-Status', label: 'Spam Status' },
             { key: 'X-Spam-Score', label: 'Spam Score' },
@@ -223,7 +239,7 @@ export class HeaderParser {
         const xHeaders: AnalysisResult['xHeaders'] = [];
 
         interesting.forEach(item => {
-            const val = headers[item.key];
+            const val = getHeaderValue(headers, item.key);
             if (val) {
                 let explanation = "";
                 const vStr = String(val).toLowerCase();
@@ -283,11 +299,12 @@ export class HeaderParser {
         return actions;
     }
 
-    private static detectImpersonation(headers: any, auth: AnalysisResult['auth']): string | undefined {
-        const from = headers['From'] || '';
+    private static detectImpersonation(headers: HeaderMap, auth: AnalysisResult['auth']): string | undefined {
+        const from = getHeaderValue(headers, 'From') || '';
         const highValueKeywords = ['admin', 'subport', 'security', 'hr', 'payroll', 'finance', 'ceo', 'it group', 'microsoft', 'google'];
 
-        const match = from.match(/^"?([^"<]+)"?\s*<.*>$/);
+        const fromHeader = Array.isArray(from) ? from[0] : from;
+        const match = fromHeader.match(/^"?([^"<]+)"?\s*<.*>$/);
         if (!match) return undefined;
 
         const displayName = match[1].toLowerCase();
@@ -306,7 +323,7 @@ export class HeaderParser {
         return undefined;
     }
 
-    private static calculateVerdict(headers: any, auth: AnalysisResult['auth'], hops: EmailHop[]) {
+    private static calculateVerdict(headers: HeaderMap, auth: AnalysisResult['auth'], hops: EmailHop[]) {
         let score = 50;
         const anomalies: string[] = [];
         const factors: { label: string; score: number }[] = [];
@@ -336,12 +353,15 @@ export class HeaderParser {
             anomalies.push('DKIM Validation Failed');
         }
 
-        const from = headers['From'];
-        const returnPath = headers['Return-Path'];
+        const from = getHeaderValue(headers, 'From');
+        const returnPath = getHeaderValue(headers, 'Return-Path');
 
-        if (typeof from === 'string' && typeof returnPath === 'string') {
-            const fromDomain = from.match(/@([\w.-]+)/)?.[1];
-            const rpDomain = returnPath.match(/@([\w.-]+)/)?.[1];
+        const fromText = Array.isArray(from) ? from[0] : from;
+        const returnPathText = Array.isArray(returnPath) ? returnPath[0] : returnPath;
+
+        if (typeof fromText === 'string' && typeof returnPathText === 'string') {
+            const fromDomain = fromText.match(/@([\w.-]+)/)?.[1];
+            const rpDomain = returnPathText.match(/@([\w.-]+)/)?.[1];
 
             if (fromDomain && rpDomain) {
                 if (!rpDomain.includes(fromDomain) && !fromDomain.includes(rpDomain)) {

@@ -1,3 +1,5 @@
+import type { DetectionTag } from "../detection/Detector";
+
 export interface AttachmentSignal {
     filename: string;
     extension: string;
@@ -83,6 +85,20 @@ export interface ValidationPenalty {
     critical?: boolean;
     warning?: boolean;
     source?: 'header' | 'body' | 'cross' | 'attachment' | 'ml';
+    tags?: DetectionTag[];
+}
+
+export interface ParsedEmailAttachment {
+    filename?: string | null;
+    mimeType?: string;
+    size?: number;
+    content?: string | ArrayBuffer | Uint8Array;
+}
+
+export interface ParsedEmailBody {
+    text?: string;
+    html?: string;
+    attachments?: ParsedEmailAttachment[];
 }
 
 export interface ScoreComponent {

@@ -3,14 +3,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig = {
   /* config options here */
-  eslint: {
-    // Disable ESLint during production builds to unblock deployment
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    // Disable TypeScript errors during production builds
-    ignoreBuildErrors: true,
-  },
   async headers() {
     return [
       {
@@ -92,9 +84,13 @@ export default withSentryConfig(nextConfig, {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
-  // Automatically annotate React components to show their full name in breadcrumbs and session replay
-  reactComponentAnnotation: {
-    enabled: true,
+  webpack: {
+    reactComponentAnnotation: {
+      enabled: true,
+    },
+    treeshake: {
+      removeDebugLogging: true,
+    },
   },
 
   // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
@@ -106,7 +102,4 @@ export default withSentryConfig(nextConfig, {
     disable: true,
   },
 
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers)
-  // automaticVercelMonitors: true,
 });

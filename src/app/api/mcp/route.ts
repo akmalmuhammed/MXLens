@@ -1,5 +1,10 @@
 import { after, NextRequest, NextResponse } from "next/server";
-import { authenticateApiRequest, maybeEnforceAgentRateLimit, type AuthenticatedAgent } from "@/lib/agent-api/auth";
+import {
+    authenticateApiRequest,
+    authenticateOptionalApiRequest,
+    maybeEnforceAgentRateLimit,
+    type AuthenticatedAgent
+} from "@/lib/agent-api/auth";
 import { createAnalysisBatch, getBatchForAgent, processAnalysisBatch } from "@/lib/agent-api/batch-processor";
 import { AgentApiError, toAgentError } from "@/lib/agent-api/errors";
 import {
@@ -8,7 +13,7 @@ import {
     resolvePendingInput,
     type PendingEmailInput
 } from "@/lib/agent-api/ingestion";
-import { analyzeResolvedEmail } from "@/lib/agent-api/analysis-service";
+import { analyzeResolvedEmail, summarizeForBatch } from "@/lib/agent-api/analysis-service";
 import { attachPersistence, persistAgentAnalysis } from "@/lib/agent-api/persistence";
 import { getAnalysisForAgent } from "@/lib/agent-api/queries";
 
@@ -45,7 +50,6 @@ export async function POST(req: NextRequest) {
 
     try {
         if (message.method === "initialize") {
-            await authenticateApiRequest(req, "analyze:read");
             return NextResponse.json(jsonRpcResult(message.id, {
                 protocolVersion: "2025-11-25",
                 capabilities: {
@@ -59,7 +63,6 @@ export async function POST(req: NextRequest) {
         }
 
         if (message.method === "tools/list") {
-            await authenticateApiRequest(req, "analyze:read");
             return NextResponse.json(jsonRpcResult(message.id, { tools: MCP_TOOLS }));
         }
 
@@ -68,7 +71,9 @@ export async function POST(req: NextRequest) {
             const requiredScope = name === "mxlens_analyze_email" || name === "mxlens_create_batch"
                 ? "analyze:write"
                 : "analyze:read";
-            const agent = await authenticateApiRequest(req, requiredScope);
+            const agent = name === "mxlens_get_batch" || name === "mxlens_get_analysis"
+                ? await authenticateApiRequest(req, requiredScope)
+                : await authenticateOptionalApiRequest(req, requiredScope);
             const result = await callTool(agent, name, args);
 
             return NextResponse.json(jsonRpcResult(message.id, {
@@ -91,34 +96,47 @@ export async function POST(req: NextRequest) {
     }
 }
 
-async function callTool(agent: AuthenticatedAgent, name: string, args: unknown) {
+async function callTool(agent: AuthenticatedAgent | null, name: string, args: unknown) {
     switch (name) {
         case "mxlens_analyze_email":
-            await maybeEnforceAgentRateLimit(agent, "mcp-single");
+            if (agent) await maybeEnforceAgentRateLimit(agent, "mcp-single");
             return analyzeViaMcp(agent, args);
         case "mxlens_create_batch":
-            await maybeEnforceAgentRateLimit(agent, "mcp-batch");
+            if (agent) await maybeEnforceAgentRateLimit(agent, "mcp-batch");
             return createBatchViaMcp(agent, args);
         case "mxlens_get_batch":
+            if (!agent) throw new AgentApiError(401, "missing_api_key", "API key is required to retrieve persisted batches");
             return getBatchForAgent(agent, requireStringArg(args, "batchId"));
         case "mxlens_get_analysis":
+            if (!agent) throw new AgentApiError(401, "missing_api_key", "API key is required to retrieve persisted analyses");
             return getAnalysisForAgent(agent, requireStringArg(args, "analysisId"));
         default:
             throw new AgentApiError(404, "tool_not_found", `Unsupported MCP tool: ${name}`);
     }
 }
 
-async function analyzeViaMcp(agent: AuthenticatedAgent, args: unknown) {
+async function analyzeViaMcp(agent: AuthenticatedAgent | null, args: unknown) {
     const input = parsePendingJsonInput(args);
     const options = normalizeOptions(isRecord(args) ? args.options : undefined);
     const resolved = await resolvePendingInput(input);
     const analysis = await analyzeResolvedEmail(resolved, options);
+
+    if (!agent) {
+        return {
+            ...analysis,
+            usage: {
+                free: true,
+                persisted: false
+            }
+        };
+    }
+
     const persisted = await persistAgentAnalysis({ agent, input: resolved, options, result: analysis });
 
     return attachPersistence(analysis, persisted);
 }
 
-async function createBatchViaMcp(agent: AuthenticatedAgent, args: unknown) {
+async function createBatchViaMcp(agent: AuthenticatedAgent | null, args: unknown) {
     if (!isRecord(args) || !Array.isArray(args.items)) {
         throw new AgentApiError(400, "invalid_arguments", "items array is required");
     }
@@ -126,6 +144,58 @@ async function createBatchViaMcp(agent: AuthenticatedAgent, args: unknown) {
     const items = args.items.map((item: unknown): PendingEmailInput => parsePendingJsonInput(item));
     const options = normalizeOptions(args.options);
     const clientReferenceId = typeof args.clientReferenceId === "string" ? args.clientReferenceId : undefined;
+
+    if (!agent) {
+        const results = [];
+
+        for (let index = 0; index < items.length; index++) {
+            const item = items[index];
+            try {
+                const resolved = await resolvePendingInput(item);
+                const analysis = await analyzeResolvedEmail(resolved, options);
+                results.push({
+                    id: `public-${index + 1}`,
+                    position: index,
+                    status: "COMPLETED",
+                    sourceType: item.sourceType,
+                    sourceLabel: resolved.sourceLabel || item.filename || `item-${index + 1}`,
+                    filename: item.filename,
+                    externalId: item.externalId,
+                    clientReferenceId: item.clientReferenceId,
+                    result: summarizeForBatch(analysis),
+                    processingMs: analysis.processingMs
+                });
+            } catch (error) {
+                results.push({
+                    id: `public-${index + 1}`,
+                    position: index,
+                    status: "FAILED",
+                    sourceType: item.sourceType,
+                    sourceLabel: item.filename || `item-${index + 1}`,
+                    filename: item.filename,
+                    externalId: item.externalId,
+                    clientReferenceId: item.clientReferenceId,
+                    errorCode: "analysis_failed",
+                    errorMessage: error instanceof Error ? error.message : "Analysis failed"
+                });
+            }
+        }
+
+        const failedItems = results.filter(item => item.status === "FAILED").length;
+
+        return {
+            batchId: `public-${Date.now()}`,
+            status: failedItems === 0 ? "COMPLETED" : failedItems === results.length ? "FAILED" : "PARTIAL_FAILED",
+            totalItems: results.length,
+            completedItems: results.length - failedItems,
+            failedItems,
+            clientReferenceId,
+            statusUrl: null,
+            persisted: false,
+            items: results
+        };
+    }
+
     const { batch, workItems } = await createAnalysisBatch({ agent, items, options, clientReferenceId });
 
     after(async () => {

@@ -16,7 +16,7 @@ export default async function AnalysisDetailPage(props: { params: Promise<{ id: 
     const session = await auth();
 
     if (!session?.user?.id || !session?.user?.orgId) {
-        return redirect("/auth/signin");
+        return redirect("/analyze");
     }
 
     const log = await db.analysisLog.findUnique({

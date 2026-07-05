@@ -1,5 +1,5 @@
 import { Redis } from "@upstash/redis";
-import { Ratelimit } from "@upstash/ratelimit";
+import { Ratelimit, type Duration } from "@upstash/ratelimit";
 
 // Initialize Redis client (lazy, serverless-safe)
 let redis: Redis | null = null;
@@ -18,48 +18,61 @@ function getRedis(): Redis {
     return redis;
 }
 
-// Pre-configured rate limiters for different use cases
-// These are globally shared across all serverless instances
+type LazyRateLimiter = Pick<Ratelimit, "limit" | "getRemaining" | "resetUsedTokens">;
+
+function createRateLimiter(
+    limit: number,
+    window: Duration,
+    prefix: string,
+    analytics = true
+): Ratelimit {
+    return new Ratelimit({
+        redis: getRedis(),
+        limiter: Ratelimit.slidingWindow(limit, window),
+        prefix,
+        analytics,
+    });
+}
+
+function lazyRateLimiter(
+    limit: number,
+    window: Duration,
+    prefix: string,
+    analytics = true
+): LazyRateLimiter {
+    let limiter: Ratelimit | null = null;
+
+    function getLimiter() {
+        limiter ??= createRateLimiter(limit, window, prefix, analytics);
+        return limiter;
+    }
+
+    return {
+        limit: (...args) => getLimiter().limit(...args),
+        getRemaining: (...args) => getLimiter().getRemaining(...args),
+        resetUsedTokens: (...args) => getLimiter().resetUsedTokens(...args),
+    };
+}
 
 /**
  * Admin API rate limiter: 100 requests per minute
  */
-export const adminRateLimiter = new Ratelimit({
-    redis: getRedis(),
-    limiter: Ratelimit.slidingWindow(100, "1 m"),
-    prefix: "ratelimit:admin",
-    analytics: true,
-});
+export const adminRateLimiter = lazyRateLimiter(100, "1 m", "ratelimit:admin");
 
 /**
  * General API rate limiter: 60 requests per minute per IP
  */
-export const apiRateLimiter = new Ratelimit({
-    redis: getRedis(),
-    limiter: Ratelimit.slidingWindow(60, "1 m"),
-    prefix: "ratelimit:api",
-    analytics: true,
-});
+export const apiRateLimiter = lazyRateLimiter(60, "1 m", "ratelimit:api");
 
 /**
  * Analysis rate limiter: 10 requests per minute (per user/org)
  */
-export const analysisRateLimiter = new Ratelimit({
-    redis: getRedis(),
-    limiter: Ratelimit.slidingWindow(10, "1 m"),
-    prefix: "ratelimit:analysis",
-    analytics: true,
-});
+export const analysisRateLimiter = lazyRateLimiter(10, "1 m", "ratelimit:analysis");
 
 /**
  * Webhook rate limiter: 30 requests per minute per IP
  */
-export const webhookRateLimiter = new Ratelimit({
-    redis: getRedis(),
-    limiter: Ratelimit.slidingWindow(30, "1 m"),
-    prefix: "ratelimit:webhook",
-    analytics: true,
-});
+export const webhookRateLimiter = lazyRateLimiter(30, "1 m", "ratelimit:webhook");
 
 /**
  * Generic rate limit function for ad-hoc use
@@ -70,13 +83,9 @@ export const webhookRateLimiter = new Ratelimit({
 export async function rateLimit(
     identifier: string,
     limit: number = 60,
-    window: string = "1 m"
+    window: Duration = "1 m"
 ): Promise<{ success: boolean; remaining: number; reset: number }> {
-    const limiter = new Ratelimit({
-        redis: getRedis(),
-        limiter: Ratelimit.slidingWindow(limit, window as any),
-        prefix: "ratelimit:adhoc",
-    });
+    const limiter = createRateLimiter(limit, window, "ratelimit:adhoc", false);
 
     const result = await limiter.limit(identifier);
 

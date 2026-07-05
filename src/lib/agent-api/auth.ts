@@ -78,10 +78,6 @@ export async function authenticateApiRequest(
             throw new AgentApiError(403, "missing_scope", `API key requires ${requiredScope} scope`);
         }
 
-        if (!["PRO", "ENTERPRISE"].includes(candidate.organization.planTier)) {
-            throw new AgentApiError(403, "plan_required", "Agent API access requires a PRO or ENTERPRISE plan");
-        }
-
         await db.apiKey.update({
             where: { id: candidate.id },
             data: { lastUsedAt: new Date() }
@@ -97,6 +93,17 @@ export async function authenticateApiRequest(
     }
 
     throw new AgentApiError(401, "invalid_api_key", "Invalid API key");
+}
+
+export async function authenticateOptionalApiRequest(
+    req: NextRequest | Request,
+    requiredScope: ApiKeyScope
+): Promise<AuthenticatedAgent | null> {
+    if (!extractBearerToken(req)) {
+        return null;
+    }
+
+    return authenticateApiRequest(req, requiredScope);
 }
 
 export async function maybeEnforceAgentRateLimit(agent: AuthenticatedAgent, bucket: string) {

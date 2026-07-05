@@ -1,4 +1,5 @@
 import { Detector, DetectionContext, DetectionResult } from "../Detector";
+import { getFirstHeaderValue } from "../../parser/HeaderUtils";
 
 export class SpellingGrammarDetector implements Detector {
     id = "spelling-grammar-simple";
@@ -16,7 +17,7 @@ export class SpellingGrammarDetector implements Detector {
     detect(context: DetectionContext): DetectionResult | null {
         if (!context.options.checkBody || !context.emailBody) return null;
 
-        const text = context.emailBody.text.toLowerCase();
+        const text = (context.emailBody.text || "").toLowerCase();
 
         // 1. Check for broken words / spaced-out keywords
         // "V e r i f y" -> spam filter evasion
@@ -56,7 +57,7 @@ export class SpellingGrammarDetector implements Detector {
         }
 
         // 3. Excessive Capitalization (in Subject)
-        const subject = context.header.headers['Subject'] || "";
+        const subject = getFirstHeaderValue(context.header.headers, 'Subject');
         const subjectUpper = subject.replace(/[^A-Z]/g, "").length;
         const subjectLen = subject.length;
 

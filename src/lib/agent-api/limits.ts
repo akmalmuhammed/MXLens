@@ -9,9 +9,9 @@ export const API_KEY_SCOPES = ["analyze:read", "analyze:write"] as const;
 export type ApiKeyScope = typeof API_KEY_SCOPES[number];
 
 export const PLAN_DAILY_ANALYSIS_LIMITS: Record<string, number> = {
-    FREE: 10,
-    PRO: 1000,
-    ENTERPRISE: 100000
+    FREE: Number.MAX_SAFE_INTEGER,
+    PRO: Number.MAX_SAFE_INTEGER,
+    ENTERPRISE: Number.MAX_SAFE_INTEGER
 };
 
 export function getDailyAnalysisLimit(planTier: string | null | undefined) {

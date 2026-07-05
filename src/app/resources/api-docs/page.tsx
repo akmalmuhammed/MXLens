@@ -16,11 +16,11 @@ export default function ApiDocsPage() {
                         MXLens for agents and automations
                     </h1>
                     <p className="text-xl text-muted-foreground">
-                        Upload email files, fetch signed URLs, create bulk batches, and retrieve privacy-safe analysis results through REST or MCP.
+                        Upload email files, fetch signed URLs, create bulk batches, and retrieve privacy-safe analysis results through REST or MCP. API keys are optional for persisted history.
                     </p>
                     <div className="flex flex-wrap gap-3">
                         <Button asChild className="h-11 px-6">
-                            <Link href="/settings/api-keys">Manage API Keys</Link>
+                            <Link href="/analyze">Analyze Free</Link>
                         </Button>
                         <Button asChild variant="outline" className="h-11 px-6">
                             <Link href="/api/v1/openapi.json">OpenAPI JSON</Link>
@@ -38,7 +38,6 @@ export default function ApiDocsPage() {
                         </CardHeader>
                         <CardContent>
                             <CodeBlock>{`curl -X POST https://mxlens.com/api/v1/analyze \\
-  -H "Authorization: Bearer mxl_live_..." \\
   -F "file=@suspicious.eml" \\
   -F "analyzeBody=true"`}</CodeBlock>
                         </CardContent>
@@ -53,7 +52,6 @@ export default function ApiDocsPage() {
                         </CardHeader>
                         <CardContent>
                             <CodeBlock>{`curl -X POST https://mxlens.com/api/v1/analyze \\
-  -H "Authorization: Bearer mxl_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{"fetchUrl":"https://storage.example.com/email.eml?signature=..."}'`}</CodeBlock>
                         </CardContent>
@@ -68,7 +66,6 @@ export default function ApiDocsPage() {
                         </CardHeader>
                         <CardContent>
                             <CodeBlock>{`curl -X POST https://mxlens.com/api/v1/batches \\
-  -H "Authorization: Bearer mxl_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{"items":[{"contentBase64":"..."}]}'`}
                             </CodeBlock>
@@ -84,7 +81,7 @@ export default function ApiDocsPage() {
                         </CardHeader>
                         <CardContent>
                             <CodeBlock>{`POST /api/mcp
-Authorization: Bearer mxl_live_...
+Authorization: Bearer mxl_live_... (optional)
 
 Tools:
 - mxlens_analyze_email

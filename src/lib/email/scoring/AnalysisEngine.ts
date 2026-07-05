@@ -8,14 +8,15 @@ import { CrossContextScorer } from "./CrossContextScorer";
 import { AttachmentScorer } from "./AttachmentScorer";
 import { TrustCalculator } from "./TrustCalculator";
 import { ConfidenceCalculator } from "./ConfidenceCalculator";
-import { NormalizedSignals, ScoringResult, ValidationPenalty } from "./types";
+import { NormalizedSignals, ParsedEmailBody, ScoringResult, ValidationPenalty } from "./types";
 import { DetectionPipeline } from "../detection/Pipeline";
+import type { DetectionResult, DetectionTag } from "../detection/Detector";
 import { AnalysisResult } from "../HeaderParser";
 
 export class AnalysisEngine {
     static async analyze(
         headerResult: AnalysisResult,
-        emailBody: any | null,
+        emailBody: ParsedEmailBody | null,
         options: { checkBody: boolean; checkAttachments: boolean }
     ): Promise<{ signals: NormalizedSignals; result: ScoringResult }> {
 
@@ -43,7 +44,7 @@ export class AnalysisEngine {
         const { results: pipelineResults, totalPenalty: pipelinePenalty, performance: pipelineTelemetry } = await pipeline.run({
             header: headerResult,
             signals: signals,
-            emailBody: emailBody,
+            emailBody: emailBody || undefined,
             attachments: emailBody?.attachments || [], // Pass raw attachments for scanning
             options: options
         });
@@ -73,7 +74,8 @@ export class AnalysisEngine {
             reason: r.reason,
             value: r.penalty,
             critical: r.score > 0.8,
-            source: 'ml' // effectively "advanced logic"
+            source: this.mapDetectionSource(r),
+            tags: r.tags
         }));
         trustResult.penalties.push(...newPenalties);
 
@@ -92,6 +94,17 @@ export class AnalysisEngine {
                 performance: pipelineTelemetry
             }
         };
+    }
+
+    private static mapDetectionSource(result: DetectionResult): NonNullable<ValidationPenalty['source']> {
+        const tags: DetectionTag[] = result.tags || [];
+
+        if (tags.includes('auth')) return 'header';
+        if (tags.includes('identity')) return 'cross';
+        if (tags.includes('content') || tags.includes('link')) return 'body';
+        if (tags.includes('malware')) return 'attachment';
+
+        return 'ml';
     }
 
     private static determineVerdict(

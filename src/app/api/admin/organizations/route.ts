@@ -71,16 +71,6 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// Generate a random password
-function generatePassword(length = 12): string {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
-    let password = "";
-    for (let i = 0; i < length; i++) {
-        password += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
-    return password;
-}
-
 export async function POST(request: NextRequest) {
     try {
         await requireAdminApi();
@@ -114,11 +104,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Generate password and hash it
-        const tempPassword = generatePassword();
-        const bcrypt = await import("bcryptjs");
-        const hashedPassword = await bcrypt.hash(tempPassword, 10);
-
         // Create user and organization in a transaction
         const result = await db.$transaction(async (tx) => {
             // Create the owner user
@@ -126,8 +111,7 @@ export async function POST(request: NextRequest) {
                 data: {
                     name: ownerName,
                     email: ownerEmail,
-                    hashedPassword,
-                    emailVerified: new Date(), // Auto-verify admin-created users
+                    emailVerified: new Date(),
                 },
             });
 
@@ -149,7 +133,7 @@ export async function POST(request: NextRequest) {
                 },
             });
 
-            return { org, user, tempPassword };
+            return { org, user };
         });
 
         return NextResponse.json({
@@ -160,9 +144,8 @@ export async function POST(request: NextRequest) {
                 id: result.user.id,
                 email: result.user.email,
                 name: result.user.name,
-                tempPassword: result.tempPassword, // Return for admin to share with user
             },
-            message: "Organization created successfully",
+            message: "Organization created. The owner can authenticate through Clerk with this email.",
         });
     } catch (error) {
         console.error("Create organization error:", error);

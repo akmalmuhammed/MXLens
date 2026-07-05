@@ -3,16 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 
-// Generate a random password
-function generatePassword(length = 12): string {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
-    let password = "";
-    for (let i = 0; i < length; i++) {
-        password += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
-    return password;
-}
-
 export async function GET(request: NextRequest) {
     try {
         await requireAdminApi();
@@ -152,19 +142,13 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // Generate password and hash it
-        const tempPassword = generatePassword();
-        const bcrypt = await import("bcryptjs");
-        const hashedPassword = await bcrypt.hash(tempPassword, 10);
-
         // Create user and membership in a transaction
         const result = await db.$transaction(async (tx) => {
             const user = await tx.user.create({
                 data: {
                     name,
                     email,
-                    hashedPassword,
-                    emailVerified: new Date(), // Auto-verify admin-created users
+                    emailVerified: new Date(),
                 },
             });
 
@@ -176,15 +160,14 @@ export async function POST(request: NextRequest) {
                 },
             });
 
-            return { user, tempPassword };
+            return { user };
         });
 
         return NextResponse.json({
             id: result.user.id,
             email: result.user.email,
             name: result.user.name,
-            tempPassword: result.tempPassword,
-            message: "User created successfully",
+            message: "User created. They can authenticate through Clerk with this email.",
         });
     } catch (error) {
         console.error("Create user error:", error);

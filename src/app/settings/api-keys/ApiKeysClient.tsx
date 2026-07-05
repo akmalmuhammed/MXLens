@@ -135,9 +135,9 @@ export function ApiKeysClient({ initialKeys }: ApiKeysClientProps) {
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                 <div>
-                    <p className="font-medium text-amber-500">Plan Requirement</p>
+                    <p className="font-medium text-amber-500">Optional Keys</p>
                     <p className="text-sm text-muted-foreground">
-                        API and MCP access is available on PRO and ENTERPRISE plans.
+                        Public API and MCP analysis works without a key. Create keys only when an automation needs persisted history and polling.
                     </p>
                 </div>
             </div>

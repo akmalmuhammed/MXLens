@@ -28,34 +28,11 @@ export async function GET(request: NextRequest, { params }: Props) {
                         },
                     },
                 },
-                accounts: {
-                    select: {
-                        provider: true,
-                    },
-                },
-                sessions: {
-                    select: {
-                        id: true,
-                        expires: true,
-                    },
-                    orderBy: { expires: "desc" },
-                    take: 5,
-                },
             },
         });
 
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
-        }
-
-        // Calculate status based on sessions
-        const now = new Date();
-        const activeSessions = user.sessions.filter((s) => s.expires > now);
-        const lastActive = user.sessions[0]?.expires;
-
-        let status = "inactive";
-        if (activeSessions.length > 0) {
-            status = "active";
         }
 
         return NextResponse.json({
@@ -67,10 +44,10 @@ export async function GET(request: NextRequest, { params }: Props) {
                 image: user.image,
                 isPlatformAdmin: user.isPlatformAdmin,
                 adminRole: user.adminRole,
-                status,
+                status: user.emailVerified ? "active" : "pending",
                 createdAt: user.createdAt.toISOString(),
                 updatedAt: user.updatedAt.toISOString(),
-                lastActive: lastActive?.toISOString() || null,
+                lastActive: null,
                 organizations: user.memberships.map((m) => ({
                     id: m.organization.id,
                     name: m.organization.name,
@@ -80,10 +57,8 @@ export async function GET(request: NextRequest, { params }: Props) {
                     subscriptionStatus: m.organization.subscriptionStatus,
                     joinedAt: m.joinedAt.toISOString(),
                 })),
-                authProviders: user.accounts.map((a) => ({
-                    provider: a.provider,
-                })),
-                activeSessions: activeSessions.length,
+                authProviders: [{ provider: "clerk" }],
+                activeSessions: 0,
             },
         });
     } catch (error) {
@@ -166,32 +141,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
                         });
                     }
                 } else {
-                    // Create new AdminUser
-                    // NOTE: We cannot copy the password hash easily if it's from NextAuth (different table/format potentially).
-                    // Ideally, we'd force a password reset. For now, we'll create the record so they exist.
-                    // A real solution would send an invite email.
-                    // HERE: We will set a temporary known hash or just creating the record allows us to set it later?
-                    // No, they need to login. 
-                    // Let's assume we can copy the hashedPassword from the User record if it exists.
-                    const sourceUser = await db.user.findUnique({
-                        where: { id },
-                        select: { hashedPassword: true }
-                    });
-
-                    if (sourceUser?.hashedPassword) {
-                        await db.adminUser.create({
-                            data: {
-                                email: adminEmail,
-                                name: updatedUser.name || "Admin",
-                                passwordHash: sourceUser.hashedPassword,
-                                role: (updatedUser.adminRole as any) || "SUPER_ADMIN"
-                            }
-                        });
-                        console.log(`Synced AdminUser for ${adminEmail}`);
-                    } else {
-                        console.warn(`Could not sync AdminUser for ${adminEmail} - no password hash found`);
-                        // Todo: Handle OAuth users promoted to Admin (need separate pwd)
-                    }
+                    console.log(`Platform admin flag set for ${adminEmail}. Clerk handles user authentication.`);
                 }
             } catch (syncError) {
                 console.error("Failed to sync AdminUser:", syncError);
@@ -221,7 +171,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     }
 }
 
-// DELETE - Suspend/deactivate user (soft delete - invalidates sessions)
+// DELETE - Suspend/deactivate user placeholder.
 export async function DELETE(request: NextRequest, { params }: Props) {
     try {
         await requireAdminApi();
@@ -232,14 +182,8 @@ export async function DELETE(request: NextRequest, { params }: Props) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // Clear all sessions (effectively logs them out)
-        await db.session.deleteMany({ where: { userId: id } });
-
-        // Can optionally add a 'suspended' flag if you have one
-        // For now, clearing sessions is the safest approach
-
         return NextResponse.json({
-            message: "User sessions invalidated. User must re-authenticate.",
+            message: "User found. Clerk session revocation is managed by Clerk.",
         });
     } catch (error) {
         console.error("Admin user delete error:", error);

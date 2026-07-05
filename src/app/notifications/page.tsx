@@ -14,9 +14,9 @@ const MOCK_NOTIFICATIONS = [
     },
     {
         id: 2,
-        title: "Daily Limit Reached",
-        message: "You have used 10/10 free scans today. Upgrade to continue.",
-        type: "warning",
+        title: "Free Analysis Enabled",
+        message: "MXLens email analysis is now free and does not require signup.",
+        type: "info",
         read: false,
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2) // 2 hours ago
     },

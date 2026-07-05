@@ -20,7 +20,7 @@ export class HeaderScorer {
             }
         } else {
             score -= 15;
-            penalties.push({ reason: "No DMARC Record Found", value: -15, source: 'header' as const });
+            penalties.push({ reason: "No DMARC Result Found", value: -15, source: 'header' as const });
         }
 
         // SPF
@@ -32,7 +32,7 @@ export class HeaderScorer {
             penalties.push({ reason: "SPF Softfail", value: -10, source: 'header' as const });
         } else if (signals.spfResult === "none" || signals.spfResult === "neutral") {
             score -= 10;
-            penalties.push({ reason: "SPF Record Missing or Neutral", value: -10, source: 'header' as const });
+            penalties.push({ reason: "SPF Missing or Neutral", value: -10, source: 'header' as const });
         }
 
         // DKIM

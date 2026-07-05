@@ -28,29 +28,12 @@ export default async function UserDetailPage({ params }: Props) {
                     },
                 },
             },
-            accounts: {
-                select: {
-                    provider: true,
-                },
-            },
-            sessions: {
-                select: {
-                    id: true,
-                    expires: true,
-                },
-                orderBy: { expires: "desc" },
-                take: 5,
-            },
         },
     });
 
     if (!user) {
         notFound();
     }
-
-    // Calculate status
-    const now = new Date();
-    const activeSessions = user.sessions.filter((s) => s.expires > now);
 
     const userData = {
         id: user.id,
@@ -60,10 +43,10 @@ export default async function UserDetailPage({ params }: Props) {
         image: user.image,
         isPlatformAdmin: user.isPlatformAdmin,
         adminRole: user.adminRole,
-        status: activeSessions.length > 0 ? "active" : "inactive",
+        status: user.emailVerified ? "active" : "pending",
         createdAt: user.createdAt.toISOString(),
         updatedAt: user.updatedAt.toISOString(),
-        lastActive: user.sessions[0]?.expires?.toISOString() || null,
+        lastActive: null,
         organizations: user.memberships.map((m) => ({
             id: m.organization.id,
             name: m.organization.name,
@@ -73,10 +56,8 @@ export default async function UserDetailPage({ params }: Props) {
             subscriptionStatus: m.organization.subscriptionStatus,
             joinedAt: m.joinedAt.toISOString(),
         })),
-        authProviders: user.accounts.map((a) => ({
-            provider: a.provider,
-        })),
-        activeSessions: activeSessions.length,
+        authProviders: [{ provider: "clerk" }],
+        activeSessions: 0,
     };
 
     return <UserDetail user={userData} />;

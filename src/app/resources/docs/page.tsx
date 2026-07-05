@@ -427,9 +427,9 @@ export default function DocsPage() {
                                     Start Analyzing
                                 </Button>
                             </Link>
-                            <Link href="/pricing">
+                            <Link href="/resources/api-docs">
                                 <Button size="lg" variant="outline" className="gap-2">
-                                    View Pricing
+                                    API Docs
                                     <ExternalLink className="w-4 h-4" />
                                 </Button>
                             </Link>

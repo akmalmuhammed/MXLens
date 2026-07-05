@@ -1,4 +1,6 @@
 import { AnalysisResult } from "../HeaderParser";
+import { getHeaderValues } from "./HeaderUtils";
+import type { HeaderMap } from "./HeaderUtils";
 
 export interface AuthStatus {
     status: 'pass' | 'fail' | 'neutral' | 'none' | 'softfail' | 'policy' | 'temperror' | 'permerror';
@@ -12,36 +14,36 @@ export class AuthenticationAnalyzer {
         const s = status.toLowerCase();
 
         if (type === 'spf') {
-            if (s === 'pass') return "Sender IP is authorized by the domain's SPF record.";
-            if (s === 'fail') return "Sender IP is NOT authorized. High confidence spoofing signal (unless forwarding).";
-            if (s === 'softfail') return "Sender IP is not authorized, but domain is in 'testing' mode (~all). Suspicious.";
-            if (s === 'none') return "No SPF record found for this domain. weak security posture.";
-            if (s === 'neutral') return "Domain does not explicitly authorize or deny this IP (?all).";
-            if (s === 'temperror') return "Temporary DNS error during check. Try again later.";
-            if (s === 'permerror') return "Invalid SPF record syntax. Administrator error.";
+            if (s === 'pass') return "Authentication-Results reports the sender IP was authorized by SPF.";
+            if (s === 'fail') return "Authentication-Results reports the sender IP was not authorized. Strong spoofing signal unless forwarding is involved.";
+            if (s === 'softfail') return "Authentication-Results reports SPF softfail. The domain discourages this sender, but has not published a hard fail policy.";
+            if (s === 'none') return "Authentication-Results reports no SPF result for this message.";
+            if (s === 'neutral') return "Authentication-Results reports SPF neutral; the domain did not explicitly authorize or deny this IP.";
+            if (s === 'temperror') return "Authentication-Results reports a temporary SPF/DNS error.";
+            if (s === 'permerror') return "Authentication-Results reports an invalid SPF record or permanent SPF error.";
         }
 
         if (type === 'dkim') {
-            if (s === 'pass') return "Email cryptographic signature is valid and unaltered.";
-            if (s === 'fail') return "Cryptographic signature failed verification. Body or headers may have been modified.";
-            if (s === 'none') return "Email was not signed. Common for spam or very old systems.";
-            if (s === 'neutral') return "Signature exists but is not valid for this sender.";
+            if (s === 'pass') return "Authentication-Results reports a valid DKIM signature.";
+            if (s === 'fail') return "Authentication-Results reports DKIM verification failed. Body or signed headers may have changed.";
+            if (s === 'none') return "Authentication-Results reports no DKIM signature was verified.";
+            if (s === 'neutral') return "Authentication-Results reports a DKIM signature that was not valid for this sender.";
         }
 
         if (type === 'dmarc') {
-            if (s === 'pass') return "Email aligns with domain policy (SPF or DKIM passed & aligned). Legitimate.";
+            if (s === 'pass') return "Authentication-Results reports DMARC alignment passed via SPF or DKIM.";
             if (s === 'fail') {
-                if (details.includes('reject')) return "DMARC Failed & Rejected. This email would typically be blocked by gateways.";
-                if (details.includes('quarantine')) return "DMARC Failed & Quarantined. This email is likely in Spam/Junk folder.";
-                return "DMARC Failed. Domain failed policy checks. Strong spoofing indicator.";
+                if (details.includes('reject')) return "Authentication-Results reports DMARC failed against a reject policy.";
+                if (details.includes('quarantine')) return "Authentication-Results reports DMARC failed against a quarantine policy.";
+                return "Authentication-Results reports DMARC failed. This is a strong spoofing indicator.";
             }
-            if (s === 'none') return "No DMARC policy published. Domain is vulnerable to spoofing.";
+            if (s === 'none') return "Authentication-Results reports no DMARC result for this message.";
         }
 
         return "";
     }
 
-    static analyze(authHeader: string | string[]): AnalysisResult['auth'] {
+    static analyze(authHeader?: string | string[]): AnalysisResult['auth'] {
         const result: AnalysisResult['auth'] = {
             spf: { status: 'none', details: 'No SPF check found' },
             dkim: { status: 'none', details: 'No DKIM check found' },
@@ -60,7 +62,7 @@ export class AuthenticationAnalyzer {
         // SPF
         const spfMatch = mainHeader.match(/spf=(\w+)/i);
         if (spfMatch) {
-            result.spf.status = spfMatch[1].toLowerCase() as any;
+            result.spf.status = this.normalizeStatus(spfMatch[1]);
             result.spf.details = mainHeader.match(/spf=[^;]+/)?.[0] || 'Found in headers';
         }
         result.spf.explanation = this.getAuthExplanation('spf', result.spf.status, result.spf.details);
@@ -68,7 +70,7 @@ export class AuthenticationAnalyzer {
         // DKIM
         const dkimMatch = mainHeader.match(/dkim=(\w+)/i);
         if (dkimMatch) {
-            result.dkim.status = dkimMatch[1].toLowerCase() as any;
+            result.dkim.status = this.normalizeStatus(dkimMatch[1]);
             result.dkim.details = mainHeader.match(/dkim=[^;]+/)?.[0] || 'Found in headers';
         }
         result.dkim.explanation = this.getAuthExplanation('dkim', result.dkim.status, result.dkim.details);
@@ -76,7 +78,7 @@ export class AuthenticationAnalyzer {
         // DMARC
         const dmarcMatch = mainHeader.match(/dmarc=(\w+)/i);
         if (dmarcMatch) {
-            result.dmarc.status = dmarcMatch[1].toLowerCase() as any;
+            result.dmarc.status = this.normalizeStatus(dmarcMatch[1]);
             result.dmarc.details = mainHeader.match(/dmarc=[^;]+/)?.[0] || 'Found in headers';
         }
         result.dmarc.explanation = this.getAuthExplanation('dmarc', result.dmarc.status, result.dmarc.details);
@@ -84,24 +86,31 @@ export class AuthenticationAnalyzer {
         return result;
     }
 
-    static analyzeARC(headers: any): AnalysisResult['arc'] {
-        const arcResults = headers['ARC-Authentication-Results'];
-        const arcSeal = headers['ARC-Seal'];
+    private static normalizeStatus(status: string): AuthStatus['status'] {
+        const normalized = status.toLowerCase();
+        const valid: AuthStatus['status'][] = ['pass', 'fail', 'neutral', 'none', 'softfail', 'policy', 'temperror', 'permerror'];
+        return valid.includes(normalized as AuthStatus['status']) ? normalized as AuthStatus['status'] : 'none';
+    }
 
-        if (!arcResults && !arcSeal) return { status: 'none', details: [] };
+    static analyzeARC(headers: HeaderMap): AnalysisResult['arc'] {
+        const arcResults = getHeaderValues(headers, 'ARC-Authentication-Results');
+        const arcSeals = getHeaderValues(headers, 'ARC-Seal');
+
+        if (arcResults.length === 0 && arcSeals.length === 0) return { status: 'none', details: [] };
 
         const details: string[] = [];
         let status: NonNullable<AnalysisResult['arc']>['status'] = 'none';
 
         // 1. Check Chain Validation (ARC-Seal)
         // We look at the most recent seal (top of the list)
-        const seals = Array.isArray(arcSeal) ? arcSeal : [arcSeal];
-        const latestSeal = seals[0] || "";
+        const latestSeal = arcSeals[0] || "";
 
-        if (latestSeal.includes('cv=pass')) {
+        const latestSealLower = latestSeal.toLowerCase();
+
+        if (latestSealLower.includes('cv=pass')) {
             status = 'pass';
             details.push("Chain Validation: Pass (Trusted Forwarder)");
-        } else if (latestSeal.includes('cv=fail')) {
+        } else if (latestSealLower.includes('cv=fail')) {
             status = 'fail';
             details.push("Chain Validation: Fail (Tampered Chain)");
         } else {
@@ -110,13 +119,13 @@ export class AuthenticationAnalyzer {
 
         // 2. Analyze Authentication Results (AAR)
         // We want to find the result from the "Origin" (usually i=1)
-        const aarHeaders = Array.isArray(arcResults) ? arcResults : [arcResults];
+        const aarHeaders = arcResults;
 
         // Find i=1 (Origin) and High index (Latest)
         let originAar = "";
 
         aarHeaders.forEach(h => {
-            if (typeof h === 'string' && h.includes('i=1;')) {
+            if (typeof h === 'string' && h.toLowerCase().includes('i=1;')) {
                 originAar = h;
             }
         });

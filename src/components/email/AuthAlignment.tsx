@@ -12,40 +12,40 @@ interface AuthAlignmentProps {
     dmarc: AuthStatus;
 }
 
-export function AuthAlignment({ spf, dkim, dmarc }: AuthAlignmentProps) {
+function StatusIcon({ status }: { status: string }) {
+    const normalizedStatus = status.toLowerCase();
+    if (normalizedStatus === 'pass') return <CheckCircle className="w-5 h-5 text-green-500" />;
+    if (normalizedStatus === 'fail' || normalizedStatus === 'softfail') return <XCircle className="w-5 h-5 text-red-500" />;
+    if (normalizedStatus === 'none') return <MinusCircle className="w-5 h-5 text-muted-foreground" />;
+    return <HelpCircle className="w-5 h-5 text-amber-500" />;
+}
 
-    const StatusIcon = ({ status }: { status: string }) => {
-        const s = status.toLowerCase();
-        if (s === 'pass') return <CheckCircle className="w-5 h-5 text-green-500" />;
-        if (s === 'fail' || s === 'softfail') return <XCircle className="w-5 h-5 text-red-500" />;
-        if (s === 'none') return <MinusCircle className="w-5 h-5 text-muted-foreground" />;
-        return <HelpCircle className="w-5 h-5 text-amber-500" />;
-    }
-
-    const StatusCard = ({ title, data }: { title: string, data: AuthStatus }) => (
-        <div className="flex flex-col p-4 border rounded-md bg-card shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold text-sm text-muted-foreground">{title}</span>
+function StatusCard({ title, data }: { title: string, data: AuthStatus }) {
+    return (
+        <div className="bg-card flex flex-col rounded-md border p-4 shadow-sm">
+            <div className="mb-2 flex items-center justify-between">
+                <span className="text-muted-foreground text-sm font-semibold">{title}</span>
                 <StatusIcon status={data.status} />
             </div>
-            <div className="text-lg font-bold uppercase tracking-tight mb-1">{data.status}</div>
-            {/* Replaced original span with new div structure for details */}
-            <div className="text-xs mt-1 font-mono break-all text-muted-foreground" title={data.details}>
+            <div className="mb-1 text-lg font-bold uppercase tracking-tight">{data.status}</div>
+            <div className="text-muted-foreground mt-1 break-all font-mono text-xs" title={data.details}>
                 {data.details}
             </div>
             {data.explanation && (
-                <div className="text-xs mt-1.5 text-foreground/80 italic border-l-2 border-primary/20 pl-2">
+                <div className="text-foreground/80 border-primary/20 mt-1.5 border-l-2 pl-2 text-xs italic">
                     {data.explanation}
                 </div>
             )}
         </div>
-    )
+    );
+}
 
+export function AuthAlignment({ spf, dkim, dmarc }: AuthAlignmentProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <StatusCard title="SPF (Sender Policy Framework)" data={spf} />
             <StatusCard title="DKIM (DomainKeys Identified Mail)" data={dkim} />
             <StatusCard title="DMARC (Domain-based Message Auth)" data={dmarc} />
         </div>
-    )
+    );
 }

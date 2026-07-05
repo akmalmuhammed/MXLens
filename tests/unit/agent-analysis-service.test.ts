@@ -29,4 +29,27 @@ describe("agent analysis service", () => {
         expect(result.signals.content).toHaveProperty("extractedUrlCount");
         expect(JSON.stringify(result)).not.toContain("Urgent action required");
     });
+
+    it("handles minimal raw emails without authentication headers", async () => {
+        const result = await analyzeResolvedEmail(
+            {
+                sourceType: "raw",
+                rawEmail: [
+                    "From: sender@example.com",
+                    "To: user@example.com",
+                    "Subject: Smoke Test",
+                    "",
+                    "Hello from unauthenticated API smoke test."
+                ].join("\r\n")
+            },
+            {
+                analyzeBody: true,
+                analyzeAttachments: false
+            }
+        );
+
+        expect(result.verdict).toMatch(/clean|suspicious|malicious|unknown/);
+        expect(result.signals.authentication.authenticationResultsPresent).toBe(false);
+        expect(result.signals.authentication.dmarc).toBe("none");
+    });
 });

@@ -57,17 +57,6 @@ export async function createApiKey(data: {
 }) {
     const session = await requireApiKeyAdmin();
 
-    const org = await db.organization.findUnique({
-        where: { id: session.orgId },
-        select: {
-            planTier: true
-        }
-    });
-
-    if (!org || !["PRO", "ENTERPRISE"].includes(org.planTier)) {
-        return { error: "API access requires a PRO or ENTERPRISE plan." };
-    }
-
     const name = data.name.trim();
     if (name.length < 2 || name.length > 80) {
         return { error: "Name must be between 2 and 80 characters." };

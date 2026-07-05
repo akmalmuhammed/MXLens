@@ -8,19 +8,19 @@ export async function GET() {
         info: {
             title: "MXLens Agent & Automation API",
             version: "1.0.0",
-            description: "Programmatic email analysis for AI agents, automation platforms, and security workflows."
+            description: "Free programmatic email analysis for AI agents, automation platforms, and security workflows. API keys are optional for persisted history and polling."
         },
         servers: [
             {
                 url: "/api/v1"
             }
         ],
-        security: [{ bearerAuth: [] }],
+        security: [],
         paths: {
             "/analyze": {
                 post: {
                     summary: "Analyze one email",
-                    description: "Accepts multipart upload, rawEmail, contentBase64, or safe HTTPS fetchUrl.",
+                    description: "Accepts multipart upload, rawEmail, contentBase64, or safe HTTPS fetchUrl. Authorization is optional.",
                     requestBody: {
                         required: true,
                         content: {
@@ -72,6 +72,7 @@ export async function GET() {
             "/batches": {
                 post: {
                     summary: "Create a bulk analysis batch",
+                    description: "Without an API key, returns completed stateless results directly. With an API key, creates a persisted pollable batch.",
                     requestBody: {
                         required: true,
                         content: {

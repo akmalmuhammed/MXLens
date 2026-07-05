@@ -1,4 +1,5 @@
 import { Detector, DetectionContext, DetectionResult } from "../Detector";
+import { getFirstHeaderValue } from "../../parser/HeaderUtils";
 
 export class ContentUrgencyDetector implements Detector {
     id = "content-urgency";
@@ -20,7 +21,7 @@ export class ContentUrgencyDetector implements Detector {
     detect(context: DetectionContext): DetectionResult | null {
         if (!context.options.checkBody || !context.emailBody) return null;
 
-        const text = (context.emailBody.text + " " + context.header.headers['Subject']).toLowerCase();
+        const text = `${context.emailBody.text || ""} ${getFirstHeaderValue(context.header.headers, 'Subject')}`.toLowerCase();
 
         let urgencyCount = 0;
         let paymentCount = 0;

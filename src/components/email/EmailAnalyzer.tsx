@@ -73,27 +73,11 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
             const { checkAndTrackUsage } = await import("@/actions/analysis");
             const serverResult = await checkAndTrackUsage();
 
-            if (!serverResult.isGuest) {
-                if (!serverResult.allowed) {
-                    setUsageStatus({ allowed: false, message: serverResult.reason });
-                    return false;
-                }
-                return true;
-            }
-
-            const GUEST_LIMIT = 3;
-            const stored = localStorage.getItem('mxlens_guest_usage');
-            const current = parseInt(stored || '0');
-
-            if (current >= GUEST_LIMIT) {
-                setUsageStatus({
-                    allowed: false,
-                    message: "Guest limit reached for this session (3/3)."
-                });
+            if (!serverResult.allowed) {
+                setUsageStatus({ allowed: false, message: serverResult.reason });
                 return false;
             }
 
-            localStorage.setItem('mxlens_guest_usage', (current + 1).toString());
             return true;
         } catch (e) {
             console.error("Usage check failed", e);

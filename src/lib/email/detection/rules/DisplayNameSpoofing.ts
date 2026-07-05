@@ -1,4 +1,5 @@
 import { Detector, DetectionContext, DetectionResult } from "../Detector";
+import { getFirstHeaderValue } from "../../parser/HeaderUtils";
 
 export class DisplayNameSpoofingDetector implements Detector {
     id = "display-name-spoofing";
@@ -8,7 +9,7 @@ export class DisplayNameSpoofingDetector implements Detector {
 
     detect(context: DetectionContext): DetectionResult | null {
         const displayName = context.signals.fromDisplayName;
-        const actualRawFrom = context.header.headers['From'] || "";
+        const actualRawFrom = getFirstHeaderValue(context.header.headers, 'From');
 
         if (!displayName) return null;
 

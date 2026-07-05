@@ -1,6 +1,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { suspendUser, setSystemLockdown, assertSuperAdmin } from '@/actions/admin/emergency';
+import { suspendUser, setSystemLockdown } from '@/actions/admin/emergency';
 import { unblockIpAction } from '@/actions/admin/abuse';
 import * as fs from 'fs';
 
@@ -23,7 +23,6 @@ vi.mock('@prisma/client', () => {
 vi.mock('@/lib/db', () => ({
     db: {
         user: { findUnique: vi.fn().mockImplementation(() => { console.log("MOCK: db.user.findUnique"); return Promise.resolve({}); }) },
-        session: { deleteMany: vi.fn().mockImplementation(() => { console.log("MOCK: db.session.deleteMany"); return Promise.resolve({}); }) },
         apiKey: { update: vi.fn().mockImplementation(() => { console.log("MOCK: db.apiKey.update"); return Promise.resolve({}); }) },
         auditLog: { create: vi.fn().mockImplementation(() => { console.log("MOCK: db.auditLog.create"); return Promise.resolve({}); }) }
     }
@@ -68,6 +67,9 @@ import { auth } from '@/auth';
 import { logAuditAction } from '@/lib/audit';
 import { unblockIp } from '@/lib/security/abuse-detector';
 
+const mockedAuth = vi.mocked(auth);
+const mockedFindUnique = vi.mocked(db.user.findUnique);
+
 console.log("TEST: Imports loaded");
 
 describe('Admin Actions', () => {
@@ -89,8 +91,8 @@ describe('Admin Actions', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         // Default happy path setup
-        (auth as any).mockResolvedValue(mockSession);
-        (db.user.findUnique as any).mockResolvedValue(mockAdminUser);
+        mockedAuth.mockResolvedValue(mockSession);
+        mockedFindUnique.mockResolvedValue(mockAdminUser);
     });
 
     // Skipping due to environmental hang in server action context vs Vitest mocks
@@ -98,8 +100,6 @@ describe('Admin Actions', () => {
         it('should suspend a user successfully when authorized', async () => {
             console.log("IS AUTH MOCK:", vi.isMockFunction(auth));
             console.log("IS REDIS MOCK:", vi.isMockFunction(redis.set));
-            console.log("IS DB MOCK:", vi.isMockFunction(db.session.deleteMany));
-
             if (!vi.isMockFunction(redis.set)) throw new Error("Redis is not mocked!");
 
             const targetId = 'target-user-999';
@@ -109,14 +109,12 @@ describe('Admin Actions', () => {
                 const result = await suspendUser(targetId, reason);
                 console.log("SUSPEND RESULT:", result);
                 expect(result.success).toBe(true);
-            } catch (e: any) {
+            } catch (e: unknown) {
+                const error = e instanceof Error ? e : new Error(String(e));
                 console.error("SUSPEND ERROR:", e);
-                fs.writeFileSync('test_error.log', "ERROR: " + e.message + "\nSTACK: " + e.stack);
+                fs.writeFileSync('test_error.log', "ERROR: " + error.message + "\nSTACK: " + error.stack);
                 throw e; // fail the test
             }
-
-            // Verify DB Session wipe
-            // expect(db.session.deleteMany).toHaveBeenCalled();
 
             // Verify Redis Blocklist
             // expect(redis.set).toHaveBeenCalled();
@@ -128,7 +126,7 @@ describe('Admin Actions', () => {
 
         it('should throw error if not super admin', async () => {
             // Mock non-admin user
-            (db.user.findUnique as any).mockResolvedValue({ ...mockAdminUser, isPlatformAdmin: false });
+            mockedFindUnique.mockResolvedValue({ ...mockAdminUser, isPlatformAdmin: false });
 
             await expect(suspendUser('target', 'reason'))
                 .rejects
@@ -146,8 +144,7 @@ describe('Admin Actions', () => {
             expect(redis.set).toHaveBeenCalledWith('system:lockdown:level', '2');
             expect(logAuditAction).toHaveBeenCalledWith(
                 "SYSTEM_LOCKDOWN",
-                expect.objectContaining({ level: 2 }),
-                undefined // Target ID is undefined for system actions
+                expect.objectContaining({ level: 2 })
             );
         });
     });
@@ -162,8 +159,7 @@ describe('Admin Actions', () => {
             expect(unblockIp).toHaveBeenCalledWith(ip);
             expect(logAuditAction).toHaveBeenCalledWith(
                 "IP_UNBLOCK",
-                expect.objectContaining({ ip }),
-                undefined
+                expect.objectContaining({ ip, action: "manual_unblock" })
             );
         });
     });

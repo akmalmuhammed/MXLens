@@ -11,11 +11,11 @@ export default function Error403() {
             <h1 className="text-6xl font-extrabold text-foreground mb-4">403</h1>
             <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
             <p className="text-muted-foreground max-w-md mb-8">
-                You don't have permission to view this page. This feature might be restricted to premium plans.
+                This page is not available publicly. Email analysis is free and does not require an account.
             </p>
             <div className="flex gap-4">
-                <Link href="/pricing">
-                    <Button variant="outline" className="h-12 px-8">Upgrade Plan</Button>
+                <Link href="/analyze">
+                    <Button variant="outline" className="h-12 px-8">Analyze Free</Button>
                 </Link>
                 <Link href="/">
                     <Button className="h-12 px-8">Return Home</Button>

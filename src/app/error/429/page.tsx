@@ -11,16 +11,16 @@ export default function Error429() {
             <h1 className="text-6xl font-extrabold text-foreground mb-4">429</h1>
             <h2 className="text-2xl font-bold mb-4">Too Many Requests</h2>
             <p className="text-muted-foreground max-w-md mb-8">
-                You've hit your daily limit. Take a breather or upgrade for unlimited access.
+                This request was rate limited temporarily. Email analysis remains free.
             </p>
             <div className="flex gap-4">
-                <Link href="/pricing">
+                <Link href="/analyze">
                     <Button className="h-12 px-8 bg-gradient-to-r from-primary to-cyan-400 text-black hover:opacity-90 transition-opacity">
-                        Upgrade Now
+                        Analyze Free
                     </Button>
                 </Link>
                 <Link href="/">
-                    <Button variant="ghost" className="h-12 px-8">Wait it out</Button>
+                    <Button variant="ghost" className="h-12 px-8">Return Home</Button>
                 </Link>
             </div>
         </div>

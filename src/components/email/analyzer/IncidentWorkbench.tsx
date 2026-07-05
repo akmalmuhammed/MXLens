@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import DOMPurify from "isomorphic-dompurify";
 import {
     ShieldAlert,

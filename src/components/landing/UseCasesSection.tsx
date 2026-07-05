@@ -53,8 +53,8 @@ const useCases = [
         after: "Unified approach, shared rules, consistent verdicts",
         metric: "100%",
         metricLabel: "Consistency",
-        cta: "Explore Team Features",
-        href: "/pricing",
+        cta: "Try It Free",
+        href: "/analyze",
     },
 ];
 

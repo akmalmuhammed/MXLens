@@ -9,18 +9,10 @@ export async function GET() {
         // 1. Fetch Key Metrics
         const [
             totalOrgs,
-            activeOrgs,
-            enterpriseOrgs,
             totalUsers,
-            activeUsers30d, // Logins in last 30d
         ] = await Promise.all([
             db.organization.count(),
-            db.organization.count({ where: { subscriptionStatus: "active" } }),
-            db.organization.count({ where: { planTier: "ENTERPRISE" } }),
             db.user.count(),
-            db.session.count({
-                where: { expires: { gt: new Date() } }, // Proxies active users
-            }),
         ]);
 
         // 2. Fetch Recent Activity (Logs)
@@ -39,7 +31,7 @@ export async function GET() {
         return NextResponse.json({
             overview: {
                 totalUsers,
-                totalOrganizations,
+                totalOrganizations: totalOrgs,
                 totalAnalyses: await db.analysisLog.count(), // Add this back
                 proOrgs,
                 conversionRate: totalOrgs > 0 ? (proOrgs / totalOrgs * 100).toFixed(1) + '%' : '0%'

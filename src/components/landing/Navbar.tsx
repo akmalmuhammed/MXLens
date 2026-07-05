@@ -1,5 +1,6 @@
 "use client";
 
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Shield } from "lucide-react";
@@ -10,7 +11,6 @@ import { usePathname } from "next/navigation";
 const navLinks = [
     { href: "#features", label: "Features" },
     { href: "#how-it-works", label: "How It Works" },
-    { href: "#pricing", label: "Pricing" },
     { href: "#trust", label: "Trust" },
 ];
 
@@ -80,11 +80,25 @@ export const Navbar = () => {
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center gap-4">
                         <Button variant="ghost" size="sm" asChild>
-                            <Link href="/auth/signin">Login</Link>
+                            <Link href="/resources/api-docs">API Docs</Link>
                         </Button>
                         <Button size="sm" className="shadow-glow" asChild>
-                            <Link href="/auth/signup">Sign Up</Link>
+                            <Link href="/analyze">Analyze Free</Link>
                         </Button>
+                        <Show when="signed-out">
+                            <SignInButton mode="modal">
+                                <Button variant="ghost" size="sm">Sign In</Button>
+                            </SignInButton>
+                            <SignUpButton mode="modal">
+                                <Button variant="outline" size="sm">Sign Up</Button>
+                            </SignUpButton>
+                        </Show>
+                        <Show when="signed-in">
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/dashboard">Dashboard</Link>
+                            </Button>
+                            <UserButton />
+                        </Show>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -123,11 +137,27 @@ export const Navbar = () => {
                                 ))}
                                 <div className="flex flex-col gap-2 pt-4 border-t border-border">
                                     <Button variant="ghost" className="w-full" asChild>
-                                        <Link href="/auth/signin">Login</Link>
+                                        <Link href="/resources/api-docs">API Docs</Link>
                                     </Button>
                                     <Button className="w-full shadow-glow" asChild>
-                                        <Link href="/auth/signup">Sign Up</Link>
+                                        <Link href="/analyze">Analyze Free</Link>
                                     </Button>
+                                    <Show when="signed-out">
+                                        <SignInButton mode="modal">
+                                            <Button variant="ghost" className="w-full">Sign In</Button>
+                                        </SignInButton>
+                                        <SignUpButton mode="modal">
+                                            <Button variant="outline" className="w-full">Sign Up</Button>
+                                        </SignUpButton>
+                                    </Show>
+                                    <Show when="signed-in">
+                                        <Button variant="outline" className="w-full" asChild>
+                                            <Link href="/dashboard">Dashboard</Link>
+                                        </Button>
+                                        <div className="flex justify-center py-2">
+                                            <UserButton />
+                                        </div>
+                                    </Show>
                                 </div>
                             </div>
                         </motion.div>
