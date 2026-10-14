@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Spline_Sans, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
+import { CommandPalette } from "@/components/CommandPalette";
 
 const sans = Spline_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-sans", display: "swap" });
 const mono = Spline_Sans_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-mono", display: "swap" });
@@ -22,7 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
                 <style>{`:root{--sans:${sans.style.fontFamily},ui-sans-serif,system-ui,sans-serif;--mono:${mono.style.fontFamily},ui-monospace,monospace;}`}</style>
             </head>
-            <body className={`${sans.variable} ${mono.variable}`}>{children}</body>
+            <body className={`${sans.variable} ${mono.variable}`}>
+                {children}
+                <CommandPalette />
+            </body>
         </html>
     );
 }

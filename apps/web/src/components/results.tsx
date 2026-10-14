@@ -20,7 +20,7 @@ export function FindingsCard({ findings }: { findings: Finding[] }) {
                 </div>
             ) : (
                 findings.map((f) => (
-                    <div className="finding" key={f.ruleId}>
+                    <div className={`finding s-${f.severity}`} key={f.ruleId}>
                         <div className="finding-top">
                             <span className={`sev ${f.severity}`}>{f.severity}</span>
                             <span className="finding-id">{f.ruleId}</span>

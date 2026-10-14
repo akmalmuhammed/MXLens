@@ -1,43 +1,58 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 
 const REPO = "https://github.com/akmalmuhammed/mxlens";
 
+function openPalette() {
+    window.dispatchEvent(new CustomEvent("mxlens:open-cmdk"));
+}
+
 export function TopBar() {
-    const [theme, setTheme] = useState<"dark" | "light">("dark");
+    const pathname = usePathname();
+    const [theme, setThemeState] = useState<"dark" | "light">("dark");
+    const [mac, setMac] = useState(true);
 
     useEffect(() => {
         try {
             const stored = localStorage.getItem("mxlens-theme") as "dark" | "light" | null;
-            if (stored) setTheme(stored);
-        } catch { /* storage may be blocked */ }
+            if (stored) setThemeState(stored);
+        } catch { /* storage blocked */ }
+        setMac(/Mac|iPhone|iPad/.test(navigator.platform) || /Mac/.test(navigator.userAgent));
     }, []);
 
     function toggle() {
         const next = theme === "dark" ? "light" : "dark";
-        setTheme(next);
+        setThemeState(next);
         document.documentElement.setAttribute("data-theme", next);
         try { localStorage.setItem("mxlens-theme", next); } catch { /* ignore */ }
     }
+
+    const is = (p: string) => (p === "/" ? pathname === "/" : pathname.startsWith(p));
 
     return (
         <header className="topbar">
             <div className="wrap topbar-inner">
                 <Link href="/" className="brand">
                     <Logo className="mark" />
-                    MXLens <small>v1</small>
+                    MXLens <span className="ver">v1</span>
                 </Link>
-                <nav>
-                    <Link href="/docs">Docs</Link>
-                    <Link href="/about">About</Link>
+                <nav className="topnav">
+                    <Link href="/" className={is("/") ? "active" : ""}>Analyze</Link>
+                    <Link href="/dashboard" className={is("/dashboard") ? "active" : ""}>Dashboard</Link>
+                    <Link href="/docs" className={is("/docs") ? "active" : ""}>Docs</Link>
                     <a href={REPO} target="_blank" rel="noopener noreferrer">GitHub</a>
-                    <button className="iconbtn" onClick={toggle} aria-label="Toggle light and dark theme" title="Toggle theme">
-                        {theme === "dark" ? "☾" : "☀"}
-                    </button>
                 </nav>
+                <button className="cmdk-btn" onClick={openPalette} aria-label="Open command palette">
+                    <span>Search</span>
+                    <kbd>{mac ? "⌘" : "Ctrl"} K</kbd>
+                </button>
+                <button className="iconbtn" onClick={toggle} aria-label="Toggle light and dark theme" title="Toggle theme">
+                    {theme === "dark" ? "☾" : "☀"}
+                </button>
             </div>
         </header>
     );
