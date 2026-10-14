@@ -56,7 +56,7 @@ export const HeroSection = () => {
                         >
                             Drag. Drop. <span className="text-foreground font-semibold">Verdict in 3 seconds.</span>
                             <br />
-                            Your emails never leave your browser.
+                            Your email content stays in your browser.
                         </motion.p>
 
                         {/* GLOWING Primary CTA */}

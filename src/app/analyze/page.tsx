@@ -16,7 +16,7 @@ export default async function AnalyzePage() {
             </div>
 
             <p className="text-center text-sm text-muted-foreground/60">
-                Your file never leaves this browser tab. All parsing happens locally in WebAssembly.
+                Your file is parsed and scored in this browser tab; its contents are never uploaded. Threat-intel lookups send only IPs, domains and file hashes.
             </p>
         </div>
     );

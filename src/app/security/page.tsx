@@ -24,7 +24,7 @@ export default function SecurityPage() {
                         <SecurityCard
                             icon={FileLock}
                             title="Client-Side Parsing"
-                            description="Parsing of headers and body text happens in your browser via WebAssembly/JS. Only metadata (hashes, domains) is sent for reputation checks."
+                            description="Parsing of headers and body text happens in your browser in JavaScript. Only indicators (IPs, domains, file hashes) are sent for reputation checks."
                         />
                         <SecurityCard
                             icon={WifiOff}
@@ -66,7 +66,7 @@ export default function SecurityPage() {
                         </div>
 
                         <p className="mt-12 text-muted-foreground max-w-2xl mx-auto">
-                            Note: For "Team" tier users who opt-in to centralized logging, metadata is stored encrypted at rest using AES-256 in our SOC 2 Type II compliant infrastructure.
+                            Note: For "Team" tier users who opt-in to centralized logging, metadata is stored encrypted at rest using AES-256 with AES-256-GCM.
                         </p>
                     </div>
                 </section>
@@ -80,8 +80,7 @@ export default function SecurityPage() {
                             <ComplianceLogo text="GDPR Ready" />
                             <ComplianceLogo text="CCPA Compliant" />
                             <ComplianceLogo text="AES-256 Encryption" />
-                            <ComplianceLogo text="SOC 2 Type II (Pending)" />
-                        </div>
+                                                    </div>
                     </div>
                 </section>
 

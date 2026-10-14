@@ -149,17 +149,16 @@ export const ArchitectureSection = () => {
                                     </div>
                                 </div>
                                 <p className="text-sm text-muted-foreground font-mono text-center">
-                                    Your Email → Your Browser Only → <span className="text-destructive">✕ No Server</span>
+                                    Your Email → Your Browser Only → <span className="text-destructive">✕ No upload of content</span>
                                 </p>
                             </div>
 
                             {/* Benefits */}
                             <div className="space-y-3">
                                 {[
-                                    "Zero data leaves your device",
-                                    "Works completely offline",
-                                    "GDPR/HIPAA compliant by design",
-                                    "Verifiable in DevTools (Network tab)",
+                                    "Email body and attachments never uploaded",
+                                    "Only IPs, domains and hashes sent for enrichment",
+                                                                        "Verifiable in DevTools (Network tab)",
                                 ].map((benefit, i) => (
                                     <motion.div
                                         key={i}

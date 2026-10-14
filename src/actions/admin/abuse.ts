@@ -10,6 +10,7 @@ import { AuditAction } from "@prisma/client";
  * Fetch stats for Abuse Dashboard
  */
 export async function getAbuseStats() {
+    await assertSuperAdmin(); // RBAC: blocklist contents are admin-only
     // 1. Get Blocked IPs
     const blockedIps = await redis.smembers("security:blocklist:ips");
 

@@ -10,10 +10,18 @@ import { NextRequest } from "next/server";
 const ADMIN_COOKIE_NAME = "admin_token";
 const SESSION_DURATION_HOURS = 12;
 
-// Secret for JWT (use env or fallback for fail-safe)
-const JWT_SECRET = new TextEncoder().encode(
-    process.env.ADMIN_AUTH_SECRET || process.env.BETTER_AUTH_SECRET || "fallback-admin-secret-do-not-use-in-prod"
-);
+// Secret for JWT. Fail closed: never sign or verify admin tokens with a guessable default.
+let jwtSecret: Uint8Array | null = null;
+
+function getJwtSecret(): Uint8Array {
+    if (jwtSecret) return jwtSecret;
+    const secret = process.env.ADMIN_AUTH_SECRET || process.env.BETTER_AUTH_SECRET;
+    if (!secret || secret.length < 32) {
+        throw new Error("ADMIN_AUTH_SECRET is missing or shorter than 32 characters; admin auth is disabled.");
+    }
+    jwtSecret = new TextEncoder().encode(secret);
+    return jwtSecret;
+}
 
 export type AdminSessionData = {
     userId: string;
@@ -45,7 +53,7 @@ export async function createAdminSession(userId: string, userAgent?: string, ip?
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime(`${SESSION_DURATION_HOURS}h`)
-        .sign(JWT_SECRET);
+        .sign(getJwtSecret());
 
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + SESSION_DURATION_HOURS);
@@ -90,7 +98,7 @@ export async function verifyAdminSession(): Promise<AdminSessionData | null> {
 
     try {
         // 1. Verify JWT signature first (fast)
-        const { payload } = await jwtVerify(token, JWT_SECRET);
+        const { payload } = await jwtVerify(token, getJwtSecret());
         const userId = payload.sub as string;
 
         // 2. Verify Session in DB (secure)

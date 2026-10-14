@@ -1,6 +1,7 @@
 "use server";
 
 import dns from "dns/promises";
+import { allowEnrichment, isPublicDomain } from "@/lib/security/enrichment-guard";
 
 export interface MxRecord {
     exchange: string;
@@ -8,7 +9,8 @@ export interface MxRecord {
 }
 
 export async function resolveMxRecords(domain: string): Promise<MxRecord[]> {
-    if (!domain) return [];
+    if (typeof domain !== "string" || !isPublicDomain(domain)) return [];
+    if (!(await allowEnrichment("dns", 30))) return [];
 
     try {
         const records = await dns.resolveMx(domain);

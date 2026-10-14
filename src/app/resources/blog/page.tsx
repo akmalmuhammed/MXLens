@@ -54,7 +54,7 @@ export default function BlogPage() {
                         category="Product"
                         date="Dec 15, 2024"
                         title="Introducing MXLens V1: The Client-Side Sandbox"
-                        excerpt="Why we rebuilt the email analysis engine from scratch using WebAssembly and Rust."
+                        excerpt="How MXLens parses and scores email entirely in the browser, and what it sends for enrichment."
                     />
 
                     <BlogCard
