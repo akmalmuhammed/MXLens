@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "NodeNext", "moduleResolution": "NodeNext",
+    "lib": ["ES2023"], "strict": true, "skipLibCheck": true,
+    "allowImportingTsExtensions": true, "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true, "erasableSyntaxOnly": true,
+    "declaration": true, "noEmit": true, "types": ["node"],
+    "paths": { "@mxlens/engine": ["../engine/src/index.ts"] }
+  },
+  "include": ["src", "test"]
+}

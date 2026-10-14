@@ -1,0 +1,22 @@
+{
+  "name": "mxlens",
+  "version": "1.0.0",
+  "description": "Command-line phishing analysis for .eml files. Local, explainable, JSON/STIX/Markdown output.",
+  "license": "Apache-2.0",
+  "author": "Akmal Muhammed",
+  "homepage": "https://github.com/akmalmuhammed/mxlens#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/akmalmuhammed/mxlens.git", "directory": "packages/cli" },
+  "keywords": ["phishing", "email", "security", "cli", "eml", "soc", "dfir", "triage"],
+  "type": "module",
+  "bin": { "mxlens": "./dist/index.js" },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types --no-warnings \"test/**/*.test.ts\""
+  },
+  "dependencies": { "@mxlens/engine": "1.0.0" },
+  "devDependencies": { "@types/node": "^22.10.0", "typescript": "^5.9.3" },
+  "publishConfig": { "access": "public", "provenance": true }
+}

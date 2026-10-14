@@ -1,0 +1,22 @@
+Received: from mx.docusign-envelope-review.top (mx.docusign-envelope-review.top [203.0.113.120]) by mx.example.org (Postfix) with ESMTPS id 242424 for <jordan.lee@example.org>; Thu, 12 Feb 2026 09:40:17 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@docusign-envelope-review.top; dkim=pass header.d=docusign-envelope-review.top header.s=ds1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=docusign-envelope-review.top
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=docusign-envelope-review.top; s=ds1; t=1770889217; bh=MXlensFakeBodyHashVVV=; h=From:To:Subject:Date; b=RE9DVVNJR05fMjRfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JF
+From: "DocuSign" <dse@docusign-envelope-review.top>
+To: jordan.lee@example.org
+Subject: Please DocuSign: Vendor Agreement 2026
+Date: Thu, 12 Feb 2026 09:40:15 +0000
+Message-ID: <24-ds@docusign-envelope-review.top>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b24alt"
+
+--b24alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+You have a document to review and sign. Review: https://docusign-envelope-review.top/sign?e=9920
+--b24alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>You have a document to review and sign: <b>Vendor Agreement 2026</b>.</p><p><a href="https://docusign-envelope-review.top/sign?e=9920">Review Document</a></p><p style="font-size:11px;color:#888">Powered by DocuSign</p></body></html>
+--b24alt--

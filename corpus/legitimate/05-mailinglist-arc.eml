@@ -1,0 +1,20 @@
+ARC-Seal: i=1; a=rsa-sha256; d=lists.example.net; s=arc1; t=1768640000; cv=none; b=QVJDU0VBTF9MMDVfRkFLRV9WQUxVRV9OT1RfUkVBTF9BQUFB
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=lists.example.net; s=arc1; t=1768640000; h=From:To:Subject:Date; bh=MXlensFakeBodyHashL05=; b=QVJDTVNHX0wwNV9GQUtFX1ZBTFVFX05PVF9SRUFMX0JCQkJCQg==
+ARC-Authentication-Results: i=1; lists.example.net; spf=pass smtp.mailfrom=alex.rivera@partner.example.com; dkim=pass header.d=partner.example.com header.s=pk1; dmarc=pass (p=NONE) header.from=partner.example.com
+Received: from relay.lists.example.net (relay.lists.example.net [192.0.2.240]) by mx.example.org (Postfix) with ESMTPS id L050505 for <jordan.lee@example.org>; Fri, 16 Jan 2026 10:00:10 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=fail smtp.mailfrom=bounce@lists.example.net; dkim=fail header.d=partner.example.com; dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=partner.example.com; arc=pass (i=1 spf=pass dkim=pass dmarc=pass)
+From: "Alex Rivera" <alex.rivera@partner.example.com>
+To: devlist@lists.example.net
+Subject: [dev] Notes from the sync
+Date: Fri, 16 Jan 2026 10:00:08 +0000
+Message-ID: <sync-notes-01@partner.example.com>
+List-Id: <devlist.lists.example.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi all,
+
+Notes from today's sync are in the wiki. The mailing list rewrites the body so the original DKIM no longer validates at the final hop, but the ARC chain preserves the original pass.
+
+Alex

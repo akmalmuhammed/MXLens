@@ -1,0 +1,22 @@
+Received: from mail.atlassian.net (mail.atlassian.net [192.0.2.130]) by mx.example.org (Postfix) with ESMTPS id L212121 for <jordan.lee@example.org>; Thu, 29 Jan 2026 08:05:10 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.atlassian.net; dkim=pass header.d=atlassian.net header.s=jira1; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=atlassian.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=atlassian.net; s=jira1; t=1769673910; bh=MXlensFakeBodyHashL21=; h=From:To:Subject:Date; b=SklSQV9MMjFfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JFQUxZ
+From: "Brightleaf Jira" <jira@brightleaf.atlassian.net>
+To: jordan.lee@example.org
+Subject: (DEV-412) Sam Okoye assigned an issue to you
+Date: Thu, 29 Jan 2026 08:05:08 +0000
+Message-ID: <jira-DEV-412@atlassian.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L21alt"
+
+--L21alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Sam Okoye assigned DEV-412 'Fix pagination' to you. View: https://brightleaf.atlassian.net/browse/DEV-412
+--L21alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Sam Okoye assigned <b>DEV-412</b> &ldquo;Fix pagination&rdquo; to you.</p><p><a href="https://brightleaf.atlassian.net/browse/DEV-412">View issue</a></p></body></html>
+--L21alt--

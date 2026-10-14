@@ -1,0 +1,22 @@
+Received: from mail.linkedin.com (mail.linkedin.com [192.0.2.11]) by mx.example.org (Postfix) with ESMTPS id L060606 for <jordan.lee@example.org>; Mon, 19 Jan 2026 12:05:30 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.linkedin.com; dkim=pass header.d=linkedin.com header.s=d2048; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=linkedin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linkedin.com; s=d2048; t=1768824330; bh=MXlensFakeBodyHashL06=; h=From:To:Subject:Date; b=TElOS0VESU5fTDA2X0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVFk=
+From: "LinkedIn" <notifications-noreply@linkedin.com>
+To: jordan.lee@example.org
+Subject: You have 3 new connection requests
+Date: Mon, 19 Jan 2026 12:05:28 +0000
+Message-ID: <li-conn-3321@linkedin.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L06alt"
+
+--L06alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+You have 3 new invitations to connect. View them: https://lnkd.in/eXAMple3
+--L06alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>You have 3 new invitations to connect.</p><p><a href="https://lnkd.in/eXAMple3">View invitations</a></p></body></html>
+--L06alt--

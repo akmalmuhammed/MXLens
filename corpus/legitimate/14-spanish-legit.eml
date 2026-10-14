@@ -1,0 +1,32 @@
+Received: from mail.example.com (mail.example.com [192.0.2.43]) by mx.example.org (Postfix) with ESMTPS id L141414 for <jordan.lee@example.org>; Fri, 23 Jan 2026 13:33:10 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=rrhh@example.com; dkim=pass header.d=example.com header.s=sel1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=example.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=sel1; t=1769175190; bh=MXlensFakeBodyHashL14=; h=From:To:Subject:Date; b=U1BBTklTSF9MMTRfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JF
+From: "Equipo de RRHH" <rrhh@example.com>
+To: jordan.lee@example.org
+Subject: =?UTF-8?Q?Recordatorio=3A_d=C3=ADa_festivo_el_lunes?=
+Date: Fri, 23 Jan 2026 13:33:08 +0000
+Message-ID: <rrhh-fest-01@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L14alt"
+
+--L14alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hola Jordan,
+
+Les recordamos que el lunes es dia festivo y la oficina permanecera cerrada. Mas informacion en el portal interno: https://intranet.example.com/festivos
+
+Saludos,
+Equipo de RRHH
+
+--L14alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+PGh0bWw+PGJvZHk+PHA+SG9sYSBKb3JkYW4sPC9wPjxwPkxlcyByZWNvcmRhbW9zIHF1ZSBlbCBs
+dW5lcyBlcyBkw61hIGZlc3Rpdm8geSBsYSBvZmljaW5hIHBlcm1hbmVjZXLDoSBjZXJyYWRhLiBN
+w6FzIGluZm9ybWFjacOzbiBlbiBlbCBwb3J0YWwgaW50ZXJubzogPGEgaHJlZj0iaHR0cHM6Ly9p
+bnRyYW5ldC5leGFtcGxlLmNvbS9mZXN0aXZvcyI+aW50cmFuZXQuZXhhbXBsZS5jb20vZmVzdGl2
+b3M8L2E+PC9wPjxwPlNhbHVkb3MsPGJyPkVxdWlwbyBkZSBSUkhIPC9wPjwvYm9keT48L2h0bWw+
+--L14alt--

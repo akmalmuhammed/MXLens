@@ -1,0 +1,26 @@
+{
+  "name": "@mxlens/mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for local email phishing analysis with MXLens.",
+  "license": "Apache-2.0",
+  "author": "Akmal Muhammed",
+  "homepage": "https://github.com/akmalmuhammed/mxlens#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/akmalmuhammed/mxlens.git", "directory": "packages/mcp" },
+  "keywords": ["mcp", "model-context-protocol", "phishing", "email", "security", "ai-agent"],
+  "type": "module",
+  "bin": { "mxlens-mcp": "./dist/index.js" },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types --no-warnings \"test/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@mxlens/engine": "1.0.0",
+    "@modelcontextprotocol/sdk": "^1.21.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": { "@types/node": "^22.10.0", "typescript": "^5.9.3" },
+  "publishConfig": { "access": "public", "provenance": true }
+}

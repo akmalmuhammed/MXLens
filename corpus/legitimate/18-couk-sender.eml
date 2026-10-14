@@ -1,0 +1,22 @@
+Received: from mail.example.co.uk (mail.example.co.uk [192.0.2.101]) by mx.example.org (Postfix) with ESMTPS id L181818 for <jordan.lee@example.org>; Tue, 27 Jan 2026 15:12:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=notifications@mail.example.co.uk; dkim=pass header.d=example.co.uk header.s=uk1; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=example.co.uk
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.co.uk; s=uk1; t=1769526720; bh=MXlensFakeBodyHashL18=; h=From:To:Subject:Date; b=Q09VS19MMThfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JFQUxZ
+From: "Example UK" <notifications@mail.example.co.uk>
+To: jordan.lee@example.org
+Subject: Your monthly statement is ready
+Date: Tue, 27 Jan 2026 15:11:58 +0000
+Message-ID: <uk-stmt-2026-01@example.co.uk>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L18alt"
+
+--L18alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your monthly statement is ready. View it: https://www.example.co.uk/statements
+--L18alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Your monthly statement is ready.</p><p><a href="https://www.example.co.uk/statements">View statement</a></p></body></html>
+--L18alt--

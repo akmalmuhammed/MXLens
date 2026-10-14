@@ -1,0 +1,22 @@
+Received: from relay.account-verify-center.xyz (relay.account-verify-center.xyz [203.0.113.19]) by mx.example.org (Postfix) with ESMTP id 4D4D4D for <jordan.lee@example.org>; Thu, 15 Jan 2026 12:30:41 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@account-verify-center.xyz; dkim=pass header.d=account-verify-center.xyz header.s=d1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=account-verify-center.xyz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=account-verify-center.xyz; s=d1; t=1768480241; bh=MXlensFakeBodyHashCCC=; h=From:To:Subject:Date; b=RElTUExBWV9OQU1FX0FERFJfMDRfRkFLRV9TSUdfTk9UX1JFQUw=
+From: "security@paypal.com" <alerts@account-verify-center.xyz>
+To: jordan.lee@example.org
+Subject: Security notice regarding your account
+Date: Thu, 15 Jan 2026 12:30:39 +0000
+Message-ID: <04-dn@account-verify-center.xyz>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b04alt"
+
+--b04alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+A new device signed in. Review activity: https://account-verify-center.xyz/review
+--b04alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>A new device signed in to your account.</p><p><a href="https://account-verify-center.xyz/review">Review activity</a></p></body></html>
+--b04alt--

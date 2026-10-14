@@ -1,0 +1,17 @@
+Received: from mail-sor-f69.google.com (mail-sor-f69.google.com [192.0.2.120]) by mx.example.org (Postfix) with ESMTPS id L202020 for <jordan.lee@example.org>; Wed, 28 Jan 2026 19:15:40 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=taylor.m.brooks@gmail.com; dkim=pass header.d=gmail.com header.s=20230601; dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20230601; t=1769627740; bh=MXlensFakeBodyHashL20=; h=From:To:Subject:Date; b=R01BSUxfTDIwX0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVF9SRUFM
+From: "Taylor Brooks" <taylor.m.brooks@gmail.com>
+To: jordan.lee@example.org
+Subject: photos from the weekend
+Date: Wed, 28 Jan 2026 19:15:38 +0000
+Message-ID: <CAFpersonal01@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hey Jordan,
+
+Great seeing you Saturday! I'll bring the photos to the office next week. No rush on the hiking plan - whenever you're free.
+
+Taylor

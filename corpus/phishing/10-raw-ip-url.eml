@@ -1,0 +1,21 @@
+Received: from [203.0.113.45] (unknown [203.0.113.45]) by mx.example.org (Postfix) with ESMTP id A0A0A0 for <jordan.lee@example.org>; Fri, 23 Jan 2026 08:12:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=none smtp.mailfrom=admin@o365-notice.info; dkim=none; dmarc=none header.from=o365-notice.info
+From: "Office 365" <admin@o365-notice.info>
+To: jordan.lee@example.org
+Subject: Re-authenticate your mailbox
+Date: Fri, 23 Jan 2026 08:11:58 +0000
+Message-ID: <10-ip@o365-notice.info>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b10alt"
+
+--b10alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your mailbox could not sync. Re-authenticate: http://203.0.113.45/office365/login.php
+--b10alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Your mailbox could not sync. Please re-authenticate.</p><p><a href="http://203.0.113.45/office365/login.php">Re-authenticate now</a></p></body></html>
+--b10alt--

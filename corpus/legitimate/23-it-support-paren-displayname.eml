@@ -1,0 +1,22 @@
+Received: from mail.example.org (mail.example.org [192.0.2.46]) by mx.example.org (Postfix) with ESMTPS id L232323 for <jordan.lee@example.org>; Fri, 30 Jan 2026 09:20:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=it@example.org; dkim=pass header.d=example.org header.s=sel1; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=example.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.org; s=sel1; t=1769764800; bh=MXlensFakeBodyHashL23=; h=From:To:Subject:Date; b=SVRTVVBQX0wyM19GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVB
+From: "IT Support (example.org)" <it@example.org>
+To: jordan.lee@example.org
+Subject: Scheduled maintenance this weekend
+Date: Fri, 30 Jan 2026 09:19:58 +0000
+Message-ID: <it-maint-0130@example.org>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L23alt"
+
+--L23alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Heads up: email will be briefly unavailable Saturday 02:00-03:00 for maintenance. Details: https://it.example.org/status
+--L23alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Heads up: email will be briefly unavailable Saturday 02:00-03:00 for maintenance.</p><p><a href="https://it.example.org/status">Status page</a></p></body></html>
+--L23alt--

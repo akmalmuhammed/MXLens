@@ -1,0 +1,23 @@
+Received: from smtp.vendor-portal.example.net (smtp.vendor-portal.example.net [198.51.100.60]) by mx.example.org (Postfix) with ESMTPS id 7A7A7A for <jordan.lee@example.org>; Tue, 20 Jan 2026 11:05:14 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=billing@vendor-portal.example.net; dkim=pass header.d=vendor-portal.example.net header.s=v1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=vendor-portal.example.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vendor-portal.example.net; s=v1; t=1768907114; bh=MXlensFakeBodyHashFFF=; h=From:To:Subject:Date; b=UkVQTFlUT18wN19GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVBTA==
+From: "Accounts Receivable" <billing@vendor-portal.example.net>
+To: jordan.lee@example.org
+Subject: Updated remittance instructions
+Date: Tue, 20 Jan 2026 11:05:12 +0000
+Message-ID: <07-rt@vendor-portal.example.net>
+MIME-Version: 1.0
+Reply-To: accounts@secure-billing-update.info
+Content-Type: multipart/alternative; boundary="b07alt"
+
+--b07alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Please note our remittance details have changed. Reply to confirm receipt.
+--b07alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Please note our remittance details have changed. Reply to confirm receipt.</p></body></html>
+--b07alt--

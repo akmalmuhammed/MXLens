@@ -1,0 +1,22 @@
+Received: from a1.amazonses.com (a1.amazonses.com [192.0.2.220]) by mx.example.org (Postfix) with ESMTPS id L030303 for <jordan.lee@example.org>; Wed, 14 Jan 2026 20:11:05 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounces.amazon.com; dkim=pass header.d=amazon.com header.s=yj2vq; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=amazon.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amazon.com; s=yj2vq; t=1768507865; bh=MXlensFakeBodyHashL03=; h=From:To:Subject:Date; b=QU1BWk9OX0wwM19GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVBTA==
+From: "Amazon.com" <shipment-tracking@amazon.com>
+To: jordan.lee@example.org
+Subject: Your package has shipped
+Date: Wed, 14 Jan 2026 20:11:03 +0000
+Message-ID: <ship-77a1@amazon.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L03alt"
+
+--L03alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your order of 'USB-C Cable' has shipped. Track it: https://www.amazon.com/gp/r.html?C=ABCDEF&R=track123&T=C
+--L03alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Your order of <b>USB-C Cable</b> has shipped.</p><p><a href="https://www.amazon.com/gp/r.html?C=ABCDEF&amp;R=track123&amp;T=C">Track your package</a></p></body></html>
+--L03alt--

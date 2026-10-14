@@ -1,0 +1,22 @@
+Received: from mail.dhl.com (mail.dhl.com [192.0.2.91]) by mx.example.org (Postfix) with ESMTPS id L171717 for <jordan.lee@example.org>; Tue, 27 Jan 2026 08:50:12 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.dhl.com; dkim=pass header.d=dhl.com header.s=dhl1; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=dhl.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dhl.com; s=dhl1; t=1769503812; bh=MXlensFakeBodyHashL17=; h=From:To:Subject:Date; b=REhMX0wxN19GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVBTF9Z
+From: "DHL Express" <noreply@dhl.com>
+To: jordan.lee@example.org
+Subject: Your shipment 1234567890 is on its way
+Date: Tue, 27 Jan 2026 08:50:10 +0000
+Message-ID: <dhl-ship-1234567890@dhl.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L17alt"
+
+--L17alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your shipment 1234567890 is on its way. Track: https://www.dhl.com/track?id=1234567890
+--L17alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Your shipment <b>1234567890</b> is on its way.</p><p><a href="https://www.dhl.com/track?id=1234567890">Track your shipment</a></p></body></html>
+--L17alt--

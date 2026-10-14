@@ -1,0 +1,25 @@
+Return-Path: <bounce+jordan.lee=example.org@bounces.esp-mailer.net>
+Received: from mta7.bounces.esp-mailer.net (mta7.bounces.esp-mailer.net [192.0.2.230]) by mx.example.org (Postfix) with ESMTPS id L040404 for <jordan.lee@example.org>; Thu, 15 Jan 2026 08:30:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounces.esp-mailer.net; dkim=pass header.d=example.com header.s=esp1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=example.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=esp1; t=1768552200; bh=MXlensFakeBodyHashL04=; h=From:To:Subject:Date; b=TkVXU0xFVFRFUl9MMDRfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9U
+From: "Brightleaf Weekly" <news@example.com>
+To: jordan.lee@example.org
+Subject: This week at Brightleaf: 5 reads
+Date: Thu, 15 Jan 2026 08:29:58 +0000
+Message-ID: <nl-2026w03@esp-mailer.net>
+List-Unsubscribe: <https://example.com/unsubscribe?u=9920>, <mailto:unsub@bounces.esp-mailer.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L04alt"
+
+--L04alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+This week's picks. Read online: https://bit.ly/brightleaf-w03
+Unsubscribe: https://example.com/unsubscribe?u=9920
+--L04alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>This week's picks from Brightleaf.</p><p><a href="https://bit.ly/brightleaf-w03">Read this week online</a></p><img src="https://track.esp-mailer.net/o/9920.gif" width="1" height="1" alt=""><p><a href="https://example.com/unsubscribe?u=9920">Unsubscribe</a></p></body></html>
+--L04alt--

@@ -1,0 +1,26 @@
+Received: from mail.example.com (mail.example.com [192.0.2.44]) by mx.example.org (Postfix) with ESMTPS id L151515 for <jordan.lee@example.org>; Mon, 26 Jan 2026 09:00:05 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=sam.okoye@example.com; dkim=pass header.d=example.com header.s=sel1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=example.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=sel1; t=1769418005; bh=MXlensFakeBodyHashL15=; h=From:To:Subject:Date; b=SUNTX0wxNV9GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVBTF9Z
+From: "Sam Okoye" <sam.okoye@example.com>
+To: jordan.lee@example.org
+Subject: Invitation: 1:1 with Sam @ Wed Jan 28
+Date: Mon, 26 Jan 2026 09:00:03 +0000
+Message-ID: <cal-inv-9920@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="L15mix"
+
+--L15mix
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+You have been invited to '1:1 with Sam' on Wed Jan 28 at 15:00 UTC.
+--L15mix
+Content-Type: text/calendar; name="invite.ics"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invite.ics"
+
+QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0V4YW1wbGUvL0VODQpCRUdJ
+TjpWRVZFTlQNClVJRDpldnQtOTkyMEBleGFtcGxlLmNvbQ0KRFRTVEFNUDoyMDI2MDEyNlQwOTAw
+MDBaDQpEVFNUQVJUOjIwMjYwMTI4VDE1MDAwMFoNCkRURU5EOjIwMjYwMTI4VDE1MzAwMFoNClNV
+TU1BUlk6MToxIHdpdGggU2FtDQpFTkQ6VkVWRU5UDQpFTkQ6VkNBTEVOREFSDQo=
+--L15mix--

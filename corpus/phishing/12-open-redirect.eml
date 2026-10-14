@@ -1,0 +1,22 @@
+Received: from relay.account-verify-center.xyz (relay.account-verify-center.xyz [203.0.113.22]) by mx.example.org (Postfix) with ESMTPS id C2C2C2 for <jordan.lee@example.org>; Tue, 27 Jan 2026 09:18:44 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@account-verify-center.xyz; dkim=pass header.d=account-verify-center.xyz header.s=d1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=account-verify-center.xyz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=account-verify-center.xyz; s=d1; t=1769505524; bh=MXlensFakeBodyHashJJJ=; h=From:To:Subject:Date; b=T1BFTl9SRURJUkVDVF8xMl9GQUtFX1NJR05fVkFMVUVfTk9UX1JF
+From: "Google Docs" <share@account-verify-center.xyz>
+To: jordan.lee@example.org
+Subject: A document was shared with you
+Date: Tue, 27 Jan 2026 09:18:42 +0000
+Message-ID: <12-or@account-verify-center.xyz>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b12alt"
+
+--b12alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Open the shared document: https://www.google.com/url?q=https://account-verify-center.xyz/doc-login&sa=D
+--b12alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>A document "Q1 Budget" was shared with you.</p><p><a href="https://www.google.com/url?q=https://account-verify-center.xyz/doc-login&amp;sa=D&amp;source=editors">Open in Docs</a></p></body></html>
+--b12alt--

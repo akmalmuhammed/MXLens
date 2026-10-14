@@ -1,0 +1,14 @@
+MXLens
+Copyright 2026 Akmal Muhammed and MXLens contributors
+
+This product includes software developed as an open-source project.
+Licensed under the Apache License, Version 2.0.
+
+Third-party components (see each package's dependencies for full terms):
+- postal-mime (MIT) — MIME parsing
+- tldts (MIT) — Public Suffix List lookups
+- @modelcontextprotocol/sdk (MIT) — MCP server
+
+The bundled email corpus under corpus/ is entirely synthetic. It contains no
+real personal data; all domains use RFC 2606 reserved names and all IP
+addresses use RFC 5737 documentation ranges.

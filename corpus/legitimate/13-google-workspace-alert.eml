@@ -1,0 +1,22 @@
+Received: from mail-yw1.google.com (mail-yw1.google.com [192.0.2.71]) by mx.example.org (Postfix) with ESMTPS id L131313 for <jordan.lee@example.org>; Fri, 23 Jan 2026 07:05:21 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.google.com; dkim=pass header.d=google.com header.s=20230601; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=google.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20230601; t=1769151921; bh=MXlensFakeBodyHashL13=; h=From:To:Subject:Date; b=R09PR0xFX0wxM19GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVB
+From: "Google" <no-reply@google.com>
+To: jordan.lee@example.org
+Subject: Security alert: new sign-in on Windows
+Date: Fri, 23 Jan 2026 07:05:19 +0000
+Message-ID: <goog-sec-2231@google.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L13alt"
+
+--L13alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+A new sign-in to your Google Account on Windows. Check activity: https://myaccount.google.com/notifications
+--L13alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>A new sign-in to your Google Account on a Windows device.</p><p><a href="https://myaccount.google.com/notifications">Check activity</a></p></body></html>
+--L13alt--

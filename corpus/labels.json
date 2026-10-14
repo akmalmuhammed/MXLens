@@ -1,0 +1,421 @@
+{
+  "version": 1,
+  "description": "MXLens synthetic, labeled email corpus. Every message is invented; recipients are @example.org, IPs are documentation ranges, and no real person or mailbox appears. For training and testing phishing analysis only.",
+  "messages": [
+    {
+      "file": "phishing/01-spoofed-paypal-dmarc-fail.eml",
+      "label": "phishing",
+      "techniques": [
+        "spoofed-domain",
+        "dmarc-fail",
+        "urgency",
+        "link-text-mismatch"
+      ],
+      "notes": "Exact paypal.com in From but SPF fail, DKIM none, DMARC p=reject fail; link to throwaway domain."
+    },
+    {
+      "file": "phishing/02-lookalike-paypa1.eml",
+      "label": "phishing",
+      "techniques": [
+        "lookalike-domain",
+        "urgency"
+      ],
+      "notes": "Typosquat paypa1 (1 for l); auth passes for the lookalike's own domain, which is the tell."
+    },
+    {
+      "file": "phishing/03-homograph-punycode.eml",
+      "label": "phishing",
+      "techniques": [
+        "homograph",
+        "lookalike-domain"
+      ],
+      "notes": "Punycode xn--paypl-7ve.com is Cyrillic-a paypal; renders as paypal.com in many clients."
+    },
+    {
+      "file": "phishing/04-display-name-address.eml",
+      "label": "phishing",
+      "techniques": [
+        "display-name-address",
+        "lookalike-domain"
+      ],
+      "notes": "Display name is literally security@paypal.com but the real address is account-verify-center.xyz."
+    },
+    {
+      "file": "phishing/05-brand-display-name.eml",
+      "label": "phishing",
+      "techniques": [
+        "brand-display-name",
+        "urgency"
+      ],
+      "notes": "Microsoft 365 only in display name; sender and link are an unrelated .info domain."
+    },
+    {
+      "file": "phishing/06-freemail-bec-giftcard.eml",
+      "label": "phishing",
+      "techniques": [
+        "freemail-bec",
+        "reply-to-mismatch",
+        "urgency"
+      ],
+      "notes": "Freemail CEO impersonation, gift-card request, no links, Reply-To to a different freemail."
+    },
+    {
+      "file": "phishing/07-replyto-mismatch.eml",
+      "label": "phishing",
+      "techniques": [
+        "reply-to-mismatch",
+        "payment-change"
+      ],
+      "notes": "Message passes auth for its own domain, but Reply-To silently diverts to secure-billing-update.info."
+    },
+    {
+      "file": "phishing/08-link-text-mismatch.eml",
+      "label": "phishing",
+      "techniques": [
+        "link-text-mismatch",
+        "urgency"
+      ],
+      "notes": "Anchor text is https://www.paypal.com/activity but href points to account-verify-center.xyz."
+    },
+    {
+      "file": "phishing/09-brand-in-subdomain.eml",
+      "label": "phishing",
+      "techniques": [
+        "brand-in-subdomain",
+        "urgency"
+      ],
+      "notes": "paypal.com appears as a subdomain label of secure-session.net, the real registrable domain."
+    },
+    {
+      "file": "phishing/10-raw-ip-url.eml",
+      "label": "phishing",
+      "techniques": [
+        "ip-url",
+        "urgency"
+      ],
+      "notes": "Login link points at a raw documentation-range IP address over HTTP."
+    },
+    {
+      "file": "phishing/11-shortener-urgency.eml",
+      "label": "phishing",
+      "techniques": [
+        "url-shortener",
+        "urgency"
+      ],
+      "notes": "bit.ly link hides the destination, paired with a payroll deadline threat."
+    },
+    {
+      "file": "phishing/12-open-redirect.eml",
+      "label": "phishing",
+      "techniques": [
+        "open-redirect",
+        "link-text-mismatch"
+      ],
+      "notes": "Abuses google.com/url?q= open redirector so the visible host is google.com but it bounces to attacker."
+    },
+    {
+      "file": "phishing/13-credential-form-body.eml",
+      "label": "phishing",
+      "techniques": [
+        "credential-form"
+      ],
+      "notes": "Login form embedded directly in the HTML body, posting credentials to an attacker domain."
+    },
+    {
+      "file": "phishing/14-html-attachment.eml",
+      "label": "phishing",
+      "techniques": [
+        "html-attachment",
+        "credential-form"
+      ],
+      "notes": "login.html attachment hosts a credential form posting to the attacker, bypassing URL scanners."
+    },
+    {
+      "file": "phishing/15-dangerous-js-attachment.eml",
+      "label": "phishing",
+      "techniques": [
+        "dangerous-attachment"
+      ],
+      "notes": "Executable .js attachment (harmless placeholder bytes) disguised as an invoice."
+    },
+    {
+      "file": "phishing/16-double-ext-rtlo.eml",
+      "label": "phishing",
+      "techniques": [
+        "double-extension",
+        "rtlo",
+        "dangerous-attachment"
+      ],
+      "notes": "One attachment is invoice.pdf.exe; the other uses a U+202E right-to-left override to hide .exe."
+    },
+    {
+      "file": "phishing/17-magic-mismatch-pdf.eml",
+      "label": "phishing",
+      "techniques": [
+        "magic-mismatch",
+        "dangerous-attachment"
+      ],
+      "notes": "File named invoice.pdf but its bytes begin with the MZ (PE executable) magic number."
+    },
+    {
+      "file": "phishing/18-macro-docm.eml",
+      "label": "phishing",
+      "techniques": [
+        "macro",
+        "dangerous-attachment"
+      ],
+      "notes": "Macro-enabled .docm with the classic 'Enable Content' lure (harmless placeholder bytes)."
+    },
+    {
+      "file": "phishing/19-encrypted-archive.eml",
+      "label": "phishing",
+      "techniques": [
+        "encrypted-archive",
+        "dangerous-attachment"
+      ],
+      "notes": "Password-in-body ('password is 4471') archive lure to defeat attachment scanning."
+    },
+    {
+      "file": "phishing/20-fake-reply-payment-change.eml",
+      "label": "phishing",
+      "techniques": [
+        "fake-reply",
+        "payment-change"
+      ],
+      "notes": "Subject RE: but no In-Reply-To/References; fabricated thread requesting new bank details."
+    },
+    {
+      "file": "phishing/21-data-uri.eml",
+      "label": "phishing",
+      "techniques": [
+        "data-uri",
+        "credential-form"
+      ],
+      "notes": "Links use a base64 data: URI (inline credential form) and a javascript: URI."
+    },
+    {
+      "file": "phishing/22-hidden-text-lure.eml",
+      "label": "phishing",
+      "techniques": [
+        "hidden-text",
+        "credential-form",
+        "urgency"
+      ],
+      "notes": "display:none and font-size:0 spans pad the body to dilute spam scoring around a credential lure."
+    },
+    {
+      "file": "phishing/23-callback-geeksquad.eml",
+      "label": "phishing",
+      "techniques": [
+        "callback"
+      ],
+      "notes": "Fake Geek Squad renewal invoice with a refund phone number and no links (TOAD/callback phishing)."
+    },
+    {
+      "file": "phishing/24-docusign-lookalike.eml",
+      "label": "phishing",
+      "techniques": [
+        "lookalike-domain",
+        "link-text-mismatch"
+      ],
+      "notes": "DocuSign-branded lure from docusign-envelope-review.top linking to a .top signing page."
+    },
+    {
+      "file": "legitimate/01-github-password-reset.eml",
+      "label": "legitimate",
+      "tricky": [
+        "password-reset-language"
+      ],
+      "notes": "Genuine GitHub reset: contains 'reset your password' and a link, but all auth passes and links stay on github.com."
+    },
+    {
+      "file": "legitimate/02-paypal-receipt.eml",
+      "label": "legitimate",
+      "tricky": [
+        "brand-money-language"
+      ],
+      "notes": "Genuine PayPal receipt; links stay on paypal.com and auth passes DMARC p=reject."
+    },
+    {
+      "file": "legitimate/03-amazon-shipping.eml",
+      "label": "legitimate",
+      "tricky": [
+        "redirect-tracking-link"
+      ],
+      "notes": "Amazon's own gp/r.html click-tracker looks redirector-ish but is legitimate and on amazon.com."
+    },
+    {
+      "file": "legitimate/04-newsletter-esp.eml",
+      "label": "legitimate",
+      "tricky": [
+        "shortener",
+        "esp-return-path",
+        "tracking-pixel"
+      ],
+      "notes": "ESP-sent newsletter: Return-Path is the ESP bounce domain but DKIM d=example.com aligns and DMARC passes; bit.ly + pixel are benign."
+    },
+    {
+      "file": "legitimate/05-mailinglist-arc.eml",
+      "label": "legitimate",
+      "tricky": [
+        "auth-fail-arc-pass",
+        "mailing-list"
+      ],
+      "notes": "Final-hop SPF/DKIM/DMARC fail because a list modified the message, but ARC chain shows the origin passed."
+    },
+    {
+      "file": "legitimate/06-linkedin-notification.eml",
+      "label": "legitimate",
+      "tricky": [
+        "shortener-lnkd"
+      ],
+      "notes": "LinkedIn's own lnkd.in shortener is legitimate; sender passes DMARC p=reject."
+    },
+    {
+      "file": "legitimate/07-slack-invite.eml",
+      "label": "legitimate",
+      "tricky": [],
+      "notes": "Standard Slack workspace invite; link on slack.com subdomain, auth passes."
+    },
+    {
+      "file": "legitimate/08-zoom-invite.eml",
+      "label": "legitimate",
+      "tricky": [],
+      "notes": "Zoom meeting invite with a zoom.us join link; auth passes."
+    },
+    {
+      "file": "legitimate/09-real-reply-thread.eml",
+      "label": "legitimate",
+      "tricky": [
+        "reply-subject"
+      ],
+      "notes": "Genuine reply with matching In-Reply-To/References headers, unlike the fake-reply phish."
+    },
+    {
+      "file": "legitimate/10-internal-it-notice.eml",
+      "label": "legitimate",
+      "tricky": [
+        "urgency-language"
+      ],
+      "notes": "Real internal IT notice with 'action required' / 'expires today' but links stay on example.org and auth passes."
+    },
+    {
+      "file": "legitimate/11-vendor-invoice-pdf.eml",
+      "label": "legitimate",
+      "tricky": [
+        "invoice-attachment"
+      ],
+      "notes": "Real vendor invoice; attachment is a genuine PDF (bytes start with %PDF-1.7) and auth passes."
+    },
+    {
+      "file": "legitimate/12-microsoft-security-alert.eml",
+      "label": "legitimate",
+      "tricky": [
+        "security-alert-language",
+        "brand-subdomain-sender"
+      ],
+      "notes": "Genuine Microsoft alert from accountprotection.microsoft.com with links to live.com/microsoft.com."
+    },
+    {
+      "file": "legitimate/13-google-workspace-alert.eml",
+      "label": "legitimate",
+      "tricky": [
+        "security-alert-language"
+      ],
+      "notes": "Genuine Google security alert; links on google.com and auth passes DMARC p=reject."
+    },
+    {
+      "file": "legitimate/14-spanish-legit.eml",
+      "label": "legitimate",
+      "tricky": [
+        "non-english"
+      ],
+      "notes": "Legitimate Spanish-language HR holiday notice; encoded subject, links on example.com."
+    },
+    {
+      "file": "legitimate/15-calendar-ics.eml",
+      "label": "legitimate",
+      "tricky": [
+        "calendar-attachment"
+      ],
+      "notes": "Legitimate meeting invite with a .ics calendar attachment from a colleague on example.com."
+    },
+    {
+      "file": "legitimate/16-docusign-real.eml",
+      "label": "legitimate",
+      "tricky": [
+        "brand-signing-link"
+      ],
+      "notes": "Genuine DocuSign envelope from docusign.net linking to docusign.net; contrast with the lookalike phish."
+    },
+    {
+      "file": "legitimate/17-dhl-shipment.eml",
+      "label": "legitimate",
+      "tricky": [
+        "shipping-language"
+      ],
+      "notes": "Genuine DHL shipment notice; tracking link on dhl.com and auth passes."
+    },
+    {
+      "file": "legitimate/18-couk-sender.eml",
+      "label": "legitimate",
+      "tricky": [
+        "cctld-domain"
+      ],
+      "notes": "co.uk sender and www.example.co.uk links; trips naive 'last two labels' domain matching logic."
+    },
+    {
+      "file": "legitimate/19-company-subdomain-links.eml",
+      "label": "legitimate",
+      "tricky": [
+        "subdomain-links"
+      ],
+      "notes": "Legitimate magic-link mail using the company's own login.example.com and example.com; sender aligns."
+    },
+    {
+      "file": "legitimate/20-personal-gmail-note.eml",
+      "label": "legitimate",
+      "tricky": [
+        "freemail-sender"
+      ],
+      "notes": "Benign personal note from a gmail.com address, no links or requests; freemail alone is not phishing."
+    },
+    {
+      "file": "legitimate/21-jira-notification.eml",
+      "label": "legitimate",
+      "tricky": [],
+      "notes": "Automated Jira notification from a brightleaf.atlassian.net tenant; auth passes."
+    },
+    {
+      "file": "legitimate/22-dropbox-share.eml",
+      "label": "legitimate",
+      "tricky": [],
+      "notes": "Genuine Dropbox share notification with a dropbox.com link; auth passes DMARC p=reject."
+    },
+    {
+      "file": "legitimate/23-it-support-paren-displayname.eml",
+      "label": "legitimate",
+      "tricky": [
+        "brand-in-display-name"
+      ],
+      "notes": "Display name contains 'example.org' in parentheses but the real sender is it@example.org and aligns."
+    },
+    {
+      "file": "legitimate/24-internal-no-authres.eml",
+      "label": "legitimate",
+      "tricky": [
+        "no-auth-results",
+        "internal-relay"
+      ],
+      "notes": "Internal relay message with no Authentication-Results header at all; benign, over a private hop."
+    },
+    {
+      "file": "legitimate/25-zip-report.eml",
+      "label": "legitimate",
+      "tricky": [
+        "zip-attachment"
+      ],
+      "notes": "Legitimate internal report delivered as a .zip from a passing example.com sender; no password lure."
+    }
+  ]
+}

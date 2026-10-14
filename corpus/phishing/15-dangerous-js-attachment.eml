@@ -1,0 +1,24 @@
+Received: from edge.secure-billing-update.info (edge.secure-billing-update.info [203.0.113.90]) by mx.example.org (Postfix) with ESMTPS id F5F5F5 for <jordan.lee@example.org>; Fri, 30 Jan 2026 08:44:12 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@secure-billing-update.info; dkim=pass header.d=secure-billing-update.info header.s=sb1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=secure-billing-update.info
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=secure-billing-update.info; s=sb1; t=1769762652; bh=MXlensFakeBodyHashMMM=; h=From:To:Subject:Date; b=SlNfQVRUQUNIXzE1X0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVF9S
+From: "Billing" <billing@secure-billing-update.info>
+To: jordan.lee@example.org
+Subject: Invoice details attached
+Date: Fri, 30 Jan 2026 08:44:10 +0000
+Message-ID: <15-js@secure-billing-update.info>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b15mix"
+
+--b15mix
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Please see the attached invoice script to view your statement.
+--b15mix
+Content-Type: application/javascript; name="invoice_details.js"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invoice_details.js"
+
+TVhMRU5TIFRFU1QgRklMRSAtIE5PVCBFWEVDVVRBQkxFDQovLyBwbGFjZWhvbGRlciBvbmx5LCBu
+byBleGVjdXRhYmxlIGxvZ2ljDQo=
+--b15mix--

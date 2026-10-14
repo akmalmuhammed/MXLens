@@ -1,0 +1,28 @@
+Received: from smtp.example.net (smtp.example.net [192.0.2.51]) by mx.example.org (Postfix) with ESMTPS id L111111 for <jordan.lee@example.org>; Thu, 22 Jan 2026 09:45:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=billing@example.net; dkim=pass header.d=example.net header.s=bn1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=example.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.net; s=bn1; t=1769075100; bh=MXlensFakeBodyHashL11=; h=From:To:Subject:Date; b=SU5WT0lDRV9MMTFfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JF
+From: "Northwind Supplies" <billing@example.net>
+To: jordan.lee@example.org
+Subject: Invoice NW-20260122
+Date: Thu, 22 Jan 2026 09:44:58 +0000
+Message-ID: <nw-inv-20260122@example.net>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="L11mix"
+
+--L11mix
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi Jordan,
+
+Please find invoice NW-20260122 attached, net 30. Thank you.
+
+Northwind Supplies
+
+--L11mix
+Content-Type: application/pdf; name="invoice_NW-20260122.pdf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invoice_NW-20260122.pdf"
+
+JVBERi0xLjcKTVhMRU5TIFRFU1QgRklMRSAtIE5PVCBFWEVDVVRBQkxFCiUlRU9GCg==
+--L11mix--

@@ -1,0 +1,24 @@
+Received: from mail.paypa1-secure-login.com (mail.paypa1-secure-login.com [198.51.100.23]) by mx.example.org (Postfix) with ESMTPS id D4E5F6 for <jordan.lee@example.org>; Tue, 13 Jan 2026 10:02:11 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@paypa1-secure-login.com; dkim=pass header.d=paypa1-secure-login.com header.s=s1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paypa1-secure-login.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=paypa1-secure-login.com; s=s1; t=1768298531; bh=MXlensFakeBodyHashAAA=; h=From:To:Subject:Date; b=Qk9HVVNfU0lHTkFUVVJFX0RPX05PVF9UUlVTVF9USElTX1ZBTFVFMDI=
+From: "PayPal" <alerts@paypa1-secure-login.com>
+To: jordan.lee@example.org
+Subject: Action needed: verify your billing details
+Date: Tue, 13 Jan 2026 10:02:09 +0000
+Message-ID: <9f8e7d@paypa1-secure-login.com>
+MIME-Version: 1.0
+Reply-To: alerts@paypa1-secure-login.com
+Content-Type: multipart/alternative; boundary="b02alt"
+
+--b02alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Please verify your billing details to avoid suspension.
+https://paypa1-secure-login.com/verify
+--b02alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Please verify your billing details to avoid suspension.</p><p><a href="https://paypa1-secure-login.com/verify">Verify now</a></p></body></html>
+--b02alt--

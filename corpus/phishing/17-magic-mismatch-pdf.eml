@@ -1,0 +1,24 @@
+Received: from edge.secure-billing-update.info (edge.secure-billing-update.info [203.0.113.91]) by mx.example.org (Postfix) with ESMTPS id 171717 for <jordan.lee@example.org>; Tue, 03 Feb 2026 09:02:27 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@secure-billing-update.info; dkim=pass header.d=secure-billing-update.info header.s=sb1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=secure-billing-update.info
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=secure-billing-update.info; s=sb1; t=1770109347; bh=MXlensFakeBodyHashOOO=; h=From:To:Subject:Date; b=TUFHSUNfTUlTXzE3X0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVF9S
+From: "Accounts Payable" <ap@secure-billing-update.info>
+To: jordan.lee@example.org
+Subject: Your statement (PDF)
+Date: Tue, 03 Feb 2026 09:02:25 +0000
+Message-ID: <17-mm@secure-billing-update.info>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b17mix"
+
+--b17mix
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your statement is attached as a PDF.
+--b17mix
+Content-Type: application/pdf; name="invoice.pdf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invoice.pdf"
+
+TVrCkABNWExFTlMgVEVTVCBGSUxFIC0gTk9UIEVYRUNVVEFCTEUgLSB0aGlzIGlzIGhhcm1sZXNz
+IHBsYWNlaG9sZGVyIHRleHQgb25seQ==
+--b17mix--

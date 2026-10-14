@@ -1,0 +1,37 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# never commit real mail, data dumps, or local debug output
+*.eml
+!corpus/**/*.eml
+!packages/*/test/**/*.eml
+!apps/web/public/samples/*.eml
+*.msg
+*dump*.json
+users*.json
+users*.txt
+*.log
+
+# misc
+.DS_Store
+coverage/
+.vercel
+.idea/
+.vscode/

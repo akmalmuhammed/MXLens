@@ -1,0 +1,22 @@
+Received: from unknown (unknown [192.0.2.71]) by mx.example.org (Postfix) with ESMTP id A1B2C3 for <jordan.lee@example.org>; Mon, 12 Jan 2026 08:14:22 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=fail smtp.mailfrom=service@paypal.com (sender IP 192.0.2.71 not permitted); dkim=none; dmarc=fail (p=REJECT sp=REJECT dis=NONE) header.from=paypal.com
+From: "PayPal Service" <service@paypal.com>
+To: jordan.lee@example.org
+Subject: Your account has been limited
+Date: Mon, 12 Jan 2026 08:14:20 +0000
+Message-ID: <20260112081420.1a2b@paypal.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b01alt"
+
+--b01alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+We detected unusual activity. Your account is limited until you confirm your information.
+Confirm now: http://account-verify-center.xyz/paypal/confirm
+--b01alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>We detected unusual activity. Your account is limited.</p><p><a href="http://account-verify-center.xyz/paypal/confirm">Confirm your account</a></p></body></html>
+--b01alt--

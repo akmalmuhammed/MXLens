@@ -1,0 +1,22 @@
+Received: from mx.mailbox-helpdesk.info (mx.mailbox-helpdesk.info [198.51.100.140]) by mx.example.org (Postfix) with ESMTP id 5E5E5E for <jordan.lee@example.org>; Fri, 16 Jan 2026 09:10:05 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@mailbox-helpdesk.info; dkim=pass header.d=mailbox-helpdesk.info header.s=mh1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=mailbox-helpdesk.info
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox-helpdesk.info; s=mh1; t=1768554605; bh=MXlensFakeBodyHashDDD=; h=From:To:Subject:Date; b=QlJBTkRfRElTUExBWV8wNV9GQUtFX1NJR05fTk9UX1JFQUxfVkFM
+From: "Microsoft 365 Admin" <it-desk@mailbox-helpdesk.info>
+To: jordan.lee@example.org
+Subject: Your password expires today
+Date: Fri, 16 Jan 2026 09:10:03 +0000
+Message-ID: <05-bdn@mailbox-helpdesk.info>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b05alt"
+
+--b05alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your Microsoft 365 password expires today. Keep the same password: https://mailbox-helpdesk.info/m365/keep
+--b05alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Your Microsoft 365 password expires today.</p><p><a href="https://mailbox-helpdesk.info/m365/keep">Keep my password</a></p></body></html>
+--b05alt--

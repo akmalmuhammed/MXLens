@@ -1,0 +1,29 @@
+Received: from mail.example.com (mail.example.com [192.0.2.47]) by mx.example.org (Postfix) with ESMTPS id L252525 for <jordan.lee@example.org>; Fri, 30 Jan 2026 17:45:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=reports@example.com; dkim=pass header.d=example.com header.s=sel1; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=example.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=sel1; t=1769795100; bh=MXlensFakeBodyHashL25=; h=From:To:Subject:Date; b=WklQX0wyNV9GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVBTF9Z
+From: "Analytics" <reports@example.com>
+To: jordan.lee@example.org
+Subject: Weekly metrics report (zip)
+Date: Fri, 30 Jan 2026 17:44:58 +0000
+Message-ID: <weekly-metrics-0130@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="L25mix"
+
+--L25mix
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi Jordan,
+
+This week's metrics are attached as a zip. No password needed.
+
+Analytics
+
+--L25mix
+Content-Type: application/zip; name="weekly_metrics.zip"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="weekly_metrics.zip"
+
+UEsDBE1YTEVOUyBURVNUIEZJTEUgLSBOT1QgRVhFQ1VUQUJMRSAocGxhY2Vob2xkZXIgcmVwb3J0
+IGJ5dGVzKQ==
+--L25mix--

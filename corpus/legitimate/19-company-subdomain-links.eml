@@ -1,0 +1,22 @@
+Received: from mail.example.com (mail.example.com [192.0.2.45]) by mx.example.org (Postfix) with ESMTPS id L191919 for <jordan.lee@example.org>; Wed, 28 Jan 2026 10:30:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=noreply@example.com; dkim=pass header.d=example.com header.s=sel1; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=example.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=sel1; t=1769596200; bh=MXlensFakeBodyHashL19=; h=From:To:Subject:Date; b=U1VCRE9NX0wxOV9GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVB
+From: "Example App" <noreply@example.com>
+To: jordan.lee@example.org
+Subject: Your sign-in link
+Date: Wed, 28 Jan 2026 10:29:58 +0000
+Message-ID: <app-login-7781@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L19alt"
+
+--L19alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Sign in: https://login.example.com/magic?token=zzz  or visit https://example.com/account
+--L19alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Click to sign in to Example App.</p><p><a href="https://login.example.com/magic?token=zzz">Sign in</a></p><p>Or manage your account at <a href="https://example.com/account">example.com/account</a></p></body></html>
+--L19alt--

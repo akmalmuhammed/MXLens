@@ -1,0 +1,27 @@
+From: notifications@github.com
+To: developer@example.org
+Subject: [GitHub] Your repository has a new star!
+Date: Mon, 23 Dec 2024 10:15:00 +0000
+Message-ID: <star-notification-abc123@github.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: GitHub Mailer
+Return-Path: <noreply@github.com>
+Received: from out-1.smtp.github.com (192.30.252.199) by mx.example.org with ESMTPS; Mon, 23 Dec 2024 10:15:00 +0000
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=noreply@github.com; dkim=pass header.d=github.com header.s=pf2023; dmarc=pass action=none header.from=github.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=github.com; s=pf2023; h=from:to:subject:date:message-id; bh=abc123def456; b=valid_signature_here
+List-Unsubscribe: <https://github.com/settings/notifications>
+X-GitHub-Sender: octocat
+X-GitHub-Recipient: developer
+
+Hey developer!
+
+octocat just starred your repository mxlens/email-analyzer!
+
+Your project now has 127 stars. Keep up the great work!
+
+View repository: https://github.com/mxlens/email-analyzer
+
+---
+You're receiving this because you're watching the repository.
+Manage your notification settings: https://github.com/settings/notifications

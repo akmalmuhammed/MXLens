@@ -1,0 +1,10 @@
+export { analyzeEmail } from "./analyze.ts";
+export { listRules, RULES } from "./rules/index.ts";
+export { toMarkdown, toCsv, toStix } from "./report.ts";
+export { riskScore, verdictFor, THRESHOLDS, VERDICT_LABELS } from "./score.ts";
+export { defang } from "./lib/text.ts";
+export { ENGINE_VERSION } from "./version.ts";
+export { BRANDS } from "./data/brands.ts";
+export type * from "./types.ts";
+export type { RawInput } from "./context.ts";
+export type { Rule } from "./rules/rule.ts";

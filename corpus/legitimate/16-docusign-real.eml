@@ -1,0 +1,23 @@
+Received: from mail.docusign.net (mail.docusign.net [192.0.2.81]) by mx.example.org (Postfix) with ESMTPS id L161616 for <jordan.lee@example.org>; Mon, 26 Jan 2026 14:28:40 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.docusign.net; dkim=pass header.d=docusign.net header.s=ds2; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=docusign.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=docusign.net; s=ds2; t=1769437720; bh=MXlensFakeBodyHashL16=; h=From:To:Subject:Date; b=RE9DVVNJR05fTDE2X0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVFk=
+From: "DocuSign EU" <dse_na3@docusign.net>
+To: jordan.lee@example.org
+Subject: Please DocuSign: Mutual NDA
+Date: Mon, 26 Jan 2026 14:28:38 +0000
+Message-ID: <ds-env-5521@docusign.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L16alt"
+
+--L16alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Sam Okoye sent you a document to review and sign.
+Review: https://na3.docusign.net/Signing/EmailStart?a=9920
+--L16alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Sam Okoye sent you a document to review and sign: <b>Mutual NDA</b>.</p><p><a href="https://na3.docusign.net/Signing/EmailStart?a=9920">Review Document</a></p></body></html>
+--L16alt--

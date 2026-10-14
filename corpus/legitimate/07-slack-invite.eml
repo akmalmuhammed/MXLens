@@ -1,0 +1,23 @@
+Received: from mail.slack.com (mail.slack.com [192.0.2.21]) by mx.example.org (Postfix) with ESMTPS id L070707 for <jordan.lee@example.org>; Tue, 20 Jan 2026 09:14:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.slack.com; dkim=pass header.d=slack.com header.s=s1; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=slack.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=slack.com; s=s1; t=1768900440; bh=MXlensFakeBodyHashL07=; h=From:To:Subject:Date; b=U0xBQ0tfTDA3X0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVF9SRUFM
+From: "Slack" <no-reply@slack.com>
+To: jordan.lee@example.org
+Subject: Priya invited you to the Brightleaf workspace
+Date: Tue, 20 Jan 2026 09:13:58 +0000
+Message-ID: <slack-inv-8810@slack.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L07alt"
+
+--L07alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Priya invited you to join the Brightleaf workspace on Slack.
+Join: https://brightleaf.slack.com/join/shared_invite/zt-abcdef
+--L07alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Priya invited you to join the <b>Brightleaf</b> workspace on Slack.</p><p><a href="https://brightleaf.slack.com/join/shared_invite/zt-abcdef">Join now</a></p></body></html>
+--L07alt--

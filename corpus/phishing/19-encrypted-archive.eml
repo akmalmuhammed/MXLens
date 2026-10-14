@@ -1,0 +1,24 @@
+Received: from edge.secure-billing-update.info (edge.secure-billing-update.info [203.0.113.92]) by mx.example.org (Postfix) with ESMTPS id 191919 for <jordan.lee@example.org>; Thu, 05 Feb 2026 08:27:03 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@secure-billing-update.info; dkim=pass header.d=secure-billing-update.info header.s=sb1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=secure-billing-update.info
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=secure-billing-update.info; s=sb1; t=1770280023; bh=MXlensFakeBodyHashQQQ=; h=From:To:Subject:Date; b=QVJDSElWRV8xOV9GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVB
+From: "Shipping Dept" <ship@secure-billing-update.info>
+To: jordan.lee@example.org
+Subject: Your parcel documents (password protected)
+Date: Thu, 05 Feb 2026 08:27:01 +0000
+Message-ID: <19-za@secure-billing-update.info>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b19mix"
+
+--b19mix
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your shipping documents are in the attached archive. The password is 4471. Extract and open the file inside.
+--b19mix
+Content-Type: application/zip; name="shipping_docs.zip"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="shipping_docs.zip"
+
+UEsDBE1YTEVOUyBURVNUIEZJTEUgLSBOT1QgRVhFQ1VUQUJMRSAobm90IGEgcmVhbCBhcmNoaXZl
+KQ==
+--b19mix--

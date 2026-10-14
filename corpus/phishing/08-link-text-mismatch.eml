@@ -1,0 +1,22 @@
+Received: from edge.secure-session.net (edge.secure-session.net [203.0.113.80]) by mx.example.org (Postfix) with ESMTPS id 8B8B8B for <jordan.lee@example.org>; Wed, 21 Jan 2026 07:33:09 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@secure-session.net; dkim=pass header.d=secure-session.net header.s=ss1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=secure-session.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=secure-session.net; s=ss1; t=1768980789; bh=MXlensFakeBodyHashGGG=; h=From:To:Subject:Date; b=TElOS19URVhUXzA4X0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVF9S
+From: "PayPal" <noreply@secure-session.net>
+To: jordan.lee@example.org
+Subject: You sent a payment of $749.99
+Date: Wed, 21 Jan 2026 07:33:07 +0000
+Message-ID: <08-lt@secure-session.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b08alt"
+
+--b08alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+You sent a payment of $749.99. If you did not authorize this, cancel at https://www.paypal.com/activity (link actually goes elsewhere).
+--b08alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>You sent a payment of <b>$749.99</b>. If this was not you, cancel it here:</p><p><a href="https://account-verify-center.xyz/paypal-dispute">https://www.paypal.com/activity</a></p></body></html>
+--b08alt--

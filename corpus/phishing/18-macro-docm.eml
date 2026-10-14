@@ -1,0 +1,23 @@
+Received: from out.throwaway-mailer.top (out.throwaway-mailer.top [198.51.100.204]) by mx.example.org (Postfix) with ESMTPS id 181818 for <jordan.lee@example.org>; Wed, 04 Feb 2026 14:36:51 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@throwaway-mailer.top; dkim=pass header.d=throwaway-mailer.top header.s=t1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=throwaway-mailer.top
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=throwaway-mailer.top; s=t1; t=1770215811; bh=MXlensFakeBodyHashPPP=; h=From:To:Subject:Date; b=TUFDUk9fMThfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JFQUxZ
+From: "Finance Team" <finance@throwaway-mailer.top>
+To: jordan.lee@example.org
+Subject: Q4 report - enable editing to view
+Date: Wed, 04 Feb 2026 14:36:49 +0000
+Message-ID: <18-mc@throwaway-mailer.top>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b18mix"
+
+--b18mix
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Open the attached report and click 'Enable Content' to view the figures.
+--b18mix
+Content-Type: application/vnd.ms-word.document.macroEnabled.12; name="report.docm"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="report.docm"
+
+TVhMRU5TIFRFU1QgRklMRSAtIE5PVCBFWEVDVVRBQkxF
+--b18mix--

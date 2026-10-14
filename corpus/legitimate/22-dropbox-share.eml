@@ -1,0 +1,22 @@
+Received: from mail.dropbox.com (mail.dropbox.com [192.0.2.140]) by mx.example.org (Postfix) with ESMTPS id L222222 for <jordan.lee@example.org>; Thu, 29 Jan 2026 14:40:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.dropbox.com; dkim=pass header.d=dropbox.com header.s=db1; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=dropbox.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dropbox.com; s=db1; t=1769697600; bh=MXlensFakeBodyHashL22=; h=From:To:Subject:Date; b=RFJPUEJPWF9MMjJfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JF
+From: "Dropbox" <no-reply@dropbox.com>
+To: jordan.lee@example.org
+Subject: Sam shared 'Q1 Deck' with you
+Date: Thu, 29 Jan 2026 14:39:58 +0000
+Message-ID: <db-share-9920@dropbox.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L22alt"
+
+--L22alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Sam Okoye shared the folder 'Q1 Deck' with you. View: https://www.dropbox.com/scl/fo/abcdef
+--L22alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Sam Okoye shared the folder <b>Q1 Deck</b> with you.</p><p><a href="https://www.dropbox.com/scl/fo/abcdef">View folder</a></p></body></html>
+--L22alt--

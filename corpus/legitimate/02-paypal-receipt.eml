@@ -1,0 +1,23 @@
+Received: from mx1.phx.paypal.com (mx1.phx.paypal.com [192.0.2.210]) by mx.example.org (Postfix) with ESMTPS id L020202 for <jordan.lee@example.org>; Tue, 13 Jan 2026 19:22:40 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.paypal.com; dkim=pass header.d=paypal.com header.s=pp-dkim1; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=paypal.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=paypal.com; s=pp-dkim1; t=1768418560; bh=MXlensFakeBodyHashL02=; h=From:To:Subject:Date; b=UEFZUEFMX0wwMl9GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RfUkVBTA==
+From: "PayPal" <service@paypal.com>
+To: jordan.lee@example.org
+Subject: Receipt for your payment to Riverside Books
+Date: Tue, 13 Jan 2026 19:22:38 +0000
+Message-ID: <receipt-9f2a@paypal.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L02alt"
+
+--L02alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+You sent a payment of $24.50 USD to Riverside Books.
+View your receipt: https://www.paypal.com/myaccount/transactions/
+--L02alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>You sent a payment of <b>$24.50 USD</b> to Riverside Books.</p><p><a href="https://www.paypal.com/myaccount/transactions/">View your receipt</a></p></body></html>
+--L02alt--

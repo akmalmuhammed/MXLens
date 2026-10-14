@@ -1,0 +1,23 @@
+Received: from mail.zoom.us (mail.zoom.us [192.0.2.31]) by mx.example.org (Postfix) with ESMTPS id L080808 for <jordan.lee@example.org>; Tue, 20 Jan 2026 15:40:12 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce.zoom.us; dkim=pass header.d=zoom.us header.s=z1; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=zoom.us
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zoom.us; s=z1; t=1768923612; bh=MXlensFakeBodyHashL08=; h=From:To:Subject:Date; b=Wk9PTV9MMDhfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JFQUxZ
+From: "Zoom" <no-reply@zoom.us>
+To: jordan.lee@example.org
+Subject: Dev Sync is scheduled for Jan 21
+Date: Tue, 20 Jan 2026 15:40:10 +0000
+Message-ID: <zoom-9921@zoom.us>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L08alt"
+
+--L08alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+You are invited to Dev Sync on Jan 21, 10:00.
+Join: https://zoom.us/j/9920012345?pwd=abc
+--L08alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>You are invited to <b>Dev Sync</b> on Jan 21, 10:00.</p><p><a href="https://zoom.us/j/9920012345?pwd=abc">Join the meeting</a></p></body></html>
+--L08alt--

@@ -1,0 +1,33 @@
+Received: from smtp.vendor-invoices.example.net (smtp.vendor-invoices.example.net [198.51.100.70]) by mx.example.org (Postfix) with ESMTPS id 202020 for <jordan.lee@example.org>; Fri, 06 Feb 2026 10:15:48 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=billing@vendor-invoices.example.net; dkim=pass header.d=vendor-invoices.example.net header.s=vi1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=vendor-invoices.example.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vendor-invoices.example.net; s=vi1; t=1770372948; bh=MXlensFakeBodyHashRRR=; h=From:To:Subject:Date; b=RkFLRV9SRVBMWV8yMF9GQUtFX1NJR05fVkFMVUVfTk9UX1JFQUxZ
+From: "Dana Whitfield" <billing@vendor-invoices.example.net>
+To: jordan.lee@example.org
+Subject: RE: Invoice overdue
+Date: Fri, 06 Feb 2026 10:15:46 +0000
+Message-ID: <20-fr@vendor-invoices.example.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b20alt"
+
+--b20alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi Jordan,
+
+Following up on the thread below. Our bank has changed - please remit the outstanding balance to the NEW account:
+Bank: Northgate Trust
+Acct: 10044712
+Routing: 021000021
+
+Thanks,
+Dana
+
+> On earlier you wrote:
+> Please find the overdue invoice attached.
+--b20alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Hi Jordan,</p><p>Following up on the thread below. Our bank has changed &mdash; please remit the outstanding balance to the <b>new account</b>:</p><p>Bank: Northgate Trust<br>Acct: 10044712<br>Routing: 021000021</p><p>Thanks,<br>Dana</p><blockquote>On earlier you wrote:<br>Please find the overdue invoice attached.</blockquote></body></html>
+--b20alt--

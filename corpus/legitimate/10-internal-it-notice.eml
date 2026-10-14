@@ -1,0 +1,22 @@
+Received: from mail.example.org (mail.example.org [192.0.2.42]) by mx.example.org (Postfix) with ESMTPS id L101010 for <jordan.lee@example.org>; Wed, 21 Jan 2026 16:20:44 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=it@example.org; dkim=pass header.d=example.org header.s=sel1; dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=example.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.org; s=sel1; t=1769012444; bh=MXlensFakeBodyHashL10=; h=From:To:Subject:Date; b=SVRfTk9USUNFX0wxMF9GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1RZ
+From: "Example IT" <it@example.org>
+To: jordan.lee@example.org
+Subject: Action required: MFA enrollment expires today
+Date: Wed, 21 Jan 2026 16:20:42 +0000
+Message-ID: <it-mfa-5521@example.org>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L10alt"
+
+--L10alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Action required: your MFA enrollment grace period expires today. Enroll on the IT portal: https://it.example.org/mfa
+--L10alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p><b>Action required.</b> Your MFA enrollment grace period expires today.</p><p><a href="https://it.example.org/mfa">Enroll in MFA</a></p><p>Questions? Reply to this email or visit https://it.example.org/help</p></body></html>
+--L10alt--

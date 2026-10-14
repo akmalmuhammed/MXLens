@@ -1,0 +1,22 @@
+Received: from mail.accountprotection.microsoft.com (mail.accountprotection.microsoft.com [192.0.2.61]) by mx.example.org (Postfix) with ESMTPS id L121212 for <jordan.lee@example.org>; Thu, 22 Jan 2026 21:10:33 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=accountprotection.microsoft.com; dkim=pass header.d=accountprotection.microsoft.com header.s=sig1; dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=accountprotection.microsoft.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=accountprotection.microsoft.com; s=sig1; t=1769116233; bh=MXlensFakeBodyHashL12=; h=From:To:Subject:Date; b=TUlDUk9TT0ZUX0wxMl9GQUtFX1NJR05BVFVSRV9WQUxVRV9OT1Q=
+From: "Microsoft account team" <account-security-noreply@accountprotection.microsoft.com>
+To: jordan.lee@example.org
+Subject: Microsoft account security alert
+Date: Thu, 22 Jan 2026 21:10:31 +0000
+Message-ID: <ms-sec-7781@accountprotection.microsoft.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="L12alt"
+
+--L12alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Unusual sign-in activity was detected. Review recent activity: https://account.live.com/Activity
+--L12alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>We detected unusual sign-in activity on your Microsoft account.</p><p><a href="https://account.live.com/Activity">Review recent activity</a></p><p>Or visit https://account.microsoft.com/security</p></body></html>
+--L12alt--

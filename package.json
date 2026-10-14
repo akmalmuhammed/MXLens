@@ -1,0 +1,35 @@
+{
+  "name": "mxlens-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MXLens: explainable, privacy-first email phishing analysis \u2014 engine, CLI, MCP server and web app.",
+  "license": "Apache-2.0",
+  "author": "Akmal Muhammed",
+  "homepage": "https://github.com/akmalmuhammed/mxlens#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akmalmuhammed/mxlens.git"
+  },
+  "type": "module",
+  "workspaces": [
+    "packages/engine",
+    "packages/cli",
+    "packages/mcp",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build -w @mxlens/engine && npm run build -w mxlens && npm run build -w @mxlens/mcp",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run build -w @mxlens/engine && npm run test -w @mxlens/engine && npm run test -w mxlens && npm run test -w @mxlens/mcp",
+    "eval": "npm run eval -w @mxlens/engine",
+    "lint": "npm run lint --workspaces --if-present",
+    "web": "npm run dev -w @mxlens/web"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.3"
+  }
+}

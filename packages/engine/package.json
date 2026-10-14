@@ -1,0 +1,36 @@
+{
+  "name": "@mxlens/engine",
+  "version": "1.0.0",
+  "description": "Explainable phishing analysis for raw emails. Runs in browsers and Node.js with no network calls.",
+  "license": "Apache-2.0",
+  "author": "Akmal Muhammed",
+  "homepage": "https://github.com/akmalmuhammed/mxlens#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/akmalmuhammed/mxlens.git", "directory": "packages/engine" },
+  "bugs": "https://github.com/akmalmuhammed/mxlens/issues",
+  "keywords": ["phishing", "email", "security", "dmarc", "dkim", "spf", "eml", "soc", "detection", "mitre-attack"],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test --experimental-strip-types --no-warnings \"test/**/*.test.ts\"",
+    "eval": "node --experimental-strip-types --no-warnings scripts/eval.ts"
+  },
+  "dependencies": {
+    "postal-mime": "^4.0.6",
+    "tldts": "^7.4.18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": { "access": "public", "provenance": true }
+}

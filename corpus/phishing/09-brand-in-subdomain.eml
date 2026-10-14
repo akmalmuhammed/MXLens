@@ -1,0 +1,22 @@
+Received: from mx.secure-session.net (mx.secure-session.net [203.0.113.81]) by mx.example.org (Postfix) with ESMTPS id 9C9C9C for <jordan.lee@example.org>; Thu, 22 Jan 2026 15:50:33 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@secure-session.net; dkim=pass header.d=secure-session.net header.s=ss1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=secure-session.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=secure-session.net; s=ss1; t=1769097033; bh=MXlensFakeBodyHashHHH=; h=From:To:Subject:Date; b=U1VCRE9NQUlOXzA5X0ZBS0VfU0lHTkFUVVJFX1ZBTFVFX05PVF9S
+From: "PayPal Resolution Center" <resolution@secure-session.net>
+To: jordan.lee@example.org
+Subject: Case ID PP-009-4471: action required
+Date: Thu, 22 Jan 2026 15:50:31 +0000
+Message-ID: <09-sd@secure-session.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b09alt"
+
+--b09alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Log in to resolve your case: https://paypal.com.secure-session.net/login
+--b09alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Log in to resolve case PP-009-4471.</p><p><a href="https://paypal.com.secure-session.net/login">https://paypal.com.secure-session.net/login</a></p></body></html>
+--b09alt--

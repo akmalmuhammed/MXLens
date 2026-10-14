@@ -1,0 +1,23 @@
+Received: from mta.xn--paypl-7ve.com (mta.xn--paypl-7ve.com [198.51.100.88]) by mx.example.org (Postfix) with ESMTPS id 778899 for <jordan.lee@example.org>; Wed, 14 Jan 2026 06:45:00 +0000 (UTC)
+Authentication-Results: mx.example.org; spf=pass smtp.mailfrom=bounce@xn--paypl-7ve.com; dkim=pass header.d=xn--paypl-7ve.com header.s=k1; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=xn--paypl-7ve.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xn--paypl-7ve.com; s=k1; t=1768373100; bh=MXlensFakeBodyHashBBB=; h=From:To:Subject:Date; b=SE9NT0dSQVBIX0ZBS0VfU0lHX1ZBTFVFXzAzX05PVF9SRUFM
+From: "PayPal Security" <security@xn--paypl-7ve.com>
+To: jordan.lee@example.org
+Subject: Confirm your identity
+Date: Wed, 14 Jan 2026 06:44:58 +0000
+Message-ID: <id-03@xn--paypl-7ve.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b03alt"
+
+--b03alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Confirm your identity to keep your account active.
+https://xn--paypl-7ve.com/login
+--b03alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Confirm your identity to keep your account active.</p><p><a href="https://xn--paypl-7ve.com/login">Confirm identity</a></p></body></html>
+--b03alt--
