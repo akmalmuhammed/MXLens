@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import { Spline_Sans, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
 import { CommandPalette } from "@/components/CommandPalette";
-
-const sans = Spline_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-sans", display: "swap" });
-const mono = Spline_Sans_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
     title: "MXLens — email phishing analysis",
@@ -14,6 +10,7 @@ export const metadata: Metadata = {
     robots: { index: true, follow: true },
 };
 
+// Honor a saved theme before paint; default is light.
 const THEME_INIT = `(function(){try{var t=localStorage.getItem("mxlens-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,9 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en" suppressHydrationWarning>
             <head>
                 <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
-                <style>{`:root{--sans:${sans.style.fontFamily},ui-sans-serif,system-ui,sans-serif;--mono:${mono.style.fontFamily},ui-monospace,monospace;}`}</style>
             </head>
-            <body className={`${sans.variable} ${mono.variable}`}>
+            <body>
                 {children}
                 <CommandPalette />
             </body>

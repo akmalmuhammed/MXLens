@@ -7,7 +7,6 @@ const RULE_COUNT = listRules().length;
 import { addAnalysis, getRecord } from "@/lib/history";
 import { FindingsCard, IdentityCard, IndicatorsCard, DeliveryCard, SourceCard, CoverageCard } from "./results";
 import { VerdictGauge } from "./VerdictGauge";
-import { Reticle } from "./Logo";
 import { CapabilityGrid } from "./CapabilityGrid";
 
 type State =
@@ -94,10 +93,7 @@ export function Analyzer() {
     return (
         <>
             <section className="hero wrap">
-                <div className="hero-glow" aria-hidden="true" />
-                <Reticle className={`hero-reticle${state.phase === "scanning" ? " scanning" : ""}`} />
-
-                <span className="eyebrow"><span className="dot" /> Analysis runs in your browser · nothing uploaded</span>
+                <span className="eyebrow"><span className="dot" /> Runs in your browser · nothing uploaded</span>
                 <h1>Resolve any email into labeled evidence.</h1>
                 <p className="lede">
                     Drop an <code>.eml</code> or paste the raw source. MXLens parses the headers, verifies SPF, DKIM and DMARC alignment, inspects every link and attachment, and returns an explained verdict — with the evidence behind every finding.

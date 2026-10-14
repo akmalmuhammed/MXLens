@@ -13,7 +13,7 @@ function openPalette() {
 
 export function TopBar() {
     const pathname = usePathname();
-    const [theme, setThemeState] = useState<"dark" | "light">("dark");
+    const [theme, setThemeState] = useState<"dark" | "light">("light");
     const [mac, setMac] = useState(true);
 
     useEffect(() => {
