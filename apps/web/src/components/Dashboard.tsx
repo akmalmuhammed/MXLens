@@ -1,11 +1,16 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { analyzeEmail, defang } from "@mxlens/engine";
+import { analyzeEmail, defang, THRESHOLDS } from "@mxlens/engine";
 import { useHistory, aggregate, addAnalysis, clearHistory, removeRecord, type HistoryRecord, type Aggregate } from "@/lib/history";
 
 type Filter = "all" | "malicious" | "suspicious" | "clean";
+type Sort = "risk" | "newest";
+
+function scoreColor(score: number): string {
+    return score >= THRESHOLDS.malicious ? "var(--crit)" : score >= THRESHOLDS.suspicious ? "var(--med)" : "var(--good)";
+}
 
 function download(name: string, text: string, type: string) {
     const url = URL.createObjectURL(new Blob([text], { type }));
@@ -20,12 +25,19 @@ function iocCsv(agg: Aggregate): string {
     return rows.map((r) => r.map(esc).join(",")).join("\n") + "\n";
 }
 
-function timeAgo(ts: number): string {
-    const s = Math.floor((Date.now() - ts) / 1000);
+function timeAgo(ts: number, now: number): string {
+    const s = Math.floor((now - ts) / 1000);
     if (s < 60) return "just now";
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
     return `${Math.floor(s / 86400)}d ago`;
+}
+
+function readPref<T extends string>(key: string, fallback: T): T {
+    try { return (localStorage.getItem(key) as T) ?? fallback; } catch { return fallback; }
+}
+function writePref(key: string, value: string) {
+    try { localStorage.setItem(key, value); } catch { /* ignore */ }
 }
 
 export function Dashboard() {
@@ -33,12 +45,25 @@ export function Dashboard() {
     const records = useHistory();
     const agg = useMemo(() => aggregate(records), [records]);
     const [filter, setFilter] = useState<Filter>("all");
+    const [sort, setSort] = useState<Sort>("risk");
     const [toast, setToast] = useState<string | null>(null);
+    const [now, setNow] = useState(() => Date.now());
     const fileInput = useRef<HTMLInputElement>(null);
 
+    useEffect(() => {
+        setFilter(readPref<Filter>("mxlens:dash:filter", "all"));
+        setSort(readPref<Sort>("mxlens:dash:sort", "risk"));
+    }, []);
+    useEffect(() => { const t = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(t); }, []);
+
+    function changeFilter(f: Filter) { setFilter(f); writePref("mxlens:dash:filter", f); }
+    function changeSort(s: Sort) { setSort(s); writePref("mxlens:dash:sort", s); }
     function flash(m: string) { setToast(m); setTimeout(() => setToast(null), 1600); }
 
-    const shown = useMemo(() => (filter === "all" ? records : records.filter((r) => r.verdict === filter)), [records, filter]);
+    const shown = useMemo(() => {
+        const list = filter === "all" ? records : records.filter((r) => r.verdict === filter);
+        return sort === "risk" ? [...list].sort((a, b) => b.riskScore - a.riskScore || b.at - a.at) : list;
+    }, [records, filter, sort]);
 
     function onBulk(files: FileList | null) {
         const list = Array.from(files ?? []).slice(0, 50);
@@ -51,7 +76,7 @@ export function Dashboard() {
     if (records.length === 0) {
         return (
             <>
-                <DashHead agg={agg} empty onBulk={() => fileInput.current?.click()} onExport={() => {}} onClear={() => {}} router={router} />
+                <DashHead agg={agg} now={now} empty onBulk={() => fileInput.current?.click()} onExport={() => {}} onClear={() => {}} router={router} />
                 <section className="wrap">
                     <div className="empty-state">
                         <div className="big">Your session board is empty</div>
@@ -68,7 +93,7 @@ export function Dashboard() {
 
     return (
         <>
-            <DashHead agg={agg} onBulk={() => fileInput.current?.click()} onExport={() => { download("mxlens-indicators.csv", iocCsv(agg), "text/csv"); flash("Exported all indicators"); }} onClear={() => { if (confirm("Clear all analyses from this browser? This cannot be undone.")) clearHistory(); }} router={router} />
+            <DashHead agg={agg} now={now} onBulk={() => fileInput.current?.click()} onExport={() => { download("mxlens-indicators.csv", iocCsv(agg), "text/csv"); flash("Exported all indicators"); }} onClear={() => { if (confirm("Clear all analyses from this browser? This cannot be undone.")) clearHistory(); }} router={router} />
             <input ref={fileInput} type="file" accept=".eml,.txt,message/rfc822,text/plain" multiple hidden onChange={(e) => onBulk(e.target.files)} />
 
             <section className="wrap" style={{ display: "grid", gap: 16, paddingBottom: 48 }}>
@@ -80,9 +105,12 @@ export function Dashboard() {
                             <h2>
                                 Threat feed <span className="count">{shown.length}</span>
                                 <span className="spacer" />
-                                <div className="filterbar">
+                                <div className="filterbar" role="group" aria-label="Sort and filter">
+                                    <button className="filter" aria-pressed={sort === "risk"} onClick={() => changeSort(sort === "risk" ? "newest" : "risk")} title="Toggle sort order">
+                                        {sort === "risk" ? "↓ Risk" : "↓ Newest"}
+                                    </button>
                                     {(["all", "malicious", "suspicious", "clean"] as Filter[]).map((f) => (
-                                        <button key={f} className={`filter ${f === "malicious" ? "c-crit" : f === "suspicious" ? "c-sus" : f === "clean" ? "c-clean" : ""}`} aria-pressed={filter === f} onClick={() => setFilter(f)}>
+                                        <button key={f} className={`filter ${f === "malicious" ? "c-crit" : f === "suspicious" ? "c-sus" : f === "clean" ? "c-clean" : ""}`} aria-pressed={filter === f} onClick={() => changeFilter(f)}>
                                             {f === "all" ? "All" : f[0].toUpperCase() + f.slice(1)}
                                         </button>
                                     ))}
@@ -92,7 +120,7 @@ export function Dashboard() {
                                 {shown.length === 0 ? (
                                     <div className="empty-good" style={{ padding: 28 }}>No {filter} messages in this session.</div>
                                 ) : shown.map((r) => (
-                                    <FeedRow key={r.id} r={r} onOpen={() => router.push(`/?open=${r.id}`)} onRemove={() => removeRecord(r.id)} />
+                                    <FeedRow key={r.id} r={r} now={now} onOpen={() => router.push(`/?open=${r.id}`)} onRemove={() => removeRecord(r.id)} />
                                 ))}
                             </div>
                         </div>
@@ -110,13 +138,13 @@ export function Dashboard() {
     );
 }
 
-function DashHead({ agg, empty, onBulk, onExport, onClear, router }: { agg: Aggregate; empty?: boolean; onBulk: () => void; onExport: () => void; onClear: () => void; router: ReturnType<typeof useRouter> }) {
+function DashHead({ agg, now, empty, onBulk, onExport, onClear, router }: { agg: Aggregate; now: number; empty?: boolean; onBulk: () => void; onExport: () => void; onClear: () => void; router: ReturnType<typeof useRouter> }) {
     return (
         <div className="wrap page-head">
             <div className="head-row">
                 <div>
                     <h1>Session dashboard</h1>
-                    <p>Everything you&apos;ve analyzed on this device{agg.lastAt ? ` · last activity ${timeAgo(agg.lastAt)}` : ""}. Stored locally, never uploaded.</p>
+                    <p>Everything you&apos;ve analyzed on this device{agg.lastAt ? ` · last activity ${timeAgo(agg.lastAt, now)}` : ""}. Stored locally, never uploaded.</p>
                 </div>
                 <div className="spacer" />
                 <button className="btn primary" onClick={() => router.push("/")}>Analyze email</button>
@@ -130,7 +158,6 @@ function DashHead({ agg, empty, onBulk, onExport, onClear, router }: { agg: Aggr
 
 function Posture({ agg }: { agg: Aggregate }) {
     const threats = agg.counts.malicious + agg.counts.suspicious;
-    const pct = (n: number) => (agg.total ? (n / agg.total) * 100 : 0);
     return (
         <div className="bento">
             <div className="tile b3 posture">
@@ -143,11 +170,6 @@ function Posture({ agg }: { agg: Aggregate }) {
                         <div className="stat c-good"><span className="n">{agg.counts.clean}</span><span className="l">Clean</span></div>
                     </div>
                 </div>
-                <div className="distbar" style={{ marginTop: 18 }}>
-                    <i className="crit" style={{ width: `${pct(agg.counts.malicious)}%` }} />
-                    <i className="sus" style={{ width: `${pct(agg.counts.suspicious)}%` }} />
-                    <i className="clean" style={{ width: `${pct(agg.counts.clean)}%` }} />
-                </div>
             </div>
             <div className="tile b1 lift">
                 <div className="t-label">Analyzed</div>
@@ -156,7 +178,7 @@ function Posture({ agg }: { agg: Aggregate }) {
             </div>
             <div className="tile b1 lift">
                 <div className="t-label">Peak risk</div>
-                <div className="t-big" style={{ color: agg.topScore >= 55 ? "var(--crit)" : agg.topScore >= 25 ? "var(--med)" : "var(--good)" }}>{agg.topScore}</div>
+                <div className="t-big" style={{ color: scoreColor(agg.topScore) }}>{agg.topScore}</div>
                 <div className="t-sub">highest score seen</div>
             </div>
             <div className="tile b1 lift">
@@ -172,36 +194,34 @@ function Ring({ value }: { value: number }) {
     const size = 92, stroke = 8, r = (size - stroke) / 2, c = 2 * Math.PI * r;
     const color = value >= 50 ? "var(--crit)" : value >= 20 ? "var(--med)" : "var(--good)";
     return (
-        <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+        <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }} role="img" aria-label={`${value}% of analyzed mail flagged as a threat`}>
             <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }} aria-hidden="true">
                 <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--surface-4)" strokeWidth={stroke} />
                 <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - value / 100)} />
             </svg>
             <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center" }}>
-                <div>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: 24, fontWeight: 600, lineHeight: 1, color }}>{value}%</div>
-                </div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 24, fontWeight: 600, lineHeight: 1, color, fontVariantNumeric: "tabular-nums" }}>{value}%</div>
             </div>
         </div>
     );
 }
 
-function FeedRow({ r, onOpen, onRemove }: { r: HistoryRecord; onOpen: () => void; onRemove: () => void }) {
+function FeedRow({ r, now, onOpen, onRemove }: { r: HistoryRecord; now: number; onOpen: () => void; onRemove: () => void }) {
     const top = r.findings[0];
     return (
-        <div className={`feed-row s-${r.verdict}`} role="button" tabIndex={0} onClick={onOpen} onKeyDown={(e) => { if (e.key === "Enter") onOpen(); }}>
-            <span className="feed-score">{r.riskScore}</span>
-            <span className="feed-main">
-                <span className="feed-subj">{r.subject || "(no subject)"}</span>
-                <span className="feed-meta">
-                    {r.fromAddress || r.fromDomain || "unknown sender"}
-                    {top ? <> · <span className="f-tag">{top.title}</span></> : null}
+        <div className={`feed-row s-${r.verdict}`}>
+            <button className="feed-open" onClick={onOpen} title="Open full analysis">
+                <span className="feed-score">{r.riskScore}</span>
+                <span className="feed-main">
+                    <span className="feed-subj">{r.subject || "(no subject)"}</span>
+                    <span className="feed-meta">
+                        <span className="feed-verdict">{r.verdict}</span> · {r.fromAddress || r.fromDomain || "unknown sender"}
+                        {top ? <> · <span className="f-tag">{top.title}</span></> : null}
+                    </span>
                 </span>
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span className="feed-time">{timeAgo(r.at)}</span>
-                <button className="copybtn" aria-label="Remove from history" onClick={(e) => { e.stopPropagation(); onRemove(); }}>✕</button>
-            </span>
+                <span className="feed-time" title={new Date(r.at).toISOString()}>{timeAgo(r.at, now)}</span>
+            </button>
+            <button className="feed-del" aria-label="Remove from history" title="Remove" onClick={onRemove}>✕</button>
         </div>
     );
 }
@@ -223,7 +243,7 @@ function IocRollup({ agg, onCopyAll, onExport }: { agg: Aggregate; onCopyAll: ()
                     <span className="val">{i.type === "ip" || i.type === "sha256" ? i.value : defang(i.value)}</span>
                     {i.count > 1 && <span className="seen">×{i.count}</span>}
                     {i.flagged && <span className="flag">flagged</span>}
-                    <button className="copybtn" onClick={() => { navigator.clipboard?.writeText(i.value); setCopied(i.value); setTimeout(() => setCopied(null), 1000); }}>{copied === i.value ? "✓" : "copy"}</button>
+                    <button className="copybtn" aria-label={`Copy ${i.value}`} onClick={() => { navigator.clipboard?.writeText(i.value); setCopied(i.value); setTimeout(() => setCopied(null), 1000); }}>{copied === i.value ? "✓" : "copy"}</button>
                 </div>
             ))}
             {agg.iocs.length > 40 && <div className="align-note" style={{ paddingTop: 12 }}>+{agg.iocs.length - 40} more — export the full set as CSV.</div>}
@@ -259,7 +279,7 @@ function TopRules({ agg }: { agg: Aggregate }) {
                     <div key={r.id} style={{ display: "grid", gap: 5 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5 }}>
                             <span>{r.title}</span>
-                            <span style={{ fontFamily: "var(--mono)", color: "var(--text-faint)" }}>{r.count}</span>
+                            <span style={{ fontFamily: "var(--mono)", color: "var(--text-faint)", fontVariantNumeric: "tabular-nums" }}>{r.count}</span>
                         </div>
                         <div style={{ height: 5, borderRadius: 3, background: "var(--surface-3)", overflow: "hidden" }}>
                             <i style={{ display: "block", height: "100%", width: `${(r.count / max) * 100}%`, background: "var(--signal)" }} />

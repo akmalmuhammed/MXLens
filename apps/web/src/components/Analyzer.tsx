@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { analyzeEmail, toMarkdown, toStix, type AnalysisResult } from "@mxlens/engine";
+import { analyzeEmail, toMarkdown, toStix, listRules, type AnalysisResult } from "@mxlens/engine";
+
+const RULE_COUNT = listRules().length;
 import { addAnalysis, getRecord } from "@/lib/history";
 import { FindingsCard, IdentityCard, IndicatorsCard, DeliveryCard, SourceCard, CoverageCard } from "./results";
 import { VerdictGauge } from "./VerdictGauge";
@@ -93,25 +95,23 @@ export function Analyzer() {
         <>
             <section className="hero wrap">
                 <div className="hero-glow" aria-hidden="true" />
-                <Reticle className="hero-reticle" />
+                <Reticle className={`hero-reticle${state.phase === "scanning" ? " scanning" : ""}`} />
 
                 <span className="eyebrow"><span className="dot" /> Analysis runs in your browser · nothing uploaded</span>
-                <h1>Resolve any email into<br /><span className="thin">evidence you can act on.</span></h1>
+                <h1>Resolve any email into labeled evidence.</h1>
                 <p className="lede">
-                    Drop an <code>.eml</code> or paste the raw source. MXLens parses the headers, verifies SPF, DKIM and DMARC alignment, inspects every link and attachment, and returns an explained verdict — with the evidence behind it.
+                    Drop an <code>.eml</code> or paste the raw source. MXLens parses the headers, verifies SPF, DKIM and DMARC alignment, inspects every link and attachment, and returns an explained verdict — with the evidence behind every finding.
                 </p>
                 <div className="caps">
-                    <span className="cap"><b>30</b> detection rules</span>
-                    <span className="cap">SPF · DKIM · DMARC · ARC</span>
+                    <span className="cap"><b>{RULE_COUNT}</b> detection rules</span>
+                    <span className="cap">SPF / DKIM / DMARC alignment</span>
                     <span className="cap">MITRE ATT&amp;CK mapped</span>
-                    <span className="cap">STIX · CSV export</span>
                 </div>
 
                 {showIntake && (
                     <div className="intake">
                         <div className="console">
                             <div className="console-bar">
-                                <div className="tap" aria-hidden="true"><i /><i /><i /></div>
                                 <div className="tab-row" role="tablist" aria-label="Input mode">
                                     <button className="console-tab" role="tab" aria-selected={mode === "drop"} onClick={() => setMode("drop")}>Drop file</button>
                                     <button className="console-tab" role="tab" aria-selected={mode === "paste"} onClick={() => setMode("paste")}>Paste source</button>
@@ -144,6 +144,7 @@ export function Analyzer() {
                             ) : (
                                 <textarea
                                     className="paste"
+                                    aria-label="Raw email source"
                                     placeholder={"Paste the raw email here — full source, or just the headers.\n\nFrom: ...\nTo: ...\nReceived: ...\nAuthentication-Results: ..."}
                                     value={paste}
                                     onChange={(e) => setPaste(e.target.value)}

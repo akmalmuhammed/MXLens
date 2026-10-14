@@ -138,12 +138,12 @@ export function SourceCard({ result, raw }: { result: AnalysisResult; raw: strin
     const headerLines = raw.split(/\r?\n\r?\n/)[0] ?? raw.slice(0, 4000);
     return (
         <div className="card">
-            <div className="tabs" role="tablist">
+            <div className="tabs" role="tablist" aria-label="Email source">
                 {tabs.map((t, i) => (
-                    <button key={t} className="tab" role="tab" aria-selected={tab === i} onClick={() => setTab(i)}>{t}</button>
+                    <button key={t} id={`srctab-${i}`} className="tab" role="tab" aria-selected={tab === i} aria-controls={`srcpanel-${i}`} tabIndex={tab === i ? 0 : -1} onClick={() => setTab(i)}>{t}</button>
                 ))}
             </div>
-            <div className="tabpanel">
+            <div className="tabpanel" role="tabpanel" id={`srcpanel-${tab}`} aria-labelledby={`srctab-${tab}`}>
                 {tabs[tab] === "Headers" && <pre className="raw">{headerLines}</pre>}
                 {tabs[tab] === "Safe preview" && result.bodyHtml && <SafePreview html={result.bodyHtml} />}
                 {tabs[tab] === "Raw" && <pre className="raw">{raw.length > 60000 ? raw.slice(0, 60000) + "\n… truncated" : raw}</pre>}

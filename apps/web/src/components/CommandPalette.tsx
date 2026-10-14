@@ -9,6 +9,7 @@ interface Command {
     label: string;
     group: string;
     icon: string;
+    shortcut?: string;
     hint?: string;
     keywords?: string;
     run: () => void;
@@ -19,6 +20,11 @@ function setTheme(next: "dark" | "light") {
     try { localStorage.setItem("mxlens-theme", next); } catch { /* ignore */ }
 }
 
+function isTyping(): boolean {
+    const el = document.activeElement;
+    return !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || (el as HTMLElement).isContentEditable);
+}
+
 export function CommandPalette() {
     const router = useRouter();
     const [open, setOpen] = useState(false);
@@ -27,31 +33,40 @@ export function CommandPalette() {
     const [recent, setRecent] = useState<HistoryRecord[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
+    const restoreRef = useRef<HTMLElement | null>(null);
 
     const close = useCallback(() => { setOpen(false); setQuery(""); setActive(0); }, []);
 
+    // Open/close (⌘K), and "g then a/d/h" navigation sequences.
     useEffect(() => {
+        let gPrime = 0;
         function onKey(e: KeyboardEvent) {
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-                e.preventDefault();
-                setOpen((v) => !v);
-            } else if (e.key === "Escape") {
-                setOpen(false);
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setOpen((v) => !v); return; }
+            if (e.key === "Escape") { setOpen(false); return; }
+            if (isTyping() || e.metaKey || e.ctrlKey || e.altKey) return;
+            const k = e.key.toLowerCase();
+            if (k === "g") { gPrime = Date.now(); return; }
+            if (gPrime && Date.now() - gPrime < 800) {
+                if (k === "a") { router.push("/"); gPrime = 0; }
+                else if (k === "d") { router.push("/dashboard"); gPrime = 0; }
+                else if (k === "h") { router.push("/docs"); gPrime = 0; }
+                else gPrime = 0;
             }
         }
         const openEvt = () => setOpen(true);
         window.addEventListener("keydown", onKey);
         window.addEventListener("mxlens:open-cmdk", openEvt);
-        return () => {
-            window.removeEventListener("keydown", onKey);
-            window.removeEventListener("mxlens:open-cmdk", openEvt);
-        };
-    }, []);
+        return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("mxlens:open-cmdk", openEvt); };
+    }, [router]);
 
+    // Focus management: capture on open, restore on close.
     useEffect(() => {
         if (open) {
+            restoreRef.current = document.activeElement as HTMLElement;
             setRecent(loadHistory().slice(0, 6));
             requestAnimationFrame(() => inputRef.current?.focus());
+        } else {
+            restoreRef.current?.focus?.();
         }
     }, [open]);
 
@@ -59,9 +74,9 @@ export function CommandPalette() {
 
     const commands = useMemo<Command[]>(() => {
         const base: Command[] = [
-            { id: "nav-analyze", label: "Analyze an email", group: "Go to", icon: "◎", hint: "G A", keywords: "home scan inspect", run: () => go("/") },
-            { id: "nav-dash", label: "Dashboard", group: "Go to", icon: "▦", hint: "G D", keywords: "history session threats overview", run: () => go("/dashboard") },
-            { id: "nav-docs", label: "Documentation", group: "Go to", icon: "❯", keywords: "cli api mcp rules help", run: () => go("/docs") },
+            { id: "nav-analyze", label: "Analyze an email", group: "Go to", icon: "◎", shortcut: "G A", keywords: "home scan inspect", run: () => go("/") },
+            { id: "nav-dash", label: "Dashboard", group: "Go to", icon: "▦", shortcut: "G D", keywords: "history session threats overview", run: () => go("/dashboard") },
+            { id: "nav-docs", label: "Documentation", group: "Go to", icon: "❯", shortcut: "G H", keywords: "cli api mcp rules help", run: () => go("/docs") },
             { id: "nav-about", label: "About", group: "Go to", icon: "ⓘ", keywords: "privacy how it works", run: () => go("/about") },
             { id: "act-phish", label: "Try the phishing sample", group: "Actions", icon: "⚑", keywords: "demo example test", run: () => go("/?sample=demo-phishing.eml") },
             { id: "act-legit", label: "Try the legitimate sample", group: "Actions", icon: "✓", keywords: "demo example test clean", run: () => go("/?sample=demo-legitimate.eml") },
@@ -99,6 +114,7 @@ export function CommandPalette() {
         if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, filtered.length - 1)); }
         else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
         else if (e.key === "Enter") { e.preventDefault(); filtered[active]?.run(); }
+        else if (e.key === "Tab") { e.preventDefault(); } // trap focus in the dialog
     }
 
     useEffect(() => {
@@ -118,12 +134,17 @@ export function CommandPalette() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={onInputKey}
+                    role="combobox"
+                    aria-expanded="true"
+                    aria-controls="cmdk-listbox"
+                    aria-activedescendant={filtered[active] ? `cmdk-opt-${active}` : undefined}
+                    aria-autocomplete="list"
                     aria-label="Command"
                 />
-                <div className="cmdk-list" ref={listRef}>
+                <div className="cmdk-list" id="cmdk-listbox" role="listbox" ref={listRef}>
                     {grouped.length === 0 && <div className="cmdk-empty">No matches.</div>}
                     {grouped.map(([group, items]) => (
-                        <div key={group}>
+                        <div key={group} role="group" aria-label={group}>
                             <div className="cmdk-group">{group}</div>
                             {items.map((c) => {
                                 flatIndex++;
@@ -131,14 +152,16 @@ export function CommandPalette() {
                                 return (
                                     <div
                                         key={c.id}
+                                        id={`cmdk-opt-${idx}`}
                                         className="cmdk-item"
                                         role="option"
                                         aria-selected={idx === active}
                                         onMouseEnter={() => setActive(idx)}
                                         onMouseDown={(e) => { e.preventDefault(); c.run(); }}
                                     >
-                                        <span className="ic">{c.icon}</span>
+                                        <span className="ic" aria-hidden="true">{c.icon}</span>
                                         <span>{c.label}</span>
+                                        {c.shortcut && <kbd className="hint">{c.shortcut}</kbd>}
                                         {c.hint && <span className="hint">{c.hint}</span>}
                                     </div>
                                 );
