@@ -1,0 +1,48 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+ts-debug.log*
+
+# local env files
+.env*.local
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Never commit data exports, real mail, or local debug output
+*.eml
+!tests/fixtures/**/*.eml
+*.msg
+*dump*.json
+users*.json
+users*.txt
+*.log
+tsc*.txt
+test_output*.txt
+build-output.txt

@@ -1,0 +1,23 @@
+Return-Path: <bounces@lists.example.net>
+ARC-Seal: i=2; a=rsa-sha256; t=1767225900; cv=pass; d=lists.example.net; s=arc-2026; b=c3ludGhldGljLXNlYWwtMg==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=lists.example.net; s=arc-2026; h=from:to:subject:date; bh=c3ludGhldGlj; b=c3ludGhldGljLW1zLTI=
+ARC-Authentication-Results: i=2; mx.lists.example.net; spf=pass smtp.mailfrom=bounces@lists.example.net; dkim=pass header.d=example.com
+ARC-Seal: i=1; a=rsa-sha256; t=1767225840; cv=none; d=example.com; s=arc-2026; b=c3ludGhldGljLXNlYWwtMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=arc-2026; h=from:to:subject:date; bh=c3ludGhldGlj; b=c3ludGhldGljLW1zLTE=
+ARC-Authentication-Results: i=1; mx.example.com; spf=pass smtp.mailfrom=survey@example.com; dkim=pass header.d=example.com; dmarc=pass header.from=example.com
+Authentication-Results: mx.recipient.example.org; spf=softfail (domain of transitioning bounces@lists.example.net does not designate 198.51.100.25 as permitted sender) smtp.mailfrom=bounces@lists.example.net; dkim=fail header.d=example.com; dmarc=fail (p=none sp=none dis=none) header.from=example.com; arc=pass (i=2)
+Received: from relay.lists.example.net (relay.lists.example.net [198.51.100.25]) by mx.recipient.example.org with ESMTPS id synthetic03; Thu, 1 Jan 2026 00:05:10 +0000
+Received: from mx.lists.example.net (mx.lists.example.net [198.51.100.24]) by relay.lists.example.net with ESMTP id synthetic02; Thu, 1 Jan 2026 00:05:00 +0000
+Received: from out.example.com (out.example.com [203.0.113.40]) by mx.lists.example.net with ESMTPS id synthetic01; Thu, 1 Jan 2026 00:04:00 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=s2026; h=from:to:subject:date; bh=c3ludGhldGlj; b=c3ludGhldGljLWRraW0=
+From: Example Surveys <survey@example.com>
+To: Team List <team@lists.example.net>
+Subject: [team] Quarterly feedback survey
+Date: Thu, 1 Jan 2026 00:03:58 +0000
+Message-ID: <synthetic-arc-forwarded-01@example.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Synthetic fixture: a legitimate message forwarded through a mailing list.
+The list rewrote the envelope, so SPF/DKIM/DMARC fail at the final hop,
+while the ARC chain records that the original authentication passed.

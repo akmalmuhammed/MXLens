@@ -1,0 +1,74 @@
+From: security-team@company.com
+To: analyst@example.org
+Subject: [DEMO] Sample Phishing Simulation Email
+Date: Mon, 23 Dec 2024 14:32:00 +0000
+Message-ID: <demo-sample-123@mxlens.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="----=_Part_123456"
+X-Mailer: MXLens Demo Generator
+Return-Path: <bounce@suspicious-domain.net>
+Received: from mail.legitimate-company.com (192.168.1.100) by mx.example.org with SMTP; Mon, 23 Dec 2024 14:32:00 +0000
+Received: from unknown (HELO suspicious-server.net) (45.33.22.11) by mail.legitimate-company.com; Mon, 23 Dec 2024 14:31:55 +0000
+Authentication-Results: mx.example.org; spf=softfail smtp.mailfrom=bounce@suspicious-domain.net; dkim=none; dmarc=fail action=quarantine header.from=security-team@company.com
+X-Spam-Status: Yes, score=7.2 required=5.0
+X-Spam-Flag: YES
+X-Priority: 1 (Highest)
+
+------=_Part_123456
+Content-Type: text/plain; charset="utf-8"
+
+URGENT: Your password expires in 24 hours!
+
+Dear User,
+
+We've detected suspicious activity on your account. Your password will expire 
+in 24 hours unless you verify your identity immediately.
+
+Click here to verify: http://bit.ly/verify-now-urgent
+
+If you don't act within 24 hours, your account will be permanently locked.
+
+Best regards,
+IT Security Team
+
+------=_Part_123456
+Content-Type: text/html; charset="utf-8"
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Expiration Notice</title>
+</head>
+<body style="font-family: Arial, sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #cc0000;">⚠️ URGENT: Password Expires in 24 Hours</h1>
+        
+        <p>Dear User,</p>
+        
+        <p>We've detected <strong>suspicious activity</strong> on your account. 
+        Your password will expire in <strong>24 hours</strong> unless you verify 
+        your identity immediately.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="http://bit.ly/verify-now-urgent" 
+               style="background-color: #cc0000; color: white; padding: 15px 30px; 
+                      text-decoration: none; border-radius: 5px; font-weight: bold;">
+                VERIFY NOW
+            </a>
+        </div>
+        
+        <p style="color: #666; font-size: 12px;">
+            If you don't act within 24 hours, your account will be permanently locked.
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+        
+        <p>Best regards,<br>IT Security Team</p>
+        
+        <!-- Hidden tracking pixel (suspicious) -->
+        <img src="http://tracking.suspicious-domain.net/pixel.gif?id=12345" width="1" height="1">
+    </div>
+</body>
+</html>
+
+------=_Part_123456--

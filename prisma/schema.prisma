@@ -1,0 +1,548 @@
+// MXLens Database Schema
+// Architect: Antigravity
+// Target: Neon (PostgreSQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// -----------------------------------------------------------------------------
+// ENUMS (Strict Typing)
+// -----------------------------------------------------------------------------
+
+enum UserRole {
+  OWNER
+  ADMIN
+  ANALYST
+  VIEWER
+}
+
+// Platform-level admin roles (different from org roles)
+enum AdminRole {
+  SUPER_ADMIN     // Full platform access
+  SUPPORT_ADMIN   // Can view/manage users and orgs
+  BILLING_ADMIN   // Can view/manage billing
+  READ_ONLY       // View-only access to admin panel
+}
+
+enum PlanTier {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum AnalysisVerdict {
+  CLEAN
+  SUSPICIOUS
+  MALICIOUS
+  UNKNOWN
+}
+
+enum AuditAction {
+  ORG_CREATE
+  ORG_UPDATE
+  MEMBER_INVITE
+  MEMBER_REMOVE
+  API_KEY_CREATE
+  API_KEY_REVOKE
+  SUBSCRIPTION_CHANGE
+  
+  // Platform Security Actions
+  USER_SUSPEND
+  USER_UNSUSPEND
+  SYSTEM_LOCKDOWN
+  IP_BLOCK
+  IP_UNBLOCK
+}
+
+enum AnalysisClassification {
+  TRUE_POSITIVE
+  FALSE_POSITIVE
+  UNDETERMINED
+}
+
+enum TriageStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+  ARCHIVED
+}
+
+enum IncidentSource {
+  MANUAL_UPLOAD
+  API
+  GENERIC_WEBHOOK
+  JIRA
+  SERVICENOW
+  GRAPH_API // Microsoft 365
+  IMAP
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AnalysisBatchStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  PARTIAL_FAILED
+  FAILED
+}
+
+enum AnalysisBatchItemStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// -----------------------------------------------------------------------------
+// IDENTITY & TENANCY
+// -----------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  
+  // Security
+  mfaEnabled     Boolean   @default(false)
+
+  // Platform Admin Access (separate from org-level roles)
+  isPlatformAdmin Boolean   @default(false)
+  adminRole       AdminRole?
+
+  // System Metadata
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  memberships   Membership[] // Org access
+  
+  // Auditing: Actions performed BY this user
+  auditLogs     AuditLog[]
+  analysisComments AnalysisComment[]
+  analysisLogs  AnalysisLog[]
+  assignedCases AnalysisLog[] @relation("AssignedCases")
+}
+
+model Organization {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique // URL friendly identifier
+  
+  // Branding (White-labeling capability)
+  logoUrl       String?
+  primaryColor  String?
+
+  // Billing
+  planTier      PlanTier  @default(FREE)
+  stripeCustomerId String? @unique
+  subscriptionId   String?
+  subscriptionStatus String? // "active", "past_due"
+  incidentCounter    Int       @default(1000) // Start at #INC-1000 for aesthetics
+
+  billableSeats    Int       @default(1)
+
+  // System
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  members       Membership[]
+  invites       OrgInvite[]
+  apiKeys       ApiKey[]
+  analysisLogs  AnalysisLog[]
+  analysisBatches AnalysisBatch[]
+  auditLogs     AuditLog[]
+  
+  // Enterprise Relations
+  integrations  Integration[]
+  customRules   CustomRule[]
+  reportConfigs ReportConfig[]
+
+  @@index([slug])
+}
+
+model Membership {
+  id            String    @id @default(cuid())
+  role          UserRole  @default(VIEWER)
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  joinedAt      DateTime  @default(now())
+
+  @@unique([userId, orgId]) // One role per org per user
+  @@index([orgId])
+  @@index([userId])
+}
+
+model OrgInvite {
+  id            String    @id @default(cuid())
+  email         String
+  role          UserRole  @default(ANALYST)
+  token         String    @unique
+  expiresAt     DateTime
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  inviterId     String
+  
+  createdAt     DateTime  @default(now())
+
+  @@index([email])
+  @@index([orgId])
+}
+
+// -----------------------------------------------------------------------------
+// API & INTEGRATION (Enterprise)
+// -----------------------------------------------------------------------------
+
+model ApiKey {
+  id            String    @id @default(cuid())
+  name          String    // e.g. "CI Pipeline", "Splunk Integration"
+  keyPrefix     String    @unique // "mxl_live_..."
+  hashedKey     String    @unique
+  lastUsedAt    DateTime?
+  expiresAt     DateTime?
+  
+  isActive      Boolean   @default(true)
+  scopes        String[]  // ["analyze:read", "analyze:write"]
+
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  analysisLogs  AnalysisLog[]
+  analysisBatches AnalysisBatch[]
+  
+  createdAt     DateTime  @default(now())
+
+  @@index([orgId])
+}
+
+// -----------------------------------------------------------------------------
+// CORE PRODUCT: ANALYSIS DATA
+// -----------------------------------------------------------------------------
+// NOTE: STRICT PRIVACY. NO PII. NO RAW CONTENT.
+
+model AnalysisLog {
+  id            String    @id @default(cuid())
+  
+  // The Verdict
+  verdict       AnalysisVerdict
+  riskScore     Int       // 0-100
+  confidence    String    // "HIGH", "MEDIUM", "LOW"
+
+  // Privacy-Safe Metadata (JSONB for flexibility without migrations)
+  // Structure: { spf: "pass", dkim: "fail", fileType: "eml", numAttachments: 2 }
+  meta          Json      
+  
+  // Ops Metrics
+  processingMs  Int
+  clientVersion String?
+
+  // Analyst Triage
+  classification AnalysisClassification?
+  triageStatus   TriageStatus            @default(OPEN)
+
+  // Team Features (New)
+  incidentId      String?             @unique // E.g., "#INC-1024" (Readable ID)
+  source          IncidentSource      @default(MANUAL_UPLOAD)
+  externalId      String?             // E.g. "JIRA-123", "MSG-XYZ"
+  severity        IncidentSeverity    @default(MEDIUM)
+  assigneeId      String?             // Link to User (Team Member)
+  assignee        User?               @relation("AssignedCases", fields: [assigneeId], references: [id])
+
+  // Ownership
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  // Optional: Who ran it? Can be null if API key
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id])
+  apiKeyId      String?
+  apiKey        ApiKey?   @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  
+  // Relations
+  comments      AnalysisComment[]
+  batchItems    AnalysisBatchItem[]
+
+  createdAt     DateTime  @default(now())
+
+  @@index([orgId, createdAt]) // Dashboard Trend Queries
+  @@index([verdict])          // Risk Stats
+  @@index([apiKeyId])
+}
+
+model AnalysisBatch {
+  id                String              @id @default(cuid())
+  status            AnalysisBatchStatus @default(QUEUED)
+  totalItems        Int
+  completedItems    Int                 @default(0)
+  failedItems       Int                 @default(0)
+  clientReferenceId String?
+
+  orgId             String
+  organization      Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  apiKeyId          String?
+  apiKey            ApiKey?             @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  items             AnalysisBatchItem[]
+
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([orgId, createdAt])
+  @@index([apiKeyId])
+  @@index([status])
+}
+
+model AnalysisBatchItem {
+  id                String                  @id @default(cuid())
+  batchId           String
+  batch             AnalysisBatch           @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  position          Int
+
+  status            AnalysisBatchItemStatus @default(QUEUED)
+  sourceType        String
+  sourceLabel       String?
+  filename          String?
+  externalId        String?
+  clientReferenceId String?
+
+  errorCode         String?
+  errorMessage      String?
+  resultSummary     Json?
+  processingMs      Int?
+
+  analysisLogId     String?
+  analysisLog       AnalysisLog?            @relation(fields: [analysisLogId], references: [id], onDelete: SetNull)
+
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  @@unique([batchId, position])
+  @@index([batchId, status])
+  @@index([analysisLogId])
+}
+
+// -----------------------------------------------------------------------------
+// SECURITY & COMPLIANCE (Audit Trail)
+// -----------------------------------------------------------------------------
+
+model AuditLog {
+  id            String    @id @default(cuid())
+  action        AuditAction
+  
+  // Who?
+  actorId       String    // User ID
+  actorEmail    String    // Snapshot in case user is deleted
+  user          User?     @relation(fields: [actorId], references: [id])
+  ipAddress     String?
+  userAgent     String?
+  
+  // Where?
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  // What?
+  targetId      String?   // ID of object affected (e.g., User ID, ApiKey ID)
+  details       Json?     // e.g. { "oldRole": "VIEWER", "newRole": "ADMIN" }
+
+  createdAt     DateTime  @default(now())
+
+  @@index([orgId, createdAt])
+  @@index([actorId])
+}
+
+// -----------------------------------------------------------------------------
+// COLLABORATION & SOCIAL
+// -----------------------------------------------------------------------------
+
+model AnalysisComment {
+  id            String    @id @default(cuid())
+  content       String
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  
+  analysisLogId String
+  analysisLog   AnalysisLog @relation(fields: [analysisLogId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([analysisLogId])
+}
+
+// -----------------------------------------------------------------------------
+// ENTERPRISE INTEGRATIONS & AUTOMATION
+// -----------------------------------------------------------------------------
+
+enum IntegrationType {
+  SLACK
+  JIRA
+  MICROSOFT_TEAMS
+  SPLUNK
+  GENERIC_WEBHOOK
+}
+
+model Integration {
+  id            String    @id @default(cuid())
+  type          IntegrationType
+  name          String
+  
+  // Encrypted Config (e.g. Webhook URL, Auth Token)
+  config        Json      
+  isActive      Boolean   @default(true)
+
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  webhookDeliveries WebhookDelivery[]
+
+  @@index([orgId])
+}
+
+model WebhookDelivery {
+  id            String    @id @default(cuid())
+  
+  integrationId String
+  integration   Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  
+  status        Int       // HTTP Status Code
+  success       Boolean
+  requestBody   Json?
+  responseBody  Json?
+  durationMs    Int
+  
+  triggeredAt   DateTime  @default(now())
+
+  @@index([integrationId])
+}
+
+// -----------------------------------------------------------------------------
+// CUSTOM DETECTION ENGINE (Client-Side Config)
+// -----------------------------------------------------------------------------
+
+enum RuleType {
+  ALLOW     // Whitelist
+  BLOCK     // Blacklist
+  FLAG      // Warning
+}
+
+enum RuleTarget {
+  SENDER_EMAIL
+  SENDER_DOMAIN
+  RETURN_PATH
+  IP_ADDRESS
+  SUBJECT_REGEX
+}
+
+model CustomRule {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  
+  type          RuleType
+  target        RuleTarget
+  pattern       String    // e.g. "*@evil.com", "1.2.3.4"
+  
+  isActive      Boolean   @default(true)
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  createdBy     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([orgId])
+  @@index([target, pattern]) // Fast lookup
+}
+
+// -----------------------------------------------------------------------------
+// REPORTING
+// -----------------------------------------------------------------------------
+
+enum ReportFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+model ReportConfig {
+  id            String    @id @default(cuid())
+  name          String
+  frequency     ReportFrequency
+  recipients    String[]  // Array of emails
+  
+  isActive      Boolean   @default(true)
+  lastRunAt     DateTime?
+  
+  orgId         String
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([orgId])
+}
+
+// -----------------------------------------------------------------------------
+// ISOLATED ADMIN AUTH (Custom Implementation)
+// -----------------------------------------------------------------------------
+
+model AdminUser {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          AdminRole @default(SUPER_ADMIN)
+  
+  sessions      AdminSession[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+
+  @@map("admin_sessions")
+}
+
+
+
+
