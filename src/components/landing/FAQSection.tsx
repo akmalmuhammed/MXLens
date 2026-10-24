@@ -14,7 +14,7 @@ const faqs = [
     {
         question: "Is my email data stored on your servers?",
         answer:
-            "No. MXLens processes everything locally in your browser using WebAssembly. Your email data never leaves your device—we have no servers to store it on. This is architecturally guaranteed, not just a policy promise.",
+            "No. The web analyzer parses and scores the email in your browser, and the message body and attachments are never uploaded. For enrichment, sender IPs, domains and attachment hashes are sent to our server and on to threat-intel providers; if you are signed in, the verdict and score are saved. The REST API and MCP endpoint analyze email on the server.",
     },
     {
         question: "Is it free to use?",

@@ -13,8 +13,7 @@ const isProtectedMainRoute = createRouteMatcher([
     "/analysis/(.*)",
     "/insights(.*)",
     "/notifications(.*)",
-    "/api/bridge/(.*)",
-    "/api/debug/session"
+    "/api/bridge/(.*)"
 ]);
 
 function getRedisClient() {

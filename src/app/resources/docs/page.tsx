@@ -298,7 +298,7 @@ export default function DocsPage() {
                         </h2>
                         <p>
                             Unlike traditional email security tools that require you to forward emails to external servers,
-                            MXLens uses a <strong>client-side architecture</strong> powered by WebAssembly.
+                            MXLens uses a <strong>client-side architecture</strong>: the web analyzer parses and scores email in your browser with JavaScript.
                         </p>
 
                         <div className="not-prose my-8 p-6 rounded-xl bg-slate-800/50 border border-slate-700/50">
@@ -319,9 +319,9 @@ export default function DocsPage() {
                                 <div>
                                     <h5 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-2">✅ MXLens</h5>
                                     <ul className="space-y-2 text-sm text-muted-foreground">
-                                        <li>• 100% browser-based analysis</li>
-                                        <li>• Zero bytes leave your device</li>
-                                        <li>• Full compliance maintained</li>
+                                        <li>• Parsing and scoring in your browser</li>
+                                        <li>• Email body and attachments never uploaded</li>
+                                        <li>• Enrichment sends only IPs, domains and hashes</li>
                                         <li>• Evidence integrity preserved</li>
                                     </ul>
                                 </div>
@@ -330,8 +330,8 @@ export default function DocsPage() {
 
                         <h3>Analysis Pipeline</h3>
                         <ol>
-                            <li><strong>Parsing:</strong> Email is parsed using PostalMime (WASM) to extract headers, body, and attachments.</li>
-                            <li><strong>Authentication Check:</strong> SPF, DKIM, DMARC, and ARC headers are validated against RFC standards.</li>
+                            <li><strong>Parsing:</strong> Email is parsed in the browser using PostalMime (JavaScript) to extract headers, body, and attachments.</li>
+                            <li><strong>Authentication Check:</strong> SPF, DKIM, DMARC, and ARC results are read from the receiving server's Authentication-Results headers (not re-verified cryptographically).</li>
                             <li><strong>Threat Detection:</strong> 50+ heuristic rules check for impersonation, suspicious URLs, and known phishing patterns.</li>
                             <li><strong>Risk Scoring:</strong> A weighted algorithm calculates an overall threat score (0-100) with confidence rating.</li>
                             <li><strong>Verdict:</strong> Final classification as Likely Legitimate, Suspicious, or High Risk with actionable recommendations.</li>

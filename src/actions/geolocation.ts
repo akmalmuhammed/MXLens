@@ -1,16 +1,18 @@
 "use server";
 
 import { getIPGeolocation, getMultipleIPGeolocations, GeoLocation } from "@/lib/threat-intel/geolocation";
+import { allowEnrichment, isPublicIp } from "@/lib/security/enrichment-guard";
 
 /**
  * Server action to get geolocation for multiple IPs
  * This runs server-side to protect API keys and cache responses
  */
 export async function fetchIPGeolocations(ips: string[]): Promise<GeoLocation[]> {
-    if (!ips || ips.length === 0) return [];
+    if (!Array.isArray(ips) || ips.length === 0) return [];
+    if (!(await allowEnrichment("geolocation", 30))) return [];
 
-    // Limit to 20 IPs per request to prevent abuse
-    const limitedIPs = ips.slice(0, 20);
+    // Only public IPs leave the server; limit to 20 per request to prevent abuse
+    const limitedIPs = Array.from(new Set(ips.filter(ip => typeof ip === "string" && isPublicIp(ip)))).slice(0, 20);
 
     const results = await getMultipleIPGeolocations(limitedIPs);
 
@@ -24,6 +26,7 @@ export async function fetchIPGeolocations(ips: string[]): Promise<GeoLocation[]>
  * Server action to get geolocation for a single IP
  */
 export async function fetchSingleIPGeolocation(ip: string): Promise<GeoLocation | null> {
-    if (!ip) return null;
+    if (typeof ip !== "string" || !isPublicIp(ip)) return null;
+    if (!(await allowEnrichment("geolocation", 30))) return null;
     return await getIPGeolocation(ip);
 }

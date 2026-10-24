@@ -24,14 +24,14 @@ export default function TrustCenterPage() {
                 <section className="max-w-3xl mx-auto text-center space-y-6">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold">
                         <Lock className="w-4 h-4" />
-                        Zero Data Collection
+                        Email Content Stays Local
                     </div>
                     <h2 className="text-4xl font-bold tracking-tight">
-                        Your emails never leave your browser.
+                        Your email content stays in your browser.
                     </h2>
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                        MXLens performs all email analysis using client-side JavaScript and WebAssembly.
-                        No email content, headers, or attachments are ever transmitted to our servers.
+                        The web analyzer parses and scores email with client-side JavaScript; the message body and attachments are never uploaded.
+                        For enrichment, sender IPs, domains and attachment hashes are sent to our server and on to threat-intel providers. Signed-in users' verdicts and scores are saved. The REST API and MCP endpoint analyze email on the server.
                     </p>
                 </section>
 
@@ -149,37 +149,6 @@ export default function TrustCenterPage() {
                         <p className="mt-6 text-sm text-muted-foreground">
                             <strong>Note:</strong> We never store raw email bodies, raw .eml files, or attachment contents. Saved reports retain only the metadata listed above.
                         </p>
-                    </div>
-                </section>
-
-                {/* Compliance & Certifications */}
-                <section className="max-w-4xl mx-auto">
-                    <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                        <ShieldCheck className="w-6 h-6 text-primary" />
-                        Compliance Roadmap
-                    </h3>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <div className="bg-card/50 border rounded-xl p-6 text-center">
-                            <div className="text-3xl font-bold text-cyan-400 mb-2">SOC 2</div>
-                            <div className="text-sm text-muted-foreground">Type II - In Progress</div>
-                            <div className="mt-4 text-xs bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full inline-block">
-                                Q2 2025
-                            </div>
-                        </div>
-                        <div className="bg-card/50 border rounded-xl p-6 text-center">
-                            <div className="text-3xl font-bold text-cyan-400 mb-2">GDPR</div>
-                            <div className="text-sm text-muted-foreground">Compliant by Design</div>
-                            <div className="mt-4 text-xs bg-green-500/10 text-green-400 px-3 py-1 rounded-full inline-block">
-                                Active
-                            </div>
-                        </div>
-                        <div className="bg-card/50 border rounded-xl p-6 text-center">
-                            <div className="text-3xl font-bold text-cyan-400 mb-2">ISO 27001</div>
-                            <div className="text-sm text-muted-foreground">Certification Planned</div>
-                            <div className="mt-4 text-xs bg-slate-500/10 text-slate-400 px-3 py-1 rounded-full inline-block">
-                                Q4 2025
-                            </div>
-                        </div>
                     </div>
                 </section>
 

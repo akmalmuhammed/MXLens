@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { redis } from "@/lib/redis"; // Using the shared Redis client we created
 import { startOfDay, subHours } from "date-fns";
+import { assertSuperAdmin } from "@/actions/admin/emergency";
 
 export interface SecurityStats {
     activeThreats24h: number;
@@ -15,6 +16,10 @@ export interface SecurityStats {
  * Fetch high-level security metrics for the admin dashboard
  */
 export async function getSecurityOverview(): Promise<SecurityStats> {
+    // RBAC: this returns incidents across every organization. Checked outside the
+    // try block so an unauthorized caller gets an error, not an empty payload.
+    await assertSuperAdmin();
+
     try {
         const oneDayAgo = subHours(new Date(), 24);
 

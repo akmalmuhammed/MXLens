@@ -28,7 +28,7 @@ export function AnimatedFeaturesClient() {
                             Local-First Security Core
                         </h2>
                         <p className="text-muted-foreground text-xl leading-relaxed mb-8">
-                            Traditional sandboxes leak data. MXLens is different. Our analysis engine runs <span className="text-emerald-400 font-semibold">100% in your browser</span> using WebAssembly.
+                            Traditional sandboxes leak data. MXLens is different. Parsing and scoring run <span className="text-emerald-400 font-semibold">in your browser</span> using WebAssembly.
                         </p>
                         <ul className="space-y-4">
                             <MotionListItem delay={0.1} text="Air-Gap Safe (No Uploads)" />

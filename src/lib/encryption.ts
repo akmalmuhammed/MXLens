@@ -15,17 +15,12 @@ function getKey(): Buffer {
 
     const keyHex = process.env.ENCRYPTION_KEY;
 
-    if (!keyHex) {
-        // During build time (static generation), env vars may not be available
-        // Only throw at runtime when actually used
-        if (process.env.NODE_ENV === "production") {
-            throw new Error("FATAL: ENCRYPTION_KEY is missing in production runtime");
-        }
-        console.warn("WARNING: Using insecure dev key for encryption");
-        encryptionKey = Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
-    } else {
-        encryptionKey = Buffer.from(keyHex, "hex");
+    // Fail closed in every environment (the key is read lazily, so builds still succeed):
+    // an all-zero or malformed key would make stored integration secrets trivially decryptable.
+    if (!keyHex || !/^[0-9a-fA-F]{64}$/.test(keyHex)) {
+        throw new Error("ENCRYPTION_KEY must be 64 hex characters (32 bytes). Generate one with: openssl rand -hex 32");
     }
+    encryptionKey = Buffer.from(keyHex, "hex");
 
     return encryptionKey;
 }

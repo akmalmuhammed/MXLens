@@ -92,8 +92,7 @@ export function AnimatedAboutClient() {
                 {/* Stats / Impact (Optional filler for motion) */}
                 <section className="py-24 container mx-auto px-4">
                     <div className="grid md:grid-cols-3 gap-8 text-center">
-                        <StatBox label="Analyses Run" value="10k+" delay={0.5} />
-                        <StatBox label="Data Leaked" value="0B" delay={0.6} active />
+                                                <StatBox label="Data Leaked" value="0B" delay={0.6} active />
                         <StatBox label="Uptime" value="99.9%" delay={0.7} />
                     </div>
                 </section>

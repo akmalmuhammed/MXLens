@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { getDecryptedConfig } from "@/actions/integrations";
+import { getDecryptedConfig } from "@/lib/integrations/config";
 
 /**
  * GET /api/bridge/content/[incidentId]
@@ -19,7 +19,7 @@ export async function GET(
         return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { incidentId } = props.params;
+    const { incidentId } = await props.params;
 
     try {
         // 1. Fetch Incident & Integration Info

@@ -18,10 +18,10 @@ const steps = [
     {
         icon: Cpu,
         step: "02",
-        title: "WASM Engine",
+        title: "Local Engine",
         time: "1 sec",
-        description: "WebAssembly engine activates in your browser",
-        highlight: "Zero network requests",
+        description: "The analysis engine runs in your browser",
+        highlight: "Email content never uploaded",
         color: "accent",
     },
     {

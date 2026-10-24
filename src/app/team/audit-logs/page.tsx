@@ -7,7 +7,7 @@ export default function AuditLogsPage() {
         <div className="space-y-6">
             <div>
                 <h1 className="text-2xl font-bold">Audit Logs</h1>
-                <p className="text-muted-foreground">Track security events and analysis history for SOC 2 compliance.</p>
+                <p className="text-muted-foreground">Track security events and analysis history for compliance reviews.</p>
             </div>
 
             <div className="relative max-w-sm">
