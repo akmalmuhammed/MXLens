@@ -97,7 +97,7 @@ export class HeaderParser {
         }
     }
 
-    static async parse(rawInput: string): Promise<AnalysisResult> {
+    static async parse(rawInput: string, options: { checkAttachments?: boolean } = {}): Promise<AnalysisResult> {
         const parser = new PostalMime();
         const email = await parser.parse(rawInput);
         const headerMap: HeaderMap = {};
@@ -161,13 +161,15 @@ export class HeaderParser {
         const impersonationAlert = this.detectImpersonation(headerMap, auth);
         const recommendedActions = this.getRecommendedActions(verdict, auth, impersonationAlert);
         const xHeaders = this.analyzeXHeaders(headerMap);
-        const attachments = await this.analyzeAttachments(email.attachments);
+        const attachments = options.checkAttachments !== false
+            ? await this.analyzeAttachments(email.attachments)
+            : [];
 
         return {
             verdict,
             score,
             headers: headerMap,
-            rawHeaders: rawInput,
+            rawHeaders: rawInput.split(/\r?\n\r?\n/, 1)[0] || "",
             auth,
             hops,
             artifacts,

@@ -1,5 +1,7 @@
 # MXLens Engineering Audit
 
+> **Status note (2026-10-25):** This document is the historical baseline. A focused remediation set was implemented after review; see [remediation-next-build.md](./remediation-next-build.md) for fixed findings, deployment steps, and remaining stop-ship work. Do not treat every finding below as current without checking that status document.
+
 Date: 2026-05-01
 Scope: security, tenancy, auth, admin APIs/actions, email analysis correctness, billing/webhooks, frontend/admin UX, dependencies, build, CI, and repo hygiene.
 

@@ -1,0 +1,54 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    env:
+      # Build-only placeholders. Never use these values in deployments.
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/mxlens
+      DIRECT_URL: postgresql://ci:ci@127.0.0.1:5432/mxlens
+      STRIPE_SECRET_KEY: sk_test_ci_placeholder
+      ADMIN_AUTH_SECRET: ci-only-not-for-deployment
+      BETTER_AUTH_SECRET: ci-only-not-for-deployment
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZXhhbXBsZS5jb20k
+      CLERK_SECRET_KEY: sk_test_ci_placeholder
+      UPSTASH_REDIS_REST_URL: https://127.0.0.1
+      UPSTASH_REDIS_REST_TOKEN: ci-only-placeholder
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Type check
+        run: npx tsc --noEmit --pretty false
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:run
+
+      - name: Production build
+        run: npm run build

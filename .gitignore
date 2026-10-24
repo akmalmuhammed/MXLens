@@ -34,3 +34,27 @@ ts-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local security-review corpus and sensitive diagnostic exports
+/test-samples/
+/db_users.json
+/db_users_dump.json
+/users.json
+/db_users_error.txt
+/users_list.txt
+/check-reset-admin.ts
+/promote-admin.ts
+/scripts/create-admin-user.ts
+/scripts/create-admin.ts
+/scripts/create_admin_user.ts
+/scripts/reset_admin_password.ts
+/scripts/reset_admin_password_v2.ts
+/build*.log
+/build*.txt
+/error.log
+/full_error.log
+/test_error.log
+/tsc_error.log
+/test_output*.txt
+/tsc*.txt
+/public/wasm/*.map

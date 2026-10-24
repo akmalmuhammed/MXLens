@@ -4,6 +4,7 @@ import { suspendUser, setSystemLockdown } from '@/actions/admin/emergency';
 import { unblockIpAction } from '@/actions/admin/abuse';
 import * as fs from 'fs';
 
+vi.mock('server-only', () => ({}));
 
 vi.mock('@prisma/client', () => {
     return {
@@ -41,6 +42,10 @@ vi.mock('@/auth', () => ({
     auth: vi.fn().mockImplementation(() => { console.log("MOCK: auth"); return Promise.resolve({}); })
 }));
 
+vi.mock('@/lib/admin/auth', () => ({
+    verifyAdminSession: vi.fn().mockResolvedValue({ userId: 'admin-123', email: 'admin@example.test', name: 'Admin', role: 'SUPER_ADMIN' })
+}));
+
 vi.mock('@/lib/audit', () => ({
     logAuditAction: vi.fn().mockImplementation(() => { console.log("MOCK: logAuditAction"); return Promise.resolve(); })
 }));
@@ -64,10 +69,12 @@ vi.mock('next/headers', () => ({
 import { db } from '@/lib/db';
 import { redis } from '@/lib/redis';
 import { auth } from '@/auth';
+import { verifyAdminSession } from '@/lib/admin/auth';
 import { logAuditAction } from '@/lib/audit';
 import { unblockIp } from '@/lib/security/abuse-detector';
 
 const mockedAuth = vi.mocked(auth);
+const mockedAdminSession = vi.mocked(verifyAdminSession);
 const mockedFindUnique = vi.mocked(db.user.findUnique);
 
 console.log("TEST: Imports loaded");
@@ -92,6 +99,7 @@ describe('Admin Actions', () => {
         vi.clearAllMocks();
         // Default happy path setup
         mockedAuth.mockResolvedValue(mockSession);
+        mockedAdminSession.mockResolvedValue({ userId: 'admin-123', email: 'admin@example.test', name: 'Admin', role: 'SUPER_ADMIN' });
         mockedFindUnique.mockResolvedValue(mockAdminUser);
     });
 

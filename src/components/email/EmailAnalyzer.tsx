@@ -86,7 +86,7 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
         setRawInput(content); // Store for re-runs
 
         try {
-            const headerResPromise = HeaderParser.parse(content);
+            const headerResPromise = HeaderParser.parse(content, { checkAttachments: runAttachments });
             const parser = new PostalMime();
             const emailPromise = parser.parse(content);
             const [headerRes, email] = await Promise.all([headerResPromise, emailPromise]);

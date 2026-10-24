@@ -262,7 +262,7 @@ model AnalysisLog {
   triageStatus   TriageStatus            @default(OPEN)
 
   // Team Features (New)
-  incidentId      String?             @unique // E.g., "#INC-1024" (Readable ID)
+  incidentId      String?             // Unique within an organization (e.g. "#INC-1024")
   source          IncidentSource      @default(MANUAL_UPLOAD)
   externalId      String?             // E.g. "JIRA-123", "MSG-XYZ"
   severity        IncidentSeverity    @default(MEDIUM)
@@ -286,6 +286,7 @@ model AnalysisLog {
   createdAt     DateTime  @default(now())
 
   @@index([orgId, createdAt]) // Dashboard Trend Queries
+  @@unique([orgId, incidentId])
   @@index([verdict])          // Risk Stats
   @@index([apiKeyId])
 }

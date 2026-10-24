@@ -2,14 +2,15 @@
 
 import { redis } from "@/lib/redis";
 import { unblockIp } from "@/lib/security/abuse-detector";
-import { assertSuperAdmin } from "@/actions/admin/emergency";
 import { logAuditAction } from "@/lib/audit";
 import { AuditAction } from "@prisma/client";
+import { assertSuperAdmin } from "@/lib/admin/guards";
 
 /**
  * Fetch stats for Abuse Dashboard
  */
 export async function getAbuseStats() {
+    await assertSuperAdmin();
     // 1. Get Blocked IPs
     const blockedIps = await redis.smembers("security:blocklist:ips");
 

@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
+import { assertSuperAdmin } from "@/lib/admin/guards";
 import { logAuditAction } from "@/lib/audit";
 
 import { AuditAction } from "@prisma/client";
@@ -16,27 +16,6 @@ const KEYS = {
 
 // Types
 export type LockdownLevel = 0 | 1 | 2 | 3;
-
-/**
- * Helper: Ensure caller is a Super Admin
- */
-export async function assertSuperAdmin() {
-    const session = await auth();
-    // Logic depends on how 'isPlatformAdmin' is stored in session. 
-    // For now, we assume standard session check or DB lookup.
-    if (!session?.user?.email) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-        where: { email: session.user.email },
-        select: { isPlatformAdmin: true, adminRole: true }
-    });
-
-    // Explicit check for existence and properties
-    if (!user || !user.isPlatformAdmin || user.adminRole !== 'SUPER_ADMIN') {
-        throw new Error("Insufficient Permissions");
-    }
-    return user;
-}
 
 /**
  * Emergency: Suspend a User immediately.
@@ -98,6 +77,7 @@ export async function setSystemLockdown(level: LockdownLevel) {
  * Get current lockdown status
  */
 export async function getSystemLockdownStatus(): Promise<LockdownLevel> {
+    await assertSuperAdmin();
     const level = await redis.get<string | number>(KEYS.LOCKDOWN);
     return (Number(level) || 0) as LockdownLevel;
 }

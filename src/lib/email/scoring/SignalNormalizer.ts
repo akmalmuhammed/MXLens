@@ -21,10 +21,11 @@ export class SignalNormalizer {
 
         // Extract DMARC Policy
         let dmarcPolicy: NormalizedSignals['dmarcPolicy'] = "unknown";
-        const dmarcDetails = headerResult.auth.dmarc.details.toLowerCase();
-        if (dmarcDetails.includes("p=reject")) dmarcPolicy = "reject";
-        else if (dmarcDetails.includes("p=quarantine")) dmarcPolicy = "quarantine";
-        else if (dmarcDetails.includes("p=none")) dmarcPolicy = "none";
+        const authResults = getHeaderValues(headerResult.headers, "Authentication-Results").join(";").toLowerCase();
+        const dmarcDetails = `${authResults};${headerResult.auth.dmarc.details}`.toLowerCase();
+        if (/\b(?:p|action)\s*=\s*(?:reject|oreject)\b/.test(dmarcDetails)) dmarcPolicy = "reject";
+        else if (/\b(?:p|action)\s*=\s*quarantine\b/.test(dmarcDetails)) dmarcPolicy = "quarantine";
+        else if (/\bp\s*=\s*none\b/.test(dmarcDetails)) dmarcPolicy = "none";
 
         // 2. Normalize Routing
         let timestampsValid = true;
@@ -82,7 +83,7 @@ export class SignalNormalizer {
                     // Simple masquerade check
                     if (magicType === 'exe' && !['exe', 'dll', 'scr', 'com'].includes(ext)) isMasquerading = true;
                     if (magicType === 'pdf' && ext !== 'pdf') isMasquerading = true;
-                    if (magicType === 'zip' && !['zip', 'docx', 'xlsx', 'pptx', 'jar', 'apk'].includes(ext)) isMasquerading = true;
+                    if (magicType === 'zip' && !['zip', 'docx', 'docm', 'xlsx', 'xlsm', 'pptx', 'pptm', 'jar', 'apk'].includes(ext)) isMasquerading = true;
                     // Images usually safe to mismatch (e.g. jpg vs jpeg), skip stricness there for now
                 }
 

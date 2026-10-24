@@ -59,12 +59,12 @@ export async function persistAgentAnalysis(params: {
         let incidentId: string | null = null;
 
         if (safeOrg.planTier === "PRO" || safeOrg.planTier === "ENTERPRISE") {
-            const nextId = (safeOrg.incidentCounter || 1000) + 1;
-            await tx.organization.update({
+            const updatedOrg = await tx.organization.update({
                 where: { id: agent.orgId },
-                data: { incidentCounter: nextId } as any
+                data: { incidentCounter: { increment: 1 } } as any,
+                select: { incidentCounter: true }
             });
-            incidentId = `#INC-${nextId}`;
+            incidentId = `#INC-${updatedOrg.incidentCounter}`;
         }
 
         const log = await tx.analysisLog.create({

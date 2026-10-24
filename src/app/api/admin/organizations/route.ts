@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        await requireAdminApi();
+        await requireAdminApi({ roles: ["SUPER_ADMIN"] });
 
         const body = await request.json();
         const { name, slug, planTier, ownerEmail, ownerName } = body;

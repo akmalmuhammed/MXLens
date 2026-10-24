@@ -33,18 +33,9 @@ export async function saveAnalysis(data: {
         dmarc?: string;
     };
 }) {
-    console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Called with:", data);
-
     const session = await auth();
 
-    console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Session:", {
-        hasSession: !!session,
-        userId: session?.user?.id,
-        orgId: session?.user?.orgId
-    });
-
     if (!session?.user?.id || !session?.user?.orgId) {
-        console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] No session - returning null");
         return null;
     }
 
@@ -54,15 +45,11 @@ export async function saveAnalysis(data: {
     try {
         // Transaction to ensure sequential IDs if applicable
         const log = await db.$transaction(async (tx) => {
-            console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Inside transaction");
-
             // 1. Check Plan & Increment Counter
             const org = await tx.organization.findUnique({
                 where: { id: orgId },
                 select: { planTier: true, incidentCounter: true } as any
             });
-
-            console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Org lookup:", org);
 
             let incidentId = null;
 
@@ -71,17 +58,13 @@ export async function saveAnalysis(data: {
 
             if (safeOrg && (safeOrg.planTier === "PRO" || safeOrg.planTier === "ENTERPRISE")) {
                 // Note: Currently enabling for PRO too, but strictly usually TEAM. 
-                const nextId = (safeOrg.incidentCounter || 1000) + 1;
-                console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Incrementing counter to:", nextId);
-
-                await tx.organization.update({
+                const updatedOrg = await tx.organization.update({
                     where: { id: orgId },
-                    data: { incidentCounter: nextId } as any
+                    data: { incidentCounter: { increment: 1 } } as any,
+                    select: { incidentCounter: true }
                 });
-                incidentId = `#INC-${nextId}`;
+                incidentId = `#INC-${updatedOrg.incidentCounter}`;
             }
-
-            console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Creating log with incidentId:", incidentId);
 
             // 2. Create Log
             return await tx.analysisLog.create({
@@ -106,10 +89,9 @@ export async function saveAnalysis(data: {
             });
         });
 
-        console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Log created:", log?.id);
         return log;
     } catch (error) {
-        console.error("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] ERROR:", error);
+        console.error("Failed to save analysis record");
         throw error;
     }
 }
@@ -198,16 +180,25 @@ export async function addComment(id: string, content: string) {
     if (!content.trim()) return { error: "Comment cannot be empty" };
 
     try {
-        const comment = await db.analysisComment.create({
-            data: {
-                analysisLogId: id,
-                userId: session.user.id,
-                content: content
-            },
-            include: {
-                user: { select: { name: true, image: true } }
-            }
+        const comment = await db.$transaction(async (tx) => {
+            const ownedLog = await tx.analysisLog.findFirst({
+                where: { id, orgId: session.user.orgId },
+                select: { id: true }
+            });
+            if (!ownedLog) return null;
+
+            return tx.analysisComment.create({
+                data: {
+                    analysisLogId: ownedLog.id,
+                    userId: session.user.id,
+                    content: content.trim().slice(0, 2000)
+                },
+                include: {
+                    user: { select: { name: true, image: true } }
+                }
+            });
         });
+        if (!comment) return { error: "Not found" };
         return { success: true, comment };
     } catch (error) {
 
@@ -241,11 +232,11 @@ export async function getComments(id: string) {
 
 export async function getAnalysisTriageState(analysisId: string) {
     const session = await auth();
-    if (!session?.user) return null;
+    if (!session?.user?.id || !session.user.orgId) return null;
 
     try {
-        const log = await db.analysisLog.findUnique({
-            where: { id: analysisId },
+        const log = await db.analysisLog.findFirst({
+            where: { id: analysisId, orgId: session.user.orgId },
             select: {
                 triageStatus: true,
                 classification: true,

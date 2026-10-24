@@ -1,6 +1,0 @@
-﻿.next/types/validator.ts(25,44): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
-  Type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/dev/types/routes").LayoutRoutes'.
-    Type '"/admin/auth"' is not assignable to type 'LayoutRoutes'.
-.next/types/validator.ts(25,75): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
-  Type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/akmal/.gemini/antigravity/scratch/mxlens/.next/dev/types/routes").LayoutRoutes'.
-    Type '"/admin/auth"' is not assignable to type 'LayoutRoutes'.

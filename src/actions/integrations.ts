@@ -3,7 +3,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { encrypt, decrypt, EncryptedData } from "@/lib/encryption";
+import { encrypt } from "@/lib/encryption";
 import "server-only";
 
 // -----------------------------------------------------------------------------
@@ -66,24 +66,4 @@ export async function getIntegrations() {
         console.error("Failed to fetch integrations:", error);
         return [];
     }
-}
-
-// Internal server-use only (e.g. for the Ingestor/Bridge)
-export async function getDecryptedConfig(integrationId: string) {
-    // Note: No auth check here assuming caller (internal job) has verified permission or is system
-    // But safely, let's keep it strictly for internal usage context.
-
-    const integration = await db.integration.findUnique({
-        where: { id: integrationId },
-        select: { config: true }
-    });
-
-    if (!integration || !integration.config) return null;
-
-    const encryptedData = integration.config as unknown as EncryptedData;
-    const decryptedString = decrypt(encryptedData);
-
-    if (!decryptedString) return null;
-
-    return JSON.parse(decryptedString);
 }

@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { getDecryptedConfig } from "@/actions/integrations";
+import { getDecryptedConfig } from "@/lib/integrations/server-config";
 
 /**
  * GET /api/bridge/content/[incidentId]

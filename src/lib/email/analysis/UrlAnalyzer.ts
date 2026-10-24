@@ -113,9 +113,12 @@ export class UrlAnalyzer {
         return url.replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
     }
 
-    // Simple heuristic: Does it have a dot and no spaces?
+    // Require a parseable hostname so punctuation such as "here." is not a URL.
     private static looksLikeUrl(text: string): boolean {
-        return text.includes('.') && !text.includes(' ') && text.length > 4;
+        const candidate = text.trim().replace(/[.,!?;:]+$/, "");
+        if (!candidate || /\s/.test(candidate)) return false;
+        const hostname = this.getHostname(candidate);
+        return hostname !== null && hostname.includes(".");
     }
 
     private static getHostname(urlStr: string): string | null {

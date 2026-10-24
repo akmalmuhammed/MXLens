@@ -110,7 +110,7 @@ export class BulkProcessor {
             if (this.cancelled) return;
 
             // 1. Header Parse
-            const headerResPromise = HeaderParser.parse(content);
+            const headerResPromise = HeaderParser.parse(content, { checkAttachments: this.analyzeAttachments });
 
             // 2. MIME Parse
             const parser = new PostalMime();

@@ -42,12 +42,12 @@ export async function createShellIncident(orgId: string, data: ShellIncidentData
 
         // Generate ID for paid plans (or all, depending on policy. Let's stick to PRO/ENT)
         if (safeOrg.planTier === "PRO" || safeOrg.planTier === "ENTERPRISE") {
-            const nextId = (safeOrg.incidentCounter || 1000) + 1;
-            await tx.organization.update({
+            const updatedOrg = await tx.organization.update({
                 where: { id: orgId },
-                data: { incidentCounter: nextId } as any
+                data: { incidentCounter: { increment: 1 } } as any,
+                select: { incidentCounter: true }
             });
-            incidentId = `#INC-${nextId}`;
+            incidentId = `#INC-${updatedOrg.incidentCounter}`;
         }
 
         // Create the Shell AnalysisLog

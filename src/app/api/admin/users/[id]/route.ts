@@ -73,7 +73,7 @@ export async function GET(request: NextRequest, { params }: Props) {
 // PATCH - Update user details
 export async function PATCH(request: NextRequest, { params }: Props) {
     try {
-        await requireAdminApi();
+        await requireAdminApi({ roles: ["SUPER_ADMIN"] });
         const { id } = await params;
         const body = await request.json();
 
@@ -174,7 +174,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
 // DELETE - Suspend/deactivate user placeholder.
 export async function DELETE(request: NextRequest, { params }: Props) {
     try {
-        await requireAdminApi();
+        await requireAdminApi({ roles: ["SUPER_ADMIN"] });
         const { id } = await params;
 
         const user = await db.user.findUnique({ where: { id } });

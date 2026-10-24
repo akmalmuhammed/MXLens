@@ -45,8 +45,13 @@ export class HeaderScorer {
         }
         // ARC OVERRIDE
         if (signals.arcResult === "pass") {
-            const spfPenalty = penalties.find(p => p.reason.includes("SPF"));
-            const dkimPenalty = penalties.find(p => p.reason.includes("DKIM"));
+            // Restore only authentication penalties independently confirmed at origin.
+            const spfPenalty = signals.arcOriginalSpf?.toLowerCase() === "pass"
+                ? penalties.find(p => p.reason.includes("SPF"))
+                : undefined;
+            const dkimPenalty = signals.arcOriginalDkim?.toLowerCase() === "pass"
+                ? penalties.find(p => p.reason.includes("DKIM"))
+                : undefined;
 
             if (spfPenalty || dkimPenalty) {
                 const refund = Math.abs((spfPenalty?.value || 0)) + Math.abs((dkimPenalty?.value || 0));

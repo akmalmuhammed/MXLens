@@ -40,7 +40,7 @@ export async function analyzeResolvedEmail(
     options: EmailAnalysisOptions
 ): Promise<PublicAnalysisResult> {
     const start = Date.now();
-    const headerResultPromise = HeaderParser.parse(input.rawEmail);
+    const headerResultPromise = HeaderParser.parse(input.rawEmail, { checkAttachments: options.analyzeAttachments });
     const emailPromise = new PostalMime().parse(input.rawEmail);
     const [headerResult, email] = await Promise.all([headerResultPromise, emailPromise]);
     const { signals, result } = await AnalysisEngine.analyze(headerResult, email, {

@@ -82,7 +82,7 @@ export async function GET(request: NextRequest, { params }: Props) {
 // PATCH - Update organization details
 export async function PATCH(request: NextRequest, { params }: Props) {
     try {
-        await requireAdminApi();
+        await requireAdminApi({ roles: ["SUPER_ADMIN"] });
         const { id } = await params;
         const body = await request.json();
 
@@ -169,7 +169,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
 // DELETE - Archive/delete organization
 export async function DELETE(request: NextRequest, { params }: Props) {
     try {
-        await requireAdminApi();
+        await requireAdminApi({ roles: ["SUPER_ADMIN"] });
         const { id } = await params;
 
         const org = await db.organization.findUnique({ where: { id } });

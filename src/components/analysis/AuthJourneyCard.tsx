@@ -19,7 +19,7 @@ export function AuthJourneyCard({ spf, dkim, dmarc, arcStatus, arcDetails }: Aut
     const originDkim = arcDetails.find(d => d.includes('Origin DKIM:'))?.split(':')[1]?.trim().toLowerCase();
 
     const isArcValid = arcStatus === 'pass';
-    const isFinalValid = spf === 'pass' && dkim === 'pass' && dmarc === 'pass';
+    const isFinalValid = dmarc === 'pass';
 
     return (
         <Card className="bg-card/50 border-white/5">
@@ -77,8 +77,8 @@ export function AuthJourneyCard({ spf, dkim, dmarc, arcStatus, arcDetails }: Aut
                     </div>
                     <div className="flex justify-between pt-1">
                         <span className="text-muted-foreground">Final Verdict:</span>
-                        <span className={(spf === 'pass' || dkim === 'pass') ? 'text-green-500' : 'text-amber-500'}>
-                            {spf === 'pass' || dkim === 'pass' ? "ACCEPTED" : "QUARANTINE"}
+                        <span className={dmarc === 'pass' ? 'text-green-500' : dmarc === 'fail' ? 'text-rose-500' : 'text-amber-500'}>
+                            {dmarc === 'pass' ? "ACCEPTED" : dmarc === 'fail' ? "REJECTED" : "REVIEW"}
                         </span>
                     </div>
                 </div>

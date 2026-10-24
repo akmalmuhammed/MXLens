@@ -5,6 +5,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
+import type { AdminRole } from "@prisma/client";
 
 // Constants
 const ADMIN_COOKIE_NAME = "admin_token";
@@ -151,9 +152,12 @@ export async function requireAdmin() {
 /**
  * Require Admin (for API Routes) - Throws Error instead of Redirecting
  */
-export async function requireAdminApi() {
+export async function requireAdminApi(options: { roles?: AdminRole[] } = {}) {
     const session = await verifyAdminSession();
     if (!session) {
+        throw new Error("Unauthorized");
+    }
+    if (options.roles && !options.roles.includes(session.role as AdminRole)) {
         throw new Error("Unauthorized");
     }
     return session;

@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 // POST: Add existing user to organization
 export async function POST(request: NextRequest) {
     try {
-        await requireAdminApi();
+        await requireAdminApi({ roles: ["SUPER_ADMIN", "SUPPORT_ADMIN"] });
 
         const body = await request.json();
         const { orgId, userId, role } = body;

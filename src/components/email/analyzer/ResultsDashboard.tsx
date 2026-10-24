@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, AlertTriangle, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
+import { getFirstHeaderValue } from "@/lib/email/parser/HeaderUtils";
 import { NormalizedSignals, ScoringResult } from "@/lib/email/scoring/types";
 import { PrivacyControls } from "../PrivacyControls";
 import { VerdictBanner } from "../VerdictBanner";
@@ -119,8 +120,8 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
             ['Verdict', analysis.scoring.verdict.verdict],
             ['Trust Score', analysis.scoring.trust.score],
             ['Confidence', analysis.scoring.confidence.level],
-            ['Subject', `"${analysis.header.headers['Subject'] || ''}"`],
-            ['From', `"${analysis.header.headers['From'] || ''}"`],
+            ['Subject', `"${getFirstHeaderValue(analysis.header.headers, 'Subject')}"`],
+            ['From', `"${getFirstHeaderValue(analysis.header.headers, 'From')}"`],
             ['SPF', analysis.header.auth.spf.status],
             ['DKIM', analysis.header.auth.dkim.status],
             ['DMARC', analysis.header.auth.dmarc.status],

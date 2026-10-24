@@ -19,8 +19,8 @@ export default async function AnalysisDetailPage(props: { params: Promise<{ id: 
         return redirect("/analyze");
     }
 
-    const log = await db.analysisLog.findUnique({
-        where: { id: params.id },
+    const log = await db.analysisLog.findFirst({
+        where: { id: params.id, orgId: session.user.orgId },
         include: {
             comments: {
                 include: { user: { select: { name: true, image: true } } },
@@ -31,11 +31,6 @@ export default async function AnalysisDetailPage(props: { params: Promise<{ id: 
 
     if (!log) {
         return notFound();
-    }
-
-    // Security Check: Ensure user belongs to the same org
-    if (log.orgId !== session.user.orgId && session.user.role !== 'ADMIN') {
-        return notFound(); // Hide existence
     }
 
     const isSafe = ['CLEAN', 'LIKELY_LEGITIMATE'].includes(log.verdict);

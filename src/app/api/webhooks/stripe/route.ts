@@ -101,7 +101,8 @@ export async function POST(req: Request) {
         }
 
         if (event.type === "customer.subscription.deleted") {
-            const subscriptionId = session.subscription as string;
+            const subscription = event.data.object as Stripe.Subscription;
+            const subscriptionId = subscription.id;
             if (subscriptionId) {
                 const org = await db.organization.findFirst({ where: { subscriptionId } });
                 if (org) {
