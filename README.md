@@ -1,3 +1,5 @@
+<p align="center"><img src="public/logo.png" alt="MXLens" width="320"></p>
+
 # MXLens
 
 Free, open-source phishing analysis for `.eml` files. Drop in a suspicious email and get a
@@ -7,6 +9,7 @@ domains, link and attachment checks, and content heuristics.
 - **Runs in your browser.** The email is parsed and scored locally and never uploaded.
 - **No account, no database, no tracking.**
 - **Self-hostable** with Node or Docker. Nothing to configure.
+- **Command-line tool** for scripts, mail pipelines and bulk triage: `npx mxlens message.eml`.
 - **Optional enrichment** (VirusTotal, AbuseIPDB, abuse.ch, Safe Browsing, geolocation) if
   you bring your own keys. Off by default.
 
@@ -28,6 +31,16 @@ Open http://localhost:3000/analyze and drop an `.eml` file (or try
 `public/samples/demo-phishing.eml`).
 
 For development: `npm run dev`.
+
+## CLI
+
+```bash
+npx mxlens suspicious.eml              # readable report
+npx mxlens --json reported-folder/     # JSON for every .eml in a folder
+npx mxlens --fail-on malicious - < message.eml   # exit code 2 if malicious
+```
+
+The CLI runs the same engine as the web app, entirely offline. See [`cli/README.md`](cli/README.md).
 
 ## Self-hosting
 
@@ -95,12 +108,25 @@ npm run dev         # local dev server
 npm run test:run    # unit tests
 npm run typecheck   # TypeScript
 npm run lint        # ESLint
+npm run build:cli   # bundle the CLI to cli/dist/mxlens.mjs
+```
+
+### Engine API
+
+```ts
+import { analyzeEmail } from "@/lib/email/analyze";
+
+const result = await analyzeEmail(rawEml, { body: true, attachments: true });
+result.verdict;   // "clean" | "suspicious" | "malicious" | "unknown"
+result.findings;  // [{ reason, severity, impact, ... }]
 ```
 
 ## Roadmap
 
-See [`docs/OPEN_SOURCE_PLAN.md`](docs/OPEN_SOURCE_PLAN.md). Next up: a `mxlens` CLI, a local
-REST/MCP API for automation, and detection accuracy fixes.
+- Local REST and MCP API for automation and AI agents
+- Detection accuracy: DMARC policy handling, ARC overrides, Office macro detection, a larger
+  synthetic test corpus
+- Browser extension and mail-client add-ins built on the engine
 
 ## Limitations
 

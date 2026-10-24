@@ -32,6 +32,14 @@ jobs:
       - name: Unit tests
         run: npm run test:run
 
+      - name: CLI smoke test
+        run: |
+          npm run build:cli
+          node cli/dist/mxlens.mjs --fail-on malicious public/samples/demo-legitimate.eml
+          if node cli/dist/mxlens.mjs --fail-on malicious public/samples/demo-phishing.eml; then
+            echo "expected the phishing sample to fail" && exit 1
+          fi
+
       # Built with an empty environment: MXLens must work with no configuration.
       - name: Build
         run: npm run build

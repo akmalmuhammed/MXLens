@@ -1,5 +1,5 @@
 import { NormalizedSignals, ScoreComponent } from "./types";
-import { TRUSTED_MAIL_SERVERS } from "./Config";
+import { isKnownAuthServ } from "./Config";
 
 export class HeaderScorer {
     static score(signals: NormalizedSignals): ScoreComponent {
@@ -93,19 +93,18 @@ export class HeaderScorer {
             penalties.push({ reason: "Duplicate Authentication-Results", value: -20, source: 'header' as const });
         }
 
-        if (signals.authservId && !this.isTrustedAuthServ(signals.authservId)) {
-            score -= 60;
-            penalties.push({ reason: `Untrusted AuthServ-ID: ${signals.authservId}`, value: -60, critical: true, source: 'header' as const });
+        // Most organizations run their own receiving servers, so an unrecognized
+        // authserv-id is normal. It means the SPF/DKIM/DMARC results above cannot be
+        // independently confirmed, which ConfidenceCalculator reflects; it is not
+        // evidence of phishing on its own.
+        if (signals.authservId && !isKnownAuthServ(signals.authservId)) {
+            score -= 5;
+            penalties.push({ reason: `Authentication results added by an unrecognized server (${signals.authservId}); not independently verified`, value: -5, source: 'header' as const });
         }
 
         return {
             score: Math.max(0, Math.min(100, score)),
             penalties
         };
-    }
-
-    private static isTrustedAuthServ(id: string): boolean {
-        const lowerId = id.toLowerCase();
-        return TRUSTED_MAIL_SERVERS.some(trusted => lowerId.includes(trusted));
     }
 }

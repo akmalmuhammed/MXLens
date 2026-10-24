@@ -1,0 +1,39 @@
+{
+  "name": "mxlens",
+  "version": "0.1.0",
+  "description": "Analyze .eml files for phishing from the command line. Runs locally; nothing is uploaded.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "mxlens": "dist/mxlens.mjs"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "prepack": "node build.mjs && node -e \"require('fs').copyFileSync('../LICENSE','LICENSE')\""
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "phishing",
+    "email",
+    "eml",
+    "security",
+    "spf",
+    "dkim",
+    "dmarc",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akmalmuhammed/mxlens.git",
+    "directory": "cli"
+  },
+  "homepage": "https://github.com/akmalmuhammed/mxlens#cli",
+  "bugs": "https://github.com/akmalmuhammed/mxlens/issues"
+}

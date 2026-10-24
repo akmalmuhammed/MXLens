@@ -31,6 +31,21 @@ export const TRUSTED_MAIL_SERVERS = [
     'amazonses'
 ];
 
+/**
+ * True when an Authentication-Results authserv-id belongs to a well-known mail
+ * provider. Domain entries must match on a label boundary, so
+ * "google.com.attacker.example" is not trusted; dotless entries match any label
+ * that contains them (vendor appliance hostnames vary).
+ */
+export function isKnownAuthServ(id: string): boolean {
+    const host = id.trim().toLowerCase().replace(/\.$/, "");
+    return TRUSTED_MAIL_SERVERS.some(trusted =>
+        trusted.includes(".")
+            ? host === trusted || host.endsWith(`.${trusted}`)
+            : host.split(".").some(label => label.includes(trusted))
+    );
+}
+
 export const LEGITIMATE_SHORTENERS = [
     'bit.ly', 'goo.gl', 'tinyurl.com', 'ow.ly', 't.co',
     'buff.ly', 'youtu.be', 'amzn.to', 'aka.ms',

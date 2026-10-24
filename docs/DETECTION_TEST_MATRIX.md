@@ -210,14 +210,14 @@ These rules examine how the email traveled across the internet.
 | **Score Impact** | **-20 points** |
 | **Severity** | 🟡 Medium |
 
-### Rule 1.5.5: Untrusted AuthServ-ID
+### Rule 1.5.5: Unrecognized AuthServ-ID
 | Aspect | Details |
 |--------|---------|
-| **What It Detects** | Authentication results from unknown/untrusted mail server |
-| **Why It Matters** | Authentication-Results should only be trusted from known mail providers. Unknown AuthServ-IDs may be forged. |
-| **How to Test** | Email with Authentication-Results from unknown server |
-| **Score Impact** | **-60 points** |
-| **Severity** | 🔴 Critical |
+| **What It Detects** | Authentication-Results added by a server that is not a well-known provider |
+| **Why It Matters** | The SPF/DKIM/DMARC results cannot be independently verified. Most organizations run their own receiving servers, so this lowers confidence rather than indicating phishing. Provider domains match on a label boundary (`google.com.attacker.example` is not trusted). |
+| **How to Test** | Email with Authentication-Results from `mx.example.org` |
+| **Score Impact** | **-5 points**, no "Trusted Authentication Source" confidence bonus |
+| **Severity** | 🟢 Low |
 
 ---
 

@@ -1,5 +1,5 @@
 import { NormalizedSignals, ScoringResult } from "./types";
-import { TRUSTED_MAIL_SERVERS } from "./Config";
+import { isKnownAuthServ } from "./Config";
 
 export class ConfidenceCalculator {
     static calculate(signals: NormalizedSignals): ScoringResult['confidence'] {
@@ -34,7 +34,7 @@ export class ConfidenceCalculator {
             factors.push({ reason: "ARC Chain Present", value: 10 });
         }
 
-        if (signals.authservId && TRUSTED_MAIL_SERVERS.some(t => signals.authservId?.includes(t))) {
+        if (signals.authservId && isKnownAuthServ(signals.authservId)) {
             confidence += 15;
             factors.push({ reason: "Trusted Authentication Source", value: 15 });
         }
