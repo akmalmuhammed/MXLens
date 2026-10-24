@@ -87,8 +87,8 @@ with a free, no-login demo.
 - Deploy the demo to the existing domain; email existing users; cancel Stripe
   subscriptions and refund as appropriate; delete the production database after export.
 - Launch posts: Show HN, r/netsec, r/sysadmin, Product Hunt, security newsletters.
-- Follow-ups: browser extension (`extras/extension`), Outlook/Gmail add-ins, YARA-style
-  custom rules.
+- Follow-ups: browser extension built on the engine package, Outlook/Gmail add-ins,
+  YARA-style custom rules.
 
 ## Status
 
@@ -110,5 +110,5 @@ with a free, no-login demo.
 
 - `docs/engineering-audit-2026-05-01.md` describes vulnerabilities in the retired SaaS. Keep it
   in the private repo only.
-- `src/lib/agent-api/ingestion.ts` still contains the remote-URL fetch path used by the old
-  REST API; review it when the local API is rebuilt in Phase 4.
+- The engineering audit and the old browser-extension prototype were removed from the tree;
+  they remain in this private repository's history.

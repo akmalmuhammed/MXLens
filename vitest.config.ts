@@ -16,7 +16,7 @@ export default defineConfig({
                 'src/lib/email/scoring/**',
                 'src/lib/email/detection/**',
                 'src/lib/email/parser/**',
-                'src/lib/agent-api/**'
+                'src/lib/email/analyze.ts'
             ]
         },
         setupFiles: ['./tests/setup.ts']

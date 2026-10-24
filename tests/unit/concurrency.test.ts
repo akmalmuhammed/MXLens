@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mapWithConcurrency } from "@/lib/agent-api/concurrency";
+import { mapWithConcurrency } from "@/lib/utils/concurrency";
 
 describe("mapWithConcurrency", () => {
     it("keeps output order while respecting the configured concurrency", async () => {

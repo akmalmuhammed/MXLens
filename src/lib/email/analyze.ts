@@ -1,10 +1,23 @@
 import PostalMime from "postal-mime";
-import { HeaderParser } from "@/lib/email/HeaderParser";
-import { AnalysisEngine } from "@/lib/email/scoring/AnalysisEngine";
-import type { NormalizedSignals, ScoringResult, ValidationPenalty } from "@/lib/email/scoring/types";
-import type { EmailAnalysisOptions, ResolvedEmailInput } from "./ingestion";
+import { HeaderParser } from "./HeaderParser";
+import { AnalysisEngine } from "./scoring/AnalysisEngine";
+import type { NormalizedSignals, ScoringResult, ValidationPenalty } from "./scoring/types";
 
-export interface AgentFinding {
+/**
+ * Public engine API: analyze one raw RFC 822 message (.eml contents) and return a
+ * JSON-safe summary. Runs unchanged in browsers and Node; makes no network calls.
+ */
+
+export interface AnalyzeOptions {
+    /** Analyze the message body (links, forms, urgency, hidden text). Default true. */
+    body?: boolean;
+    /** Analyze attachments (types, macros, hashes). Default true. */
+    attachments?: boolean;
+}
+
+export type Verdict = "clean" | "suspicious" | "malicious" | "unknown";
+
+export interface Finding {
     reason: string;
     severity: "low" | "medium" | "high" | "critical";
     source: "header" | "body" | "cross" | "attachment" | "ml";
@@ -13,90 +26,65 @@ export interface AgentFinding {
     tags?: string[];
 }
 
-export interface PublicAnalysisResult {
-    analysisId?: string;
-    verdict: "clean" | "suspicious" | "malicious" | "unknown";
+export interface EmailAnalysis {
+    verdict: Verdict;
     verdictLabel: ScoringResult["verdict"]["verdict"];
+    /** 0 (safe) to 100 (dangerous). */
     riskScore: number;
+    /** 100 - riskScore. */
     trustScore: number;
     confidence: {
         level: string;
         score: number;
     };
     reason: string;
-    findings: AgentFinding[];
+    message: {
+        subject: string;
+        from: string;
+        date: string;
+    };
+    findings: Finding[];
     signals: ReturnType<typeof summarizeSignals>;
     processingMs: number;
-    source: {
-        type: ResolvedEmailInput["sourceType"];
-        filename?: string;
-        externalId?: string;
-        clientReferenceId?: string;
-    };
 }
 
-export async function analyzeResolvedEmail(
-    input: ResolvedEmailInput,
-    options: EmailAnalysisOptions
-): Promise<PublicAnalysisResult> {
+export async function analyzeEmail(rawEmail: string, options: AnalyzeOptions = {}): Promise<EmailAnalysis> {
     const start = Date.now();
-    const headerResultPromise = HeaderParser.parse(input.rawEmail);
-    const emailPromise = new PostalMime().parse(input.rawEmail);
-    const [headerResult, email] = await Promise.all([headerResultPromise, emailPromise]);
+    const [headerResult, email] = await Promise.all([
+        HeaderParser.parse(rawEmail),
+        new PostalMime().parse(rawEmail)
+    ]);
     const { signals, result } = await AnalysisEngine.analyze(headerResult, email, {
-        checkBody: options.analyzeBody,
-        checkAttachments: options.analyzeAttachments
+        checkBody: options.body ?? true,
+        checkAttachments: options.attachments ?? true
     });
 
     const trustScore = clampScore(result.trust.score);
-    const riskScore = clampScore(100 - trustScore);
 
     return {
         verdict: normalizeVerdict(result.verdict.verdict),
         verdictLabel: result.verdict.verdict,
-        riskScore,
+        riskScore: 100 - trustScore,
         trustScore,
         confidence: {
             level: result.confidence.level.toUpperCase(),
             score: clampScore(result.confidence.score)
         },
         reason: result.verdict.reason,
+        message: {
+            subject: email.subject ?? "",
+            from: email.from ? formatAddress(email.from) : "",
+            date: email.date ?? ""
+        },
         findings: result.trust.penalties.map(mapFinding),
         signals: summarizeSignals(signals),
-        processingMs: Date.now() - start,
-        source: {
-            type: input.sourceType,
-            filename: input.filename,
-            externalId: input.externalId,
-            clientReferenceId: input.clientReferenceId
-        }
+        processingMs: Date.now() - start
     };
 }
 
-export function toAnalysisVerdict(verdict: PublicAnalysisResult["verdict"]) {
-    switch (verdict) {
-        case "clean":
-            return "CLEAN";
-        case "suspicious":
-            return "SUSPICIOUS";
-        case "malicious":
-            return "MALICIOUS";
-        default:
-            return "UNKNOWN";
-    }
-}
-
-export function summarizeForBatch(result: PublicAnalysisResult) {
-    return {
-        analysisId: result.analysisId,
-        verdict: result.verdict,
-        verdictLabel: result.verdictLabel,
-        riskScore: result.riskScore,
-        confidence: result.confidence,
-        findingCount: result.findings.length,
-        processingMs: result.processingMs,
-        source: result.source
-    };
+function formatAddress(address: { name?: string; address?: string }) {
+    if (address.name && address.address) return `${address.name} <${address.address}>`;
+    return address.address || address.name || "";
 }
 
 function summarizeSignals(signals: NormalizedSignals) {
@@ -167,14 +155,14 @@ function summarizeSignals(signals: NormalizedSignals) {
     };
 }
 
-function normalizeVerdict(label: ScoringResult["verdict"]["verdict"]): PublicAnalysisResult["verdict"] {
+function normalizeVerdict(label: ScoringResult["verdict"]["verdict"]): Verdict {
     if (label === "Likely Legitimate") return "clean";
     if (label === "Suspicious") return "suspicious";
     if (label === "High Risk") return "malicious";
     return "unknown";
 }
 
-function mapFinding(penalty: ValidationPenalty): AgentFinding {
+function mapFinding(penalty: ValidationPenalty): Finding {
     const impact = Math.abs(penalty.value);
 
     return {
