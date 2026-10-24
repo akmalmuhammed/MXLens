@@ -5,7 +5,7 @@ import { InfrastructureAnalyzer, InfrastructureVerdict } from "@/lib/email/analy
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, ShieldAlert, Server, Network } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Network } from "lucide-react";
 
 interface InfrastructureCardProps {
     fromDomain: string;

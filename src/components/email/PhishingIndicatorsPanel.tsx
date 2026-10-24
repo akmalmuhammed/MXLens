@@ -1,5 +1,5 @@
 import { ValidationPenalty } from "@/lib/email/scoring/types";
-import { AlertTriangle, Lock, Eye, FileWarning, ExternalLink, ShieldAlert, Link } from "lucide-react";
+import { AlertTriangle, Lock, Eye, FileWarning, ExternalLink, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PhishingIndicatorsPanelProps {

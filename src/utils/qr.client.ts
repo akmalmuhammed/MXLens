@@ -21,7 +21,7 @@ export async function scanImagesForQr(imageUrls: string[]): Promise<string[]> {
                 // @ts-ignore
                 found.push(result.data);
             }
-        } catch (e) {
+        } catch {
             // Ignore individual image failures
         }
     }

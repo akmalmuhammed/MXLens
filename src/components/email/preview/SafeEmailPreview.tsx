@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { SafeSanitizer } from "@/lib/email/sanitizer";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, ShieldCheck, Image as ImageIcon } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface SafeEmailPreviewProps {
     html: string;

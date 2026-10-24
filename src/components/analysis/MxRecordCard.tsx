@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { resolveMxRecords, MxRecord } from "@/actions/dns";
+import { resolveMxRecords } from "@/actions/dns";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Network, CheckCircle2, AlertCircle } from "lucide-react";

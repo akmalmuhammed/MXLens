@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, ShieldAlert, ArrowRight, Server, Lock, Globe } from "lucide-react";
+import { ShieldCheck, ArrowRight, Lock, Globe } from "lucide-react";
 
 interface AuthJourneyCardProps {
     spf: string;

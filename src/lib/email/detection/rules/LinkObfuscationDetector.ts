@@ -63,7 +63,7 @@ export class LinkObfuscationDetector implements Detector {
                     }
                 }
 
-            } catch (e) {
+            } catch {
                 // Invalid URL
             }
         }

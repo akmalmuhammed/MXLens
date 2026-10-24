@@ -173,7 +173,7 @@ export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash'
                 return { host, count: json.urls.length, found: true };
             }
             return { host, count: 0, found: false };
-        } catch (e) {
+        } catch {
             return { host, count: 0, found: false, error: 'Connection Failed' };
         }
     });

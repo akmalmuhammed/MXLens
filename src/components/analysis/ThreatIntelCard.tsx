@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Shield, ShieldAlert, ShieldCheck, ExternalLink, Loader2, AlertTriangle, Activity } from "lucide-react";
+import { motion } from "framer-motion";
+import { ShieldAlert, ShieldCheck, ExternalLink, Loader2, AlertTriangle, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,6 @@ export const ThreatIntelCard = ({ ips, domains, hashes = [] }: ThreatIntelCardPr
     // Determine aggregate status
     const maliciousCount = results.filter(r => r.verdict === 'malicious').length;
     const suspiciousCount = results.filter(r => r.verdict === 'suspicious').length;
-    const cleanCount = results.filter(r => r.verdict === 'clean').length;
 
     let aggregateStatus: "secure" | "warning" | "danger" = "secure";
     if (maliciousCount > 0) aggregateStatus = "danger";

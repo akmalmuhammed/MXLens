@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ExternalLink, Link2, Search } from "lucide-react";
+import { AlertTriangle, Link2, Search } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

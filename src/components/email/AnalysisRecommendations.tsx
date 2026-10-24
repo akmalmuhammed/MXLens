@@ -1,5 +1,4 @@
 import { AlertTriangle, ShieldCheck, ShieldAlert, XCircle, Info } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface AnalysisRecommendationsProps {
     verdict: "Likely Legitimate" | "Suspicious" | "High Risk" | "Unknown";

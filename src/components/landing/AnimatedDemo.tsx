@@ -16,7 +16,6 @@ import {
     Link2,
     QrCode,
     Clock,
-    Globe
 } from "lucide-react";
 
 const features = [

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { GeoLocation, countryCodeToFlag } from "@/lib/threat-intel/geolocation";
-import { MapPin, Globe, Wifi, Maximize2 } from "lucide-react";
+import { MapPin, Globe, Wifi } from "lucide-react";
 import Image from "next/image";
 
 interface IPMapProps {

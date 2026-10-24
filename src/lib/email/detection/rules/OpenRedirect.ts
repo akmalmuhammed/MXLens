@@ -37,7 +37,7 @@ export class OpenRedirectDetector implements Detector {
                     }
                 }
 
-            } catch (e) {
+            } catch {
                 // Invalid URL, ignore
             }
         }

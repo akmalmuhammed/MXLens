@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, ShieldAlert, Globe, Link2, FileKey, ExternalLink } from "lucide-react";
+import { Copy, ShieldAlert, Globe, Link2, FileKey } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AttachmentSignal } from "@/lib/email/scoring/types";
 
@@ -145,7 +145,7 @@ interface ArtifactRowProps {
     truncate?: boolean;
 }
 
-function ArtifactRow({ value, label, type, onCopy, actions, truncate }: ArtifactRowProps) {
+function ArtifactRow({ value, label, onCopy, actions, truncate }: ArtifactRowProps) {
     return (
         <div className="flex items-center justify-between text-sm bg-muted/10 p-2 rounded border group hover:bg-muted/30 transition-colors">
             <div className="flex flex-col min-w-0 flex-1 mr-2">

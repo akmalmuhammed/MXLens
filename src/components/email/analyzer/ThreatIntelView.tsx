@@ -6,8 +6,7 @@ import { EnrichmentDisabledNotice } from "@/components/analysis/EnrichmentDisabl
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
 import { NormalizedSignals } from "@/lib/email/scoring/types";
-import { Globe, ShieldAlert, FileSearch } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Globe, FileSearch } from "lucide-react";
 
 interface ThreatIntelViewProps {
     analysis: {

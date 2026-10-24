@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, AlertTriangle, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
 import { NormalizedSignals, ScoringResult } from "@/lib/email/scoring/types";
 import { PrivacyControls } from "../PrivacyControls";
@@ -10,16 +9,14 @@ import { VerdictBanner } from "../VerdictBanner";
 import { AuthAlignment } from "../AuthAlignment";
 import { InteractiveHops } from "../InteractiveHops";
 import { AIAnalysisSummary } from "../AIAnalysisSummary";
-import { AnalysisRecommendations } from "../AnalysisRecommendations";
 import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
-import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown } from "lucide-react";
+import { ShieldAlert, FileJson, FileText, ChevronDown } from "lucide-react";
 import { IPGeolocationMap } from "@/components/analysis/IPGeolocationMap";
 import { fetchIPGeolocations } from "@/actions/geolocation";
 import { extractIPsFromHeaders } from "@/lib/threat-intel/geolocation";
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 
 import { ExtractedArtifactsCard } from "@/components/analysis/ExtractedArtifactsCard";
-import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import { ThreatIntelView } from "@/components/email/analyzer/ThreatIntelView";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
@@ -93,31 +90,6 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
         const a = document.createElement('a');
         a.href = url;
         a.download = `email-analysis-${analysis.timestamp}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const handleDownloadCSV = () => {
-        const rows = [
-            ['Metric', 'Value'],
-            ['Verdict', analysis.scoring.verdict.verdict],
-            ['Trust Score', analysis.scoring.trust.score],
-            ['Confidence', analysis.scoring.confidence.level],
-            ['Subject', `"${analysis.header.headers['Subject'] || ''}"`],
-            ['From', `"${analysis.header.headers['From'] || ''}"`],
-            ['SPF', analysis.header.auth.spf.status],
-            ['DKIM', analysis.header.auth.dkim.status],
-            ['DMARC', analysis.header.auth.dmarc.status],
-            [],
-            ['Header Key', 'Header Value'],
-            ...Object.entries(analysis.header.headers).map(([k, v]) => [`"${k}"`, `"${Array.isArray(v) ? v.join('; ') : v}"`])
-        ];
-        const csvContent = rows.map(e => e.join(",")).join("\n");
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `email-analysis-${analysis.timestamp}.csv`;
         a.click();
         URL.revokeObjectURL(url);
     };

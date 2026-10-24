@@ -4,7 +4,6 @@ import { Sparkles, ShieldCheck, ShieldAlert, AlertTriangle, ChevronDown, Chevron
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 
 interface AIAnalysisSummaryProps {
     analysis: AnalysisResult;

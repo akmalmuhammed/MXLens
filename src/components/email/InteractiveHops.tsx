@@ -1,10 +1,9 @@
 import { EmailHop } from "@/lib/email/HeaderParser";
-import { ArrowDown, Clock, Globe, ShieldAlert, ChevronDown, ChevronUp, Server, MapPin, AlertCircle } from "lucide-react";
+import { ArrowDown, Globe, ShieldAlert, ChevronDown, ChevronUp, Server, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 
 interface InteractiveHopsProps {
     hops: EmailHop[];
