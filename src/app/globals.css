@@ -24,6 +24,14 @@
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-border: var(--border);
+  --color-panel: var(--panel);
+  --color-hairline: var(--hairline);
+  --color-sev-critical: var(--sev-critical);
+  --color-sev-high: var(--sev-high);
+  --color-sev-medium: var(--sev-medium);
+  --color-sev-low: var(--sev-low);
+  --color-sev-pass: var(--sev-pass);
+  --color-sev-info: var(--sev-info);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
@@ -869,4 +877,40 @@
   .cta-glow {
     animation: glow-pulse 2s ease-in-out infinite;
   }
+}
+
+/* Analysis report: surfaces and severity scale */
+:root {
+  --panel: oklch(0.985 0.003 250);
+  --hairline: oklch(0.9 0.012 250);
+  --sev-critical: oklch(0.57 0.22 18);
+  --sev-high: oklch(0.6 0.17 45);
+  --sev-medium: oklch(0.62 0.14 75);
+  --sev-low: oklch(0.55 0.06 250);
+  --sev-pass: oklch(0.56 0.14 160);
+  --sev-info: oklch(0.56 0.12 225);
+}
+
+.dark {
+  --panel: oklch(0.155 0.022 245);
+  --hairline: oklch(1 0 0 / 0.09);
+  --sev-critical: oklch(0.7 0.2 18);
+  --sev-high: oklch(0.76 0.16 50);
+  --sev-medium: oklch(0.85 0.14 88);
+  --sev-low: oklch(0.72 0.06 250);
+  --sev-pass: oklch(0.8 0.16 160);
+  --sev-info: oklch(0.83 0.13 205);
+}
+
+.report-grid-bg {
+  background-image:
+    linear-gradient(to right, var(--hairline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hairline) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 80% 100% at 30% 0%, black 10%, transparent 70%);
+}
+
+@media print {
+  nav, .no-print { display: none !important; }
+  .report-panel { break-inside: avoid; }
 }

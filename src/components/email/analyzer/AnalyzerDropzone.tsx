@@ -1,13 +1,20 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
+import { AlertCircle, ArrowRight, FileUp, FlaskConical, Github, Loader2, Lock, MonitorSmartphone, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Search, ShieldCheck, Scan, Upload, AlertCircle, FileText, CheckCircle2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import { GITHUB_URL } from "@/lib/site";
 import { BulkProcessor, BulkFile, validateEmailFile } from "../BulkProcessor";
-import { PrivacyControls } from "../PrivacyControls";
 
-// Type definitions for props
+const MAX_BULK_FILES = 50;
+
+const SAMPLES = [
+    { file: "demo-phishing.eml", label: "Phishing sample" },
+    { file: "demo-legitimate.eml", label: "Legitimate sample" },
+];
+
 interface DropzoneProps {
     onAnalyze: (content: string, body: boolean, attachments: boolean) => void;
     onBulkStart: (processor: BulkProcessor, initialQueue: BulkFile[]) => void;
@@ -16,6 +23,7 @@ interface DropzoneProps {
     setAnalyzeBody: (value: boolean) => void;
     analyzeAttachments: boolean;
     setAnalyzeAttachments: (value: boolean) => void;
+    enrichmentEnabled?: boolean;
 }
 
 export function AnalyzerDropzone({
@@ -25,249 +33,201 @@ export function AnalyzerDropzone({
     analyzeBody,
     setAnalyzeBody,
     analyzeAttachments,
-    setAnalyzeAttachments
+    setAnalyzeAttachments,
+    enrichmentEnabled = false,
 }: DropzoneProps) {
     const [input, setInput] = useState("");
     const [isDragging, setIsDragging] = useState(false);
-    const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const rawInputId = useId();
-    const fileInputId = useId();
+    const fileInput = useRef<HTMLInputElement>(null);
+    const pasteId = useId();
     const errorId = useId();
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(true);
-    };
-
-    const handleDragLeave = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(false);
-    }
-
-    const handleDrop = async (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(false);
-        setError(null);
-
-        const files = Array.from(e.dataTransfer.files);
-        if (files.length === 0) return;
-
-        handleFiles(files);
-    };
 
     const handleFiles = async (files: File[]) => {
         setError(null);
-        setUploadedFileName(null);
+        if (files.length === 0) return;
 
         if (files.length > 1) {
-            if (files.length > 50) {
-                setError("Bulk limit is capped at 50 files. Please select fewer files.");
+            if (files.length > MAX_BULK_FILES) {
+                setError(`Bulk analysis takes up to ${MAX_BULK_FILES} files at a time.`);
                 return;
             }
-
             const processor = new BulkProcessor(files, { analyzeBody, analyzeAttachments });
             onBulkStart(processor, processor.getState());
             processor.start();
             return;
         }
 
-        const file = files[0];
-        const validationError = validateEmailFile(file);
+        const validationError = validateEmailFile(files[0]);
         if (validationError) {
             setError(validationError);
             return;
         }
-
         try {
-            const text = await file.text();
-            setInput(text);
-            setUploadedFileName(file.name);
-            // Slight delay to allow state update
-            setTimeout(() => onAnalyze(text, analyzeBody, analyzeAttachments), 100);
+            onAnalyze(await files[0].text(), analyzeBody, analyzeAttachments);
         } catch {
-            setError("Failed to read file. Please try again.");
+            setError("Could not read that file.");
         }
     };
 
+    const runSample = async (file: string) => {
+        setError(null);
+        try {
+            const response = await fetch(`/samples/${file}`);
+            if (!response.ok) throw new Error(String(response.status));
+            onAnalyze(await response.text(), analyzeBody, analyzeAttachments);
+        } catch {
+            setError("Could not load the sample.");
+        }
+    };
+
+    const submitPaste = () => {
+        if (!input.trim()) return;
+        setError(null);
+        onAnalyze(input, analyzeBody, analyzeAttachments);
+    };
+
     return (
-        <div
-                className={`
-                relative flex flex-col items-center justify-center min-h-[600px]
-                rounded-3xl border-2 border-dashed transition-all duration-500 group
-                ${isDragging
-                        ? 'border-primary bg-primary/10 scale-[0.99] shadow-2xl shadow-primary/20 ring-4 ring-primary/30'
-                        : 'border-border/40 hover:border-primary/50 bg-gradient-to-br from-background/50 to-muted/20'}
-                animate-in zoom-in-95 duration-500
-            `}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                role="region"
-                aria-label="Email analysis upload area"
-            >
-                {/* Drag overlay message */}
-                {isDragging && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-primary/5 backdrop-blur-sm rounded-3xl">
-                        <div className="text-center space-y-3 animate-pulse">
-                            <Upload className="w-16 h-16 text-primary mx-auto" />
-                            <p className="text-xl font-semibold text-primary">Drop files here</p>
+        <div className="mx-auto w-full max-w-5xl space-y-6 py-4 animate-in fade-in duration-500 sm:py-8">
+            <div className="space-y-3 text-center">
+                <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-panel px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-sev-info">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Local analysis
+                </p>
+                <h1 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Is this email phishing?</h1>
+                <p className="mx-auto max-w-xl text-balance text-muted-foreground">
+                    Drop a suspicious <span className="font-mono text-foreground/90">.eml</span> file and get a verdict with the
+                    evidence behind it: authentication, sender, links, attachments and delivery path.
+                </p>
+            </div>
+
+            {error && (
+                <div id={errorId} role="alert" className="mx-auto flex max-w-2xl items-center gap-2 rounded-lg border border-sev-critical/30 bg-sev-critical/10 px-3 py-2 text-sm text-sev-critical">
+                    <AlertCircle className="h-4 w-4 shrink-0" /> {error}
+                </div>
+            )}
+
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+                <div
+                    onDragOver={e => {
+                        e.preventDefault();
+                        setIsDragging(true);
+                    }}
+                    onDragLeave={e => {
+                        e.preventDefault();
+                        setIsDragging(false);
+                    }}
+                    onDrop={e => {
+                        e.preventDefault();
+                        setIsDragging(false);
+                        handleFiles(Array.from(e.dataTransfer.files));
+                    }}
+                    className={cn(
+                        "relative flex min-h-[280px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed p-8 text-center transition-all duration-300",
+                        isDragging ? "border-sev-info bg-sev-info/10 shadow-[0_0_0_4px] shadow-sev-info/15" : "border-foreground/20 bg-panel hover:border-sev-info/60"
+                    )}
+                >
+                    <div className="report-grid-bg pointer-events-none absolute inset-0 opacity-70" />
+                    <div className="relative flex flex-col items-center">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-sev-info/30 bg-sev-info/10 text-sev-info shadow-[0_0_30px] shadow-sev-info/20">
+                            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <FileUp className="h-6 w-6" />}
+                        </div>
+                        <p className="text-lg font-medium text-foreground">{loading ? "Analyzing…" : isDragging ? "Drop to analyze" : "Drop .eml files here"}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">One file for a full report, up to {MAX_BULK_FILES} for bulk triage</p>
+                        <input
+                            ref={fileInput}
+                            type="file"
+                            className="sr-only"
+                            accept=".eml,.txt,message/rfc822,text/plain"
+                            multiple
+                            aria-label="Choose .eml files"
+                            onChange={e => {
+                                handleFiles(Array.from(e.target.files || []));
+                                e.target.value = "";
+                            }}
+                        />
+                        <Button
+                            type="button"
+                            onClick={() => fileInput.current?.click()}
+                            disabled={loading}
+                            className="mt-5 h-10 gap-2 bg-sev-info px-5 font-semibold text-background hover:bg-sev-info/90"
+                        >
+                            Choose files
+                        </Button>
+                        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+                            <FlaskConical className="h-3.5 w-3.5" /> Try:
+                            {SAMPLES.map(sample => (
+                                <button
+                                    key={sample.file}
+                                    type="button"
+                                    disabled={loading}
+                                    onClick={() => runSample(sample.file)}
+                                    className="rounded-md border border-hairline px-2 py-1 text-foreground/80 transition-colors hover:border-sev-info/50 hover:text-foreground disabled:opacity-50"
+                                >
+                                    {sample.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
-                )}
-
-                {/* Visual Anchor */}
-                <div className={`
-                    absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                    transition-all duration-700 pointer-events-none 
-                    ${isDragging ? 'opacity-0' : 'opacity-[0.03] scale-100'}
-                `}>
-                    <Search className="w-96 h-96 text-foreground" />
                 </div>
 
-                <div className="relative z-10 w-full max-w-2xl px-6 space-y-8 text-center">
-
-                    {/* Trust Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium shadow-sm backdrop-blur-sm">
-                        <ShieldCheck className="w-4 h-4" />
-                        100% Client-Side Privacy
-                    </div>
-
-                    <div className="space-y-4">
-                        <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground drop-shadow-sm">
-                            Analyze suspicious emails <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">
-                                in seconds.
-                            </span>
-                        </h2>
-                        <p className="text-lg text-muted-foreground/80 max-w-lg mx-auto leading-relaxed">
-                            Drag and drop files or paste raw email headers.
-                            <br />
-                            Advanced forensic logic runs entirely in your browser.
-                        </p>
-                    </div>
-
-                    {/* Supported Formats */}
-                    <div id="supported-file-formats" className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                        <FileText className="w-4 h-4" />
-                        <span>Supported: <span className="text-foreground">.eml, .txt, raw headers, bulk (50 max)</span></span>
-                    </div>
-
-                    {/* Error Message */}
-                    {error && (
-                        <div id={errorId} role="alert" className="flex items-center justify-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
-                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                            {error}
-                        </div>
-                    )}
-
-                    {/* Uploaded File Name */}
-                    {uploadedFileName && !error && (
-                        <div role="status" className="flex items-center justify-center gap-2 p-3 rounded-lg bg-accent/10 border border-accent/30 text-accent text-sm">
-                            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                            Selected: <span className="font-mono">{uploadedFileName}</span>
-                        </div>
-                    )}
-
-                    <div className="pt-2 w-full max-w-xl mx-auto">
-                        <div className="relative group">
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500 to-blue-600 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-                            <label htmlFor={rawInputId} className="sr-only">Raw email headers or content</label>
-                            <Textarea
-                                id={rawInputId}
-                                placeholder="Paste raw email headers or content here..."
-                                className="relative h-[400px] w-full font-mono text-sm border-0 bg-background/80 focus:bg-background shadow-xl rounded-lg focus-visible:ring-2 focus-visible:ring-primary/50 resize-none p-6 transition-all"
-                                value={input}
-                                aria-label="Raw email headers or content"
-                                aria-describedby={error ? errorId : undefined}
-                                onChange={(e) => {
-                                    setInput(e.target.value);
-                                    setError(null);
-                                    setUploadedFileName(null);
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="space-y-5 w-full max-w-xl mx-auto">
-                        <div className="flex justify-center">
-                            <PrivacyControls
-                                analyzeBody={analyzeBody}
-                                setAnalyzeBody={setAnalyzeBody}
-                                analyzeAttachments={analyzeAttachments}
-                                setAnalyzeAttachments={setAnalyzeAttachments}
-                                idPrefix="upload-privacy"
-                            />
-                        </div>
-
-                        <div className="flex gap-3 items-stretch h-14">
-                            <Button
-                                onClick={() => {
-                                    setError(null);
-                                    onAnalyze(input, analyzeBody, analyzeAttachments);
-                                }}
-                                disabled={!input || loading}
-                                className="flex-1 text-lg font-semibold shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all rounded-xl"
-                                size="lg"
-                            >
-                                {loading ? (
-                                    <span className="flex items-center gap-2">
-                                        <Scan className="animate-spin w-5 h-5" /> Analyzing...
-                                    </span>
-                                ) : "Run Forensic Analysis"}
-                            </Button>
-
-                            <div className="relative h-full">
-                                <label htmlFor={fileInputId} className="sr-only">Upload .eml or .txt email files</label>
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    accept=".eml,.txt,message/rfc822,text/plain"
-                                    multiple
-                                    aria-label="Upload .eml or .txt email files"
-                                    aria-describedby="supported-file-formats"
-                                    onChange={(e) => {
-                                        const files = Array.from(e.target.files || []);
-                                        if (files.length > 0) handleFiles(files);
-                                        e.target.value = '';
-                                    }}
-                                    id={fileInputId}
-                                />
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="h-full px-4 rounded-xl border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all gap-2"
-                                    onClick={() => document.getElementById(fileInputId)?.click()}
-                                    disabled={loading}
-                                    aria-label="Upload .eml or .txt email files"
-                                    aria-controls={fileInputId}
-                                >
-                                    <Upload className="w-5 h-5" />
-                                    <span className="hidden sm:inline">Upload File</span>
-                                </Button>
-                            </div>
-                        </div>
-
-                        {/* What happens next */}
-                        <div className="pt-2 space-y-2">
-                            <p className="text-xs text-muted-foreground">You&apos;ll get:</p>
-                            <div className="flex flex-wrap justify-center gap-3 text-xs">
-                                {[
-                                    "Threat Score (0-100)",
-                                    "Authentication Status",
-                                    "Detected Threats",
-                                    "Sender Reputation"
-                                ].map((item, i) => (
-                                    <span key={i} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-muted/50 text-muted-foreground">
-                                        <CheckCircle2 className="w-3 h-3 text-accent" />
-                                        {item}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
+                <div className="flex flex-col rounded-2xl border border-hairline bg-panel">
+                    <label htmlFor={pasteId} className="border-b border-hairline px-4 py-3 text-sm font-medium text-foreground">
+                        Or paste the message source
+                        <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+                            In Outlook: File, Properties, Internet headers. In Gmail: More, Show original.
+                        </span>
+                    </label>
+                    <textarea
+                        id={pasteId}
+                        value={input}
+                        onChange={e => {
+                            setInput(e.target.value);
+                            setError(null);
+                        }}
+                        onKeyDown={e => {
+                            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submitPaste();
+                        }}
+                        aria-describedby={error ? errorId : undefined}
+                        placeholder={"Received: from ...\nFrom: ...\nSubject: ..."}
+                        spellCheck={false}
+                        className="min-h-[180px] flex-1 resize-none bg-transparent px-4 py-3 font-mono text-[12.5px] leading-relaxed text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                    />
+                    <div className="flex items-center justify-between gap-3 border-t border-hairline px-4 py-3">
+                        <span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">Ctrl + Enter</span>
+                        <Button type="button" onClick={submitPaste} disabled={!input.trim() || loading} variant="outline" className="ml-auto h-9 gap-2 border-hairline">
+                            Analyze <ArrowRight className="h-4 w-4" />
+                        </Button>
                     </div>
                 </div>
             </div>
+
+            <div className="flex flex-col gap-4 rounded-2xl border border-hairline bg-panel px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Scope</span>
+                    <ScopeSwitch id="scope-body-entry" label="Body" checked={analyzeBody} onChange={setAnalyzeBody} aria="Analyze email body content" />
+                    <ScopeSwitch id="scope-attachments-entry" label="Attachments" checked={analyzeAttachments} onChange={setAnalyzeAttachments} aria="Analyze email attachments" />
+                </div>
+                <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <li className="inline-flex items-center gap-1.5"><MonitorSmartphone className="h-3.5 w-3.5 text-sev-info" /> Runs in your browser</li>
+                    <li className="inline-flex items-center gap-1.5">
+                        <Lock className="h-3.5 w-3.5 text-sev-info" /> {enrichmentEnabled ? "Only indicators are looked up" : "Nothing uploaded"}
+                    </li>
+                    <li>
+                        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-foreground">
+                            <Github className="h-3.5 w-3.5 text-sev-info" /> Open source
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    );
+}
+
+function ScopeSwitch({ id, label, checked, onChange, aria }: { id: string; label: string; checked: boolean; onChange: (v: boolean) => void; aria: string }) {
+    return (
+        <label htmlFor={id} className="inline-flex cursor-pointer items-center gap-2 text-sm text-foreground/90">
+            <Switch id={id} checked={checked} onCheckedChange={onChange} aria-label={aria} />
+            {label}
+        </label>
     );
 }

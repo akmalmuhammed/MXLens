@@ -15,6 +15,8 @@ domains, link and attachment checks, and content heuristics.
 
 MIT licensed.
 
+![MXLens analysis report: verdict, risk score, findings ranked by severity, and recommended actions](docs/screenshot.png)
+
 ## Quick start
 
 Requires Node.js 20.9 or later.

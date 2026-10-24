@@ -5,14 +5,12 @@ import PostalMime from 'postal-mime';
 import { HeaderParser, AnalysisResult } from "@/lib/email/HeaderParser";
 import { AnalysisEngine } from "@/lib/email/scoring/AnalysisEngine";
 import { NormalizedSignals, ScoringResult } from "@/lib/email/scoring/types";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { BulkProcessor, BulkFile } from "./BulkProcessor";
 import { BulkAnalysisDashboard } from "./BulkAnalysisDashboard";
 
 // Sub-components
 import { AnalyzerDropzone } from "./analyzer/AnalyzerDropzone";
-import { ResultsDashboard } from "./analyzer/ResultsDashboard";
+import { ReportView } from "@/components/report/ReportView";
 
 export interface EnhancedAnalysis {
     header: AnalysisResult;
@@ -36,9 +34,9 @@ export function EmailAnalyzer({ enrichmentEnabled = false }: EmailAnalyzerProps)
     const bulkProcessorRef = useRef<BulkProcessor | null>(null);
     const bulkUnsubscribeRef = useRef<(() => void) | null>(null);
 
-    // Privacy Controls State
-    const [analyzeBody, setAnalyzeBody] = useState(false);
-    const [analyzeAttachments, setAnalyzeAttachments] = useState(false);
+    // Analysis scope. Everything runs locally, so the full analysis is the default.
+    const [analyzeBody, setAnalyzeBody] = useState(true);
+    const [analyzeAttachments, setAnalyzeAttachments] = useState(true);
 
     // Original input ref for re-analysis
     const [rawInput, setRawInput] = useState("");
@@ -56,8 +54,8 @@ export function EmailAnalyzer({ enrichmentEnabled = false }: EmailAnalyzerProps)
                 const parsed = JSON.parse(cached);
                 setAnalysis(parsed.analysis);
                 setRawInput(parsed.rawInput || "");
-                setAnalyzeBody(parsed.analyzeBody || false);
-                setAnalyzeAttachments(parsed.analyzeAttachments || false);
+                setAnalyzeBody(parsed.analyzeBody ?? true);
+                setAnalyzeAttachments(parsed.analyzeAttachments ?? true);
             }
         } catch (e) {
             console.warn("Failed to restore analysis from session:", e);
@@ -194,18 +192,9 @@ export function EmailAnalyzer({ enrichmentEnabled = false }: EmailAnalyzerProps)
 
     return (
         <div className="h-full flex flex-col relative font-sans">
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-50 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)]"></div>
-
-            <div className="relative z-10 flex-1 flex flex-col">
+            <div className="relative flex-1 flex flex-col">
                 {viewMode === 'bulk' && (
-                    <div className="h-full animate-in fade-in zoom-in-95 duration-300">
-                        <div className="mb-4 flex items-center">
-                            <Button variant="ghost" className="gap-2 pl-0 hover:bg-transparent hover:text-primary" onClick={() => {
-                                handleBackToSingle();
-                            }}>
-                                <ArrowLeft className="h-4 w-4" /> Back to Single Analysis
-                            </Button>
-                        </div>
+                    <div className="h-full animate-in fade-in duration-300">
                         <BulkAnalysisDashboard
                             files={bulkQueue}
                             onClear={() => {
@@ -230,13 +219,16 @@ export function EmailAnalyzer({ enrichmentEnabled = false }: EmailAnalyzerProps)
                         setAnalyzeBody={setAnalyzeBody}
                         analyzeAttachments={analyzeAttachments}
                         setAnalyzeAttachments={setAnalyzeAttachments}
+                        enrichmentEnabled={enrichmentEnabled}
                     />
                 )}
 
                 {analysis && viewMode === 'single' && (
-                    <ResultsDashboard
+                    <ReportView
                         analysis={analysis}
                         onClear={handleClear}
+                        onBack={bulkQueue.length > 0 ? () => setViewMode('bulk') : undefined}
+                        backLabel={`Back to batch (${bulkQueue.length})`}
                         analyzeBody={analyzeBody}
                         setAnalyzeBody={setAnalyzeBody}
                         analyzeAttachments={analyzeAttachments}
