@@ -53,11 +53,10 @@ docker compose up -d --build
 This serves MXLens on `127.0.0.1:3000`. Put it behind your usual reverse proxy (with TLS) to
 share it with a team.
 
-Without Compose:
+Or run the published image:
 
 ```bash
-docker build -t mxlens .
-docker run -d -p 3000:3000 mxlens
+docker run -d -p 127.0.0.1:3000:3000 ghcr.io/akmalmuhammed/mxlens:latest
 ```
 
 ### Configuration

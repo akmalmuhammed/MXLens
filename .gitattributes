@@ -1,0 +1,6 @@
+# Internal files that stay in the private repository and are left out of the
+# public export (scripts/export-public-repo.sh uses `git archive`).
+docs/OPEN_SOURCE_PLAN.md export-ignore
+docs/LAUNCH_CHECKLIST.md export-ignore
+scripts/export-public-repo.sh export-ignore
+.gitattributes export-ignore

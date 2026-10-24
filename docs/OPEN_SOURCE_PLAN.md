@@ -92,23 +92,26 @@ with a free, no-login demo.
 
 ## Status
 
-- [ ] Phase 0: owner actions (rotate Neon password and admin passwords; merge PR #1 or take the SaaS offline)
+- [ ] Phase 0: owner actions. Superseded by `docs/LAUNCH_CHECKLIST.md` (shut down Neon and the
+  other SaaS services instead of rotating credentials).
 - [x] Phase 1: strip to the lean core
   - SaaS code, pages, APIs, Prisma, auth, billing, telemetry and repo junk removed
   - Enrichment behind `MXLENS_ENRICHMENT` with PR #1's IP/domain/hash guards and in-memory rate limits
   - Fonts and the PDF.js worker bundled locally; strict CSP with `connect-src 'self'`
   - Landing copy corrected (no WebAssembly, GDPR/HIPAA, "85+ rules", pricing or user-count claims)
-  - Verified: build with empty env, 23 tests, typecheck, lint (0 errors), browser run with zero
-    external requests
-- [ ] Phase 2: engine library + CLI
-- [ ] Phase 3: detection correctness
-- [ ] Phase 4: self-hosting (Dockerfile, compose and CI image build done early; local REST/MCP API left)
-- [ ] Phase 5: open-source hygiene (LICENSE, README, CI done early; CONTRIBUTING, SECURITY, templates left)
-- [ ] Phase 6: launch
+- [x] Phase 2: engine API (`src/lib/email/analyze.ts`) and `mxlens` CLI (`cli/`, 364 KB bundle)
+- [ ] Phase 3: detection correctness. Done: unknown authserv-id no longer critical, lookalike
+  provider domains no longer trusted. Left: DMARC policy normalization, ARC override scope, auth UI
+  labels, Office macro classification, larger synthetic corpus.
+- [x] Phase 4: self-hosting (Dockerfile, compose, GHCR release workflow). Local REST/MCP API moved
+  to the public roadmap.
+- [x] Phase 5: open-source hygiene (LICENSE, README, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT,
+  issue/PR templates, Dependabot, CI, 0 npm audit findings)
+- [ ] Phase 6: launch, following `docs/LAUNCH_CHECKLIST.md`. The export is produced by
+  `scripts/export-public-repo.sh`.
 
-### Not for the public repository
+### Not in the public repository
 
-- `docs/engineering-audit-2026-05-01.md` describes vulnerabilities in the retired SaaS. Keep it
-  in the private repo only.
+- This plan, the launch checklist and the export script (`export-ignore` in `.gitattributes`).
 - The engineering audit and the old browser-extension prototype were removed from the tree;
   they remain in this private repository's history.
