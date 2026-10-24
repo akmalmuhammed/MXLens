@@ -139,38 +139,6 @@ export class BulkProcessor {
                 filename: next.file.name
             };
 
-            // Save to history (fire and forget)
-            import("@/actions/analysis").then(({ saveAnalysis }) => {
-                if (this.cancelled) return;
-
-                const getHeader = (name: string) => {
-                    const entry = Object.entries(headerRes.headers).find(([key]) => key.toLowerCase() === name.toLowerCase());
-                    const value = Array.isArray(entry?.[1]) ? entry[1][0] : entry?.[1];
-                    return (value || "").replace(/[\r\n\t]+/g, " ").replace(/\s{2,}/g, " ").trim().slice(0, 256);
-                };
-
-                const mapVerdict = (v: string): "CLEAN" | "SUSPICIOUS" | "MALICIOUS" | "UNKNOWN" => {
-                    const normalized = v.toLowerCase();
-                    if (normalized.includes("legitimate") || normalized === "clean") return "CLEAN";
-                    if (normalized.includes("suspicious")) return "SUSPICIOUS";
-                    if (normalized.includes("high") || normalized.includes("malicious")) return "MALICIOUS";
-                    return "UNKNOWN";
-                };
-
-                saveAnalysis({
-                    verdict: mapVerdict(result.verdict.verdict),
-                    score: result.trust.score,
-                    hasAttachments: this.analyzeAttachments,
-                    hasBody: this.analyzeBody,
-                    processingTimeMs: 0, // approximate
-                    subject: getHeader("Subject"),
-                    sender: getHeader("From"),
-                    spfStatus: headerRes.auth.spf.status,
-                    dkimStatus: headerRes.auth.dkim.status,
-                    dmarcStatus: headerRes.auth.dmarc.status
-                }).catch(console.error);
-            });
-
             next.status = 'completed';
 
         } catch (error) {

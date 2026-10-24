@@ -3,15 +3,16 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { ArrowRight, Shield, Zap, Package, Lock, Calendar } from "lucide-react";
+import { ArrowRight, Shield, Zap, Package, Lock, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { GITHUB_URL } from "@/lib/site";
 
 const badges = [
-    { icon: Lock, label: "100% Client-Side" },
-    { icon: Zap, label: "3-Sec Analysis" },
-    { icon: Package, label: "50-Email Bulk" },
-    { icon: Shield, label: "Zero Privacy Risk" },
+    { icon: Lock, label: "Runs in your browser" },
+    { icon: Zap, label: "Seconds per email" },
+    { icon: Package, label: "Bulk analysis" },
+    { icon: Shield, label: "MIT licensed" },
 ];
 
 export const CTASection = () => {
@@ -34,20 +35,20 @@ export const CTASection = () => {
                     className="max-w-3xl mx-auto text-center"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
-                        Ready to Eliminate{" "}
+                        Free and{" "}
                         <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            Alert Fatigue?
+                            open source
                         </span>
                     </h2>
 
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-                        Join 20+ SOC analysts analyzing emails in seconds, not hours.
+                        Analyze an email here, or run MXLens on your own machine with one command.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
                         <Button className="group w-full sm:w-auto h-14 px-8 text-lg shadow-glow" size="lg" asChild>
                             <Link href="/analyze">
-                                Start Free Analysis
+                                Analyze an email
                                 <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                             </Link>
                         </Button>
@@ -57,10 +58,10 @@ export const CTASection = () => {
                             className="w-full sm:w-auto h-14 px-8 text-lg"
                             asChild
                         >
-                            <Link href="mailto:demo@mxlens.com">
-                                <Calendar className="mr-2 w-5 h-5" />
-                                Book Demo
-                            </Link>
+                            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+                                <Github className="mr-2 w-5 h-5" />
+                                View on GitHub
+                            </a>
                         </Button>
                     </div>
 
@@ -71,9 +72,9 @@ export const CTASection = () => {
                         transition={{ duration: 0.3, delay: 0.15 }}
                         className="flex flex-wrap items-center justify-center gap-4 text-sm"
                     >
-                        <span className="text-muted-foreground">✓ No credit card</span>
-                        <span className="text-muted-foreground">✓ No account required</span>
-                        <span className="text-muted-foreground">✓ Full features</span>
+                        <span className="text-muted-foreground">✓ No signup</span>
+                        <span className="text-muted-foreground">✓ No tracking</span>
+                        <span className="text-muted-foreground">✓ Self-hostable</span>
                     </motion.div>
 
                     {/* Feature badges */}

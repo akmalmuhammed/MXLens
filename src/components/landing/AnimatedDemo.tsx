@@ -305,7 +305,7 @@ export const AnimatedDemo = () => {
                     transition={{ repeat: Infinity, duration: 3 }}
                 >
                     <Shield className="w-3 h-3 text-accent" />
-                    <span>100% local • Zero cloud upload • GDPR compliant</span>
+                    <span>Runs locally • No upload • Open source</span>
                 </motion.div>
             </motion.div>
         </div>

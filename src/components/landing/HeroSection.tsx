@@ -29,7 +29,7 @@ export const HeroSection = () => {
                         >
                             <Shield className="w-4 h-4 text-primary" />
                             <span className="text-sm font-mono text-primary">
-                                100% Client-Side • Zero Cloud Upload
+                                Free • Open Source • Runs in Your Browser
                             </span>
                         </motion.div>
 
@@ -43,7 +43,7 @@ export const HeroSection = () => {
                             <span className="text-foreground block">Email</span>
                             <span className="text-foreground block">Intelligence.</span>
                             <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent block bg-[length:200%_auto] animate-gradient">
-                                Zero Risk.
+                                Zero Upload.
                             </span>
                         </motion.h1>
 
@@ -54,7 +54,7 @@ export const HeroSection = () => {
                             transition={{ duration: 0.7, delay: 0.2 }}
                             className="text-lg sm:text-xl text-muted-foreground max-w-lg mb-10"
                         >
-                            Drag. Drop. <span className="text-foreground font-semibold">Verdict in 3 seconds.</span>
+                            Drag. Drop. <span className="text-foreground font-semibold">Verdict in seconds.</span>
                             <br />
                             Your emails never leave your browser.
                         </motion.p>
@@ -103,7 +103,7 @@ export const HeroSection = () => {
                         >
                             {[
                                 { icon: Lock, text: "No signup needed" },
-                                { icon: Zap, text: "85+ detection rules" },
+                                { icon: Zap, text: "MIT licensed" },
                                 { icon: Shield, text: "Works offline" },
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-2 text-sm">

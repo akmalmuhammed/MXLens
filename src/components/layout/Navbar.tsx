@@ -1,7 +1,8 @@
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ModeToggle";
+import { GITHUB_URL } from "@/lib/site";
 
 export function Navbar() {
     return (
@@ -12,39 +13,24 @@ export function Navbar() {
                 </Link>
 
                 <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3 md:gap-4">
-                    <Link href="/features" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden md:block">
-                        Features
+                    <Link href="/learn/phishing-101" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden md:block">
+                        Learn
                     </Link>
-                    <Link href="/resources/api-docs" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden md:block">
-                        API
-                    </Link>
-                    <Link href="/trust-center" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden lg:block">
-                        Trust
-                    </Link>
+                    <a
+                        href={GITHUB_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                    >
+                        <Github className="h-4 w-4" />
+                        <span className="hidden sm:inline">GitHub</span>
+                    </a>
 
                     <ModeToggle />
 
-                    <Button asChild className="h-9 px-2 text-xs font-semibold bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all hover:bg-cyan-400 sm:h-10 sm:px-4 sm:text-sm max-[359px]:hidden">
-                        <Link href="/analyze">Analyze Free</Link>
+                    <Button asChild className="h-9 px-2 text-xs font-semibold bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all hover:bg-cyan-400 sm:h-10 sm:px-4 sm:text-sm">
+                        <Link href="/analyze">Analyze</Link>
                     </Button>
-                    <Show when="signed-out">
-                        <SignInButton mode="modal">
-                            <Button variant="ghost" className="h-9 px-2 text-xs text-slate-300 hover:text-white sm:h-10 sm:px-4 sm:text-sm">
-                                Sign In
-                            </Button>
-                        </SignInButton>
-                        <SignUpButton mode="modal">
-                            <Button variant="outline" className="hidden h-10 border-cyan-500/30 hover:bg-cyan-500/10 hover:text-cyan-400 sm:inline-flex">
-                                Sign Up
-                            </Button>
-                        </SignUpButton>
-                    </Show>
-                    <Show when="signed-in">
-                        <Button asChild variant="outline" className="h-9 px-2 text-xs border-cyan-500/30 hover:bg-cyan-500/10 hover:text-cyan-400 sm:h-10 sm:px-4 sm:text-sm">
-                            <Link href="/dashboard">Dashboard</Link>
-                        </Button>
-                        <UserButton />
-                    </Show>
                 </div>
             </div>
         </nav>

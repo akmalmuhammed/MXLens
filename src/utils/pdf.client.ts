@@ -7,13 +7,9 @@ export async function extractLinksFromPdf(pdfBuffer: ArrayBuffer): Promise<strin
     if (typeof window === 'undefined') return []; // Client-side only
 
     try {
-        // Configure worker dynamically
-        // Use unpkg or local file. For prototype, use CDN or bundled worker.
-        // In Next.js with SWC, standard import usually works if 'pdfjs-dist/build/pdf.worker.min.js' is handled.
-        // Safer approach for client-component:
+        // Bundle the worker so attachments are never processed by code fetched from a CDN.
         const pdfjs = await import('pdfjs-dist');
-        // @ts-ignore
-        pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+        pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
         const loadingTask = pdfjs.getDocument({ data: pdfBuffer });
         const pdf = await loadingTask.promise;

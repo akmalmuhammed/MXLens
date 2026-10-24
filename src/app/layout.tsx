@@ -1,39 +1,16 @@
-import { ClerkProvider } from "@clerk/nextjs";
-import { shadcn } from "@clerk/ui/themes";
 import type { Metadata } from "next";
-import { Outfit, Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+// Fonts are bundled from npm so builds and self-hosted instances never call Google Fonts.
+import "@fontsource-variable/space-grotesk";
+import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
-import NextTopLoader from 'nextjs-toploader';
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navbar } from "@/components/layout/Navbar";
 import { NavbarUtils } from "@/components/layout/NavbarUtils";
-import { PostHogProvider } from "@/providers/PostHogProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@vercel/analytics/react";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space",
-});
 
 export const metadata: Metadata = {
-  title: "MXLens - Secure Email Analysis",
-  description: "Enterprise-grade client-side email forensics and phishing analysis.",
+  title: "MXLens - Open-source email phishing analyzer",
+  description: "Free, open-source phishing analysis for .eml files. Runs in your browser or on your own server.",
 };
 
 export default async function RootLayout({
@@ -43,25 +20,20 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} font-sans antialiased bg-background text-foreground`}>
-        <ClerkProvider appearance={{ theme: shadcn }}>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <PostHogProvider>
+      <body className="font-sans antialiased bg-background text-foreground">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {/* Skip Link for Keyboard Users */}
           <a href="#main-content" className="skip-link">
-          Skip to main content
+            Skip to main content
           </a>
           <NavbarUtils>
-          <Navbar />
+            <Navbar />
           </NavbarUtils>
           <main id="main-content" className="min-h-screen" role="main">
-          {children}
+            {children}
           </main>
           <Toaster />
-          <Analytics />
-          </PostHogProvider>
-          </ThemeProvider>
-        </ClerkProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -42,7 +42,7 @@ const useCases = [
         metric: "Zero",
         metricLabel: "Data Exposure",
         cta: "Learn About Privacy",
-        href: "#trust",
+        href: "/analyze",
     },
     {
         id: "team",

@@ -15,8 +15,8 @@ export default defineConfig({
             include: [
                 'src/lib/email/scoring/**',
                 'src/lib/email/detection/**',
-                'src/actions/**',
-                'src/app/api/webhooks/**'
+                'src/lib/email/parser/**',
+                'src/lib/agent-api/**'
             ]
         },
         setupFiles: ['./tests/setup.ts']

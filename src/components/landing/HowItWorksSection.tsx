@@ -18,18 +18,18 @@ const steps = [
     {
         icon: Cpu,
         step: "02",
-        title: "WASM Engine",
+        title: "Local Engine",
         time: "1 sec",
-        description: "WebAssembly engine activates in your browser",
-        highlight: "Zero network requests",
+        description: "The analysis engine runs in your browser",
+        highlight: "No upload",
         color: "accent",
     },
     {
         icon: Layers,
         step: "03",
-        title: "85+ Rules Scan",
+        title: "Detection Scan",
         time: "2 sec",
-        description: "11 detection modules run in parallel locally",
+        description: "Header, authentication, link, attachment and content checks run locally",
         highlight: "SPF, DKIM, DMARC, URLs, Headers, QR...",
         color: "primary",
     },
@@ -139,8 +139,8 @@ export const HowItWorksSection = () => {
                 >
                     {[
                         { icon: Zap, value: "<5s", label: "Total Analysis" },
-                        { icon: Shield, value: "85+", label: "Detection Rules" },
-                        { icon: Clock, value: "0", label: "Network Requests" },
+                        { icon: Shield, value: "MIT", label: "Open Source" },
+                        { icon: Clock, value: "0", label: "Uploads" },
                     ].map((stat, i) => (
                         <div key={i} className="text-center">
                             <stat.icon className="w-6 h-6 text-accent mx-auto mb-2" />

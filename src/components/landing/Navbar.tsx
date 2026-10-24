@@ -1,17 +1,17 @@
 "use client";
 
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Shield } from "lucide-react";
+import { Menu, X, Shield, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GITHUB_URL } from "@/lib/site";
 
 const navLinks = [
     { href: "#features", label: "Features" },
     { href: "#how-it-works", label: "How It Works" },
-    { href: "#trust", label: "Trust" },
+    { href: "/learn/phishing-101", label: "Learn" },
 ];
 
 export const Navbar = () => {
@@ -79,26 +79,14 @@ export const Navbar = () => {
 
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center gap-4">
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href="/resources/api-docs">API Docs</Link>
+                        <Button variant="ghost" size="sm" className="gap-2" asChild>
+                            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+                                <Github className="h-4 w-4" /> GitHub
+                            </a>
                         </Button>
                         <Button size="sm" className="shadow-glow" asChild>
-                            <Link href="/analyze">Analyze Free</Link>
+                            <Link href="/analyze">Analyze an email</Link>
                         </Button>
-                        <Show when="signed-out">
-                            <SignInButton mode="modal">
-                                <Button variant="ghost" size="sm">Sign In</Button>
-                            </SignInButton>
-                            <SignUpButton mode="modal">
-                                <Button variant="outline" size="sm">Sign Up</Button>
-                            </SignUpButton>
-                        </Show>
-                        <Show when="signed-in">
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href="/dashboard">Dashboard</Link>
-                            </Button>
-                            <UserButton />
-                        </Show>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -136,28 +124,14 @@ export const Navbar = () => {
                                     </Link>
                                 ))}
                                 <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                                    <Button variant="ghost" className="w-full" asChild>
-                                        <Link href="/resources/api-docs">API Docs</Link>
+                                    <Button variant="ghost" className="w-full gap-2" asChild>
+                                        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+                                            <Github className="h-4 w-4" /> GitHub
+                                        </a>
                                     </Button>
                                     <Button className="w-full shadow-glow" asChild>
-                                        <Link href="/analyze">Analyze Free</Link>
+                                        <Link href="/analyze">Analyze an email</Link>
                                     </Button>
-                                    <Show when="signed-out">
-                                        <SignInButton mode="modal">
-                                            <Button variant="ghost" className="w-full">Sign In</Button>
-                                        </SignInButton>
-                                        <SignUpButton mode="modal">
-                                            <Button variant="outline" className="w-full">Sign Up</Button>
-                                        </SignUpButton>
-                                    </Show>
-                                    <Show when="signed-in">
-                                        <Button variant="outline" className="w-full" asChild>
-                                            <Link href="/dashboard">Dashboard</Link>
-                                        </Button>
-                                        <div className="flex justify-center py-2">
-                                            <UserButton />
-                                        </div>
-                                    </Show>
                                 </div>
                             </div>
                         </motion.div>

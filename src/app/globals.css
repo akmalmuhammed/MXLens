@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "@clerk/ui/themes/shadcn.css";
 
 @plugin "tailwindcss-animate";
 
@@ -38,9 +37,9 @@
   --radius-xl: var(--radius-xl);
   --radius-2xl: var(--radius-2xl);
 
-  --font-sans: var(--font-space), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-space), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, monospace;
 
   --shadow-soft-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-glass-glow: 0 0 20px rgba(0, 217, 255, 0.15);

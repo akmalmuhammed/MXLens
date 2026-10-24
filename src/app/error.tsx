@@ -1,7 +1,6 @@
 "use client"; // Error components must be Client Components
 
 import { useEffect } from "react";
-import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
@@ -14,13 +13,7 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Send error to Sentry for production monitoring
-        Sentry.captureException(error);
-
-        // Also log locally for debugging
-        console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error caught:", error);
-        console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error message:", error.message);
-        console.error("[MXLENS_DEBUG] [ERROR_PAGE] Error stack:", error.stack);
+        console.error(error);
     }, [error]);
 
     return (
@@ -30,7 +23,7 @@ export default function Error({
             </div>
             <h2 className="text-4xl font-bold mb-4">Analysis Interrupted</h2>
             <p className="text-xl text-muted-foreground max-w-md mb-4">
-                Something went wrong on our end. Our heat-seeking missile team has been dispatched to fix it.
+                Something went wrong while rendering this page. If it keeps happening, please open an issue on GitHub.
             </p>
 
             {/* Show error details for debugging */}

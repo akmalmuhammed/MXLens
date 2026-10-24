@@ -6,12 +6,12 @@ import { HeaderParser } from '@/lib/email/HeaderParser';
 import { AnalysisEngine } from '@/lib/email/scoring/AnalysisEngine';
 
 function sample(name: string): string {
-    return readFileSync(path.join(process.cwd(), 'test-samples', name), 'utf8');
+    return readFileSync(path.join(process.cwd(), 'tests', 'fixtures', 'email', name), 'utf8');
 }
 
-describe('Real .eml analysis fixtures', () => {
+describe('Synthetic .eml analysis fixtures', () => {
     it('parses Authentication-Results and ARC from PostalMime lower-case headers', async () => {
-        const header = await HeaderParser.parse(sample('phish_alert_sp2_2.0.0.0 (17).eml'));
+        const header = await HeaderParser.parse(sample('arc-forwarded-list.eml'));
 
         expect(header.headers['authentication-results']).toBeDefined();
         expect(header.auth.spf.status).toBe('softfail');
@@ -25,7 +25,7 @@ describe('Real .eml analysis fixtures', () => {
     });
 
     it('normalizes auth, ARC, sender, and timestamp signals from real samples', async () => {
-        const raw = sample('phish_alert_sp2_2.0.0.0 (36).eml');
+        const raw = sample('arc-forwarded-list.eml');
         const header = await HeaderParser.parse(raw);
         const email = await new PostalMime().parse(raw);
         const { signals, result } = await AnalysisEngine.analyze(header, email, {
@@ -34,7 +34,7 @@ describe('Real .eml analysis fixtures', () => {
         });
 
         expect(signals.authenticationResultsPresent).toBe(true);
-        expect(signals.fromDomain).toBe('qualtrics.com');
+        expect(signals.fromDomain).toBe('example.com');
         expect(signals.arcResult).toBe('pass');
         expect(signals.arcOriginalSpf).toBe('pass');
         expect(signals.arcOriginalDkim).toBe('pass');

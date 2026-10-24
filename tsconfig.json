@@ -38,12 +38,7 @@
   ],
   "exclude": [
     "node_modules",
-    "extension",
-    "tests",
-    "scripts",
-    "check-reset-admin.ts",
-    "promote-admin.ts",
-    "list-users.ts",
-    "debug-users.ts"
+    "extras",
+    "tests"
   ]
 }

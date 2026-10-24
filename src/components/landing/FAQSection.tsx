@@ -14,27 +14,27 @@ const faqs = [
     {
         question: "Is my email data stored on your servers?",
         answer:
-            "No. MXLens processes everything locally in your browser using WebAssembly. Your email data never leaves your device—we have no servers to store it on. This is architecturally guaranteed, not just a policy promise.",
+            "No. Parsing and scoring run in your browser, and the email is never uploaded. MXLens has no accounts or database. External reputation lookups are off unless whoever runs the server turns them on, and even then only indicators (IPs, domains, file hashes) are sent, never the email.",
     },
     {
-        question: "Is it free to use?",
+        question: "Is it really free?",
         answer:
-            "Yes! Early beta users get premium features free until March 2026. After that, we'll have a generous free tier and affordable pro plans for power users and teams.",
+            "Yes. MXLens is open source under the MIT License. Use the hosted demo, run it on your own machine, or self-host it for your team. There are no paid plans.",
     },
     {
         question: "What types of files can I upload?",
         answer:
-            "MXLens supports .eml email files, the standard format exported from most email clients. You can also paste raw email content directly for quick analysis.",
+            "MXLens supports .eml files, the standard format exported by most email clients. You can also paste raw email source directly, or analyze a folder of .eml files at once.",
     },
     {
         question: "Why is client-side analysis better?",
         answer:
-            "Cloud-based tools require you to upload sensitive emails to third-party servers, creating risks of data breaches, insider threats, and legal subpoenas. Client-side analysis eliminates these risks entirely—your data physically cannot be accessed by anyone else.",
+            "Reported phishing often contains internal names, threads and attachments. Analyzing in the browser means none of that is uploaded anywhere, and you can check it yourself in the browser's Network tab or by reading the source.",
     },
     {
         question: "How accurate is the threat detection?",
         answer:
-            "MXLens combines multiple detection methods including SPF/DKIM/DMARC validation, homoglyph detection, header anomaly analysis, and content heuristics. Our engine catches sophisticated attacks like BEC and supply chain fraud that legacy tools often miss.",
+            "MXLens combines SPF/DKIM/DMARC/ARC checks, header anomaly analysis, lookalike and homoglyph domain detection, link and attachment analysis, and content heuristics. Every finding is shown with its reason so you can judge it yourself. It is a triage aid, not a replacement for an email security gateway; false positives and misses happen, and reports are welcome on GitHub.",
     },
 ];
 

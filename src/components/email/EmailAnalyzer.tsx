@@ -15,7 +15,6 @@ import { AnalyzerDropzone } from "./analyzer/AnalyzerDropzone";
 import { ResultsDashboard } from "./analyzer/ResultsDashboard";
 
 export interface EnhancedAnalysis {
-    id?: string;
     header: AnalysisResult;
     signals: NormalizedSignals;
     scoring: ScoringResult;
@@ -24,21 +23,10 @@ export interface EnhancedAnalysis {
 }
 
 interface EmailAnalyzerProps {
-    userPlan?: string;
+    enrichmentEnabled?: boolean;
 }
 
-function getSafeHeaderMetadata(headers: AnalysisResult["headers"], name: string, maxLength: number) {
-    const entry = Object.entries(headers).find(([key]) => key.toLowerCase() === name.toLowerCase());
-    const value = Array.isArray(entry?.[1]) ? entry[1][0] : entry?.[1];
-
-    return (value || "")
-        .replace(/[\r\n\t]+/g, " ")
-        .replace(/\s{2,}/g, " ")
-        .trim()
-        .slice(0, maxLength);
-}
-
-export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
+export function EmailAnalyzer({ enrichmentEnabled = false }: EmailAnalyzerProps) {
     const [analysis, setAnalysis] = useState<EnhancedAnalysis | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -82,7 +70,6 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
         const runId = ++analysisRunRef.current;
 
         setLoading(true);
-        const startTime = Date.now();
         setRawInput(content); // Store for re-runs
 
         try {
@@ -129,41 +116,6 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
             } catch (e) {
                 console.warn("Failed to cache analysis:", e);
             }
-
-            // Persist
-            try {
-                const { saveAnalysis } = await import("@/actions/analysis");
-                const mapVerdict = (v: string): "CLEAN" | "SUSPICIOUS" | "MALICIOUS" | "UNKNOWN" => {
-                    const normalized = v.toLowerCase();
-                    if (normalized.includes("legitimate") || normalized === "clean") return "CLEAN";
-                    if (normalized.includes("suspicious")) return "SUSPICIOUS";
-                    if (normalized.includes("high") || normalized.includes("malicious")) return "MALICIOUS";
-                    return "UNKNOWN";
-                };
-
-                const persistenceData = {
-                    verdict: mapVerdict(result.verdict.verdict),
-                    score: result.trust.score,
-                    hasAttachments: runAttachments,
-                    hasBody: runBody,
-                    processingTimeMs: Date.now() - startTime,
-                    subject: getSafeHeaderMetadata(headerRes.headers, "Subject", 512),
-                    sender: getSafeHeaderMetadata(headerRes.headers, "From", 320),
-                    spfStatus: headerRes.auth.spf.status,
-                    dkimStatus: headerRes.auth.dkim.status,
-                    dmarcStatus: headerRes.auth.dmarc.status
-                };
-                const savedLog = await saveAnalysis(persistenceData);
-
-                if (runId === analysisRunRef.current && savedLog && savedLog.id) {
-                    // Just update state with ID - stay on same page
-                    setAnalysis(prev => prev ? ({ ...prev, id: savedLog.id }) : null);
-                }
-
-            } catch (err) {
-                console.error("Failed to save analysis history:", err);
-            }
-
         } catch (error) {
             console.error("Analysis failed", error);
             alert("Analysis failed. Please check the console or try a different file.");
@@ -289,7 +241,7 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                         setAnalyzeBody={setAnalyzeBody}
                         analyzeAttachments={analyzeAttachments}
                         setAnalyzeAttachments={setAnalyzeAttachments}
-                        userPlan={userPlan}
+                        enrichmentEnabled={enrichmentEnabled}
                     />
                 )}
             </div>

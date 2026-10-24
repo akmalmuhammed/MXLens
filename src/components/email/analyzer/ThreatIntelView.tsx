@@ -1,6 +1,7 @@
 import { ThreatIntelCard } from "@/components/analysis/ThreatIntelCard";
 import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
+import { EnrichmentDisabledNotice } from "@/components/analysis/EnrichmentDisabledNotice";
 
 import { GeoLocation } from "@/lib/threat-intel/geolocation";
 import { AnalysisResult } from "@/lib/email/HeaderParser";
@@ -15,9 +16,10 @@ interface ThreatIntelViewProps {
     };
     ipLocations: GeoLocation[];
     loadingGeo: boolean;
+    enrichmentEnabled: boolean;
 }
 
-export function ThreatIntelView({ analysis, ipLocations, loadingGeo }: ThreatIntelViewProps) {
+export function ThreatIntelView({ analysis, ipLocations, loadingGeo, enrichmentEnabled }: ThreatIntelViewProps) {
     const uniqueIps = analysis.header.artifacts
         .filter(a => a.type === 'ip')
         .map(a => a.value)
@@ -66,11 +68,15 @@ export function ThreatIntelView({ analysis, ipLocations, loadingGeo }: ThreatInt
                     />
                 </div>
                 <div className="w-full">
-                    <ThreatIntelCard
-                        ips={uniqueIps}
-                        domains={uniqueDomains}
-                        hashes={hashes}
-                    />
+                    {enrichmentEnabled ? (
+                        <ThreatIntelCard
+                            ips={uniqueIps}
+                            domains={uniqueDomains}
+                            hashes={hashes}
+                        />
+                    ) : (
+                        <EnrichmentDisabledNotice feature="Reputation checks (VirusTotal, AbuseIPDB, abuse.ch, Safe Browsing)" />
+                    )}
                 </div>
             </div>
 

@@ -1,0 +1,11 @@
+services:
+  mxlens:
+    build: .
+    image: mxlens:local
+    ports:
+      - "127.0.0.1:3000:3000"
+    # Optional settings; see .env.example. Without it nothing leaves the browser.
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped

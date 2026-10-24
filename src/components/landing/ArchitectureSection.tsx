@@ -156,9 +156,9 @@ export const ArchitectureSection = () => {
                             {/* Benefits */}
                             <div className="space-y-3">
                                 {[
-                                    "Zero data leaves your device",
-                                    "Works completely offline",
-                                    "GDPR/HIPAA compliant by design",
+                                    "The email is never uploaded",
+                                    "Works offline once loaded",
+                                    "Open source and auditable",
                                     "Verifiable in DevTools (Network tab)",
                                 ].map((benefit, i) => (
                                     <motion.div

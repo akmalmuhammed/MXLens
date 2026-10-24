@@ -4,7 +4,6 @@ import { ArchitectureSection } from "@/components/landing/ArchitectureSection";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { UseCasesSection } from "@/components/landing/UseCasesSection";
 import { DetectionCapabilitiesSection } from "@/components/landing/DetectionCapabilitiesSection";
-import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
@@ -30,7 +29,6 @@ export default function LandingPage() {
         <HowItWorksSection />
         <UseCasesSection />
         <DetectionCapabilitiesSection />
-        <ComparisonSection />
         <FAQSection />
         <CTASection />
       </main>

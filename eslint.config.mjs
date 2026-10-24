@@ -16,14 +16,6 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "extras/**",
-    "check_*.js",
-    "check-*.ts",
-    "debug-users.ts",
-    "list-users.ts",
-    "promote-admin.ts",
-    "temp_adapter.mjs",
-    "*.log",
-    "*.txt",
   ]),
   {
     files: ["**/*.{js,jsx,ts,tsx,mjs,cjs}"],
@@ -39,12 +31,6 @@ const eslintConfig = defineConfig([
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/purity": "warn",
       "react/no-unescaped-entities": "warn",
-    },
-  },
-  {
-    files: ["scripts/**/*.cjs"],
-    rules: {
-      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ]);

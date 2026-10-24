@@ -2,40 +2,34 @@
 
 import { Shield, Github } from "lucide-react";
 import Link from "next/link";
+import { GITHUB_URL, ISSUES_URL, LICENSE_URL, SECURITY_POLICY_URL, SELF_HOSTING_URL } from "@/lib/site";
 
 const footerLinks = {
-    Product: [
-        { label: "Features", href: "/features" },
-        { label: "Analyze Free", href: "/analyze" },
-        { label: "Changelog", href: "/resources/changelog" },
+    Project: [
+        { label: "Analyze an email", href: "/analyze" },
+        { label: "Source code", href: GITHUB_URL },
+        { label: "Self-hosting", href: SELF_HOSTING_URL },
     ],
-    Resources: [
-        { label: "Docs", href: "/resources/docs" },
-        { label: "API", href: "/resources/api-docs" },
-        { label: "Security", href: "/security" },
-        { label: "Status", href: "/status" },
-    ],
-    Company: [
-        { label: "About", href: "/about" },
-        { label: "Blog", href: "/resources/blog" },
-        { label: "Contact", href: "mailto:hello@mxlens.com" },
+    Learn: [
+        { label: "Phishing 101", href: "/learn/phishing-101" },
+        { label: "Report an issue", href: ISSUES_URL },
     ],
     Legal: [
-        { label: "Privacy", href: "/legal/privacy" },
-        { label: "Terms", href: "/legal/terms" },
-        { label: "Security Policy", href: "/legal/security-policy" },
+        { label: "Privacy", href: "/privacy" },
+        { label: "License (MIT)", href: LICENSE_URL },
+        { label: "Security policy", href: SECURITY_POLICY_URL },
     ],
 };
 
 const socialLinks = [
-    { icon: Github, href: "https://github.com/akmalmuhammed/mxlens", label: "GitHub" },
+    { icon: Github, href: GITHUB_URL, label: "GitHub" },
 ];
 
 export const Footer = () => {
     return (
         <footer className="border-t border-border bg-card/30">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                     {/* Logo column */}
                     <div className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
@@ -46,9 +40,9 @@ export const Footer = () => {
                             </span>
                         </Link>
                         <p className="text-sm text-muted-foreground mb-4">
-                            Built by SOC analysts,
+                            Free, open-source email
                             <br />
-                            for SOC analysts.
+                            phishing analysis.
                         </p>
                         <div className="flex items-center gap-3">
                             {socialLinks.map((social, i) => (
@@ -89,10 +83,10 @@ export const Footer = () => {
                 {/* Bottom bar */}
                 <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-muted-foreground">
-                        &copy; {new Date().getFullYear()} MXLens. All rights reserved.
+                        &copy; {new Date().getFullYear()} MXLens contributors. Released under the MIT License.
                     </p>
                     <p className="text-xs font-mono text-muted-foreground/70">
-                        Built with security in mind in Doha, Qatar
+                        Your emails are analyzed in your browser.
                     </p>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import { checkSafeBrowsing } from "@/lib/threat-intel/safebrowsing";
 import { checkAbuseIPDB } from "@/lib/threat-intel/abuseipdb";
 import { checkMalwareBazaar, checkThreatFox } from "@/lib/threat-intel/abuse-ch";
 import { getDomainAge } from "@/lib/threat-intel/whois";
+import { allowEnrichment, isFileHash, isPublicDomain, isPublicIp } from "@/lib/security/enrichment-guard";
 
 /**
  * Server Action to check multiple targets against Threat Intel
@@ -13,12 +14,19 @@ import { getDomainAge } from "@/lib/threat-intel/whois";
 export async function checkThreatIntel(targets: { type: 'ip' | 'domain' | 'hash', value: string }[]): Promise<ThreatIntelResult[]> {
     const results: ThreatIntelResult[] = [];
 
-    // Batches for separate services
-    // Limit to prevent API exhaustion
-    const uniqueTargets = Array.from(new Set(targets.map(t => JSON.stringify(t)))).map(s => JSON.parse(s));
-    const ipTargets: string[] = uniqueTargets.filter((t: any) => t.type === 'ip').map((t: any) => t.value).slice(0, 5);
-    const domainTargets: string[] = uniqueTargets.filter((t: any) => t.type === 'domain').map((t: any) => t.value).slice(0, 5);
-    const hashTargets: string[] = uniqueTargets.filter((t: any) => t.type === 'hash').map((t: any) => t.value).slice(0, 5);
+    if (!Array.isArray(targets) || targets.length === 0) return results;
+    // Callable without an account and spends paid API quotas: limit per client IP.
+    if (!(await allowEnrichment("threat-intel", 10))) return results;
+
+    // Batches for separate services. Only well-formed, public indicators leave the
+    // server: private IPs and internal hostnames are never sent to third parties.
+    // Limit to prevent API exhaustion.
+    const unique = (values: string[]) => Array.from(new Set(values.map(v => v.trim().toLowerCase())));
+    const valuesOf = (type: 'ip' | 'domain' | 'hash') =>
+        targets.filter(t => t && t.type === type && typeof t.value === 'string').map(t => t.value);
+    const ipTargets: string[] = unique(valuesOf('ip')).filter(isPublicIp).slice(0, 5);
+    const domainTargets: string[] = unique(valuesOf('domain')).filter(isPublicDomain).slice(0, 5);
+    const hashTargets: string[] = unique(valuesOf('hash')).filter(isFileHash).slice(0, 5);
 
     // 1. VirusTotal Checks (Parallel)
     const vtPromises = [

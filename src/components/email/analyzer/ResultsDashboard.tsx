@@ -12,11 +12,7 @@ import { InteractiveHops } from "../InteractiveHops";
 import { AIAnalysisSummary } from "../AIAnalysisSummary";
 import { AnalysisRecommendations } from "../AnalysisRecommendations";
 import { PhishingIndicatorsPanel } from "../PhishingIndicatorsPanel";
-import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown, Gavel } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
-import { AnalystTriagePanel } from "@/components/analysis/AnalystTriagePanel";
-import { IncidentWorkbench } from "@/components/email/analyzer/IncidentWorkbench";
-import { getAnalysisTriageState } from "@/actions/analysis";
+import { ShieldAlert, BookOpen, MoreVertical, X, Check, FileJson, FileText, ChevronDown } from "lucide-react";
 import { IPGeolocationMap } from "@/components/analysis/IPGeolocationMap";
 import { fetchIPGeolocations } from "@/actions/geolocation";
 import { extractIPsFromHeaders } from "@/lib/threat-intel/geolocation";
@@ -29,6 +25,7 @@ import { InfrastructureCard } from "@/components/analysis/InfrastructureCard";
 import { LinkAnalysisCard } from "@/components/analysis/LinkAnalysisCard";
 import { SafeEmailPreview } from "@/components/email/preview/SafeEmailPreview";
 import { MxRecordCard } from "@/components/analysis/MxRecordCard";
+import { EnrichmentDisabledNotice } from "@/components/analysis/EnrichmentDisabledNotice";
 import { AuthJourneyCard } from "@/components/analysis/AuthJourneyCard";
 import {
     DropdownMenu,
@@ -38,17 +35,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 
 interface EnhancedAnalysis {
-    id?: string;
     header: AnalysisResult;
     signals: NormalizedSignals;
     scoring: ScoringResult;
@@ -63,23 +51,19 @@ interface ResultsDashboardProps {
     setAnalyzeBody: (v: boolean) => void;
     analyzeAttachments: boolean;
     setAnalyzeAttachments: (v: boolean) => void;
-    userPlan?: string;
+    enrichmentEnabled?: boolean;
 }
 
-export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, userPlan = "FREE" }: ResultsDashboardProps) {
+export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBody, analyzeAttachments, setAnalyzeAttachments, enrichmentEnabled = false }: ResultsDashboardProps) {
     const [mode, setMode] = useState<"analyst" | "raw" | "it" | "threat-intel">("analyst");
     const [rawTab, setRawTab] = useState<'headers' | 'body_text' | 'body_html' | 'telemetry' | 'safe_preview'>('headers');
-    const [triageStatus, setTriageStatus] = useState<string | null>(null);
     const [ipLocations, setIpLocations] = useState<GeoLocation[]>([]);
     const [loadingGeo, setLoadingGeo] = useState(false);
 
-    // Check if this is a team/enterprise user for additional features
-    const isTeamPlan = userPlan === "TEAM" || userPlan === "ENTERPRISE" || userPlan === "PRO";
-
-    // Fetch IP geolocation data on mount
+    // Geolocation is enrichment: it sends relay IPs to a third-party service.
     useEffect(() => {
         async function loadGeoData() {
-            if (!analysis?.header?.headers) return;
+            if (!enrichmentEnabled || !analysis?.header?.headers) return;
             setLoadingGeo(true);
             try {
                 const ips = extractIPsFromHeaders(analysis.header.headers);
@@ -94,7 +78,7 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
             }
         }
         loadGeoData();
-    }, [analysis?.header?.headers]);
+    }, [analysis?.header?.headers, enrichmentEnabled]);
 
     const handleDownloadJSON = () => {
         const exportData = {
@@ -187,22 +171,7 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                         />
                     </div>
 
-                    {/* Status Badge */}
-                    {triageStatus && (
-                        <div className={`px-3 py-1 rounded-full text-xs font-bold border whitespace-nowrap ${triageStatus === 'CLOSED' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                            triageStatus === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-                                'bg-amber-500/10 text-amber-500 border-amber-500/20'
-                            }`}>
-                            {triageStatus}
-                        </div>
-                    )}
-
                     <div className="flex items-center gap-2">
-                        {/* Triage Button (Pro) */}
-                        {analysis.id && (
-                            <TriageDialog analysisId={analysis.id} onStatusChange={setTriageStatus} />
-                        )}
-
                         {/* Save Report Dropdown */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -446,10 +415,14 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                                             ipLocations={ipLocations}
                                             loading={loadingGeo}
                                         />
-                                        <MxRecordCard
-                                            domain={analysis.signals.fromDomain}
-                                            rawFrom={analysis.header.headers['From'] as string}
-                                        />
+                                        {enrichmentEnabled ? (
+                                            <MxRecordCard
+                                                domain={analysis.signals.fromDomain}
+                                                rawFrom={analysis.header.headers['From'] as string}
+                                            />
+                                        ) : (
+                                            <EnrichmentDisabledNotice feature="MX record lookup" />
+                                        )}
                                     </div>
 
                                     {/* Link analysis moved to extraction card or link analysis view if needed */}
@@ -468,6 +441,7 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
                         analysis={analysis}
                         ipLocations={ipLocations}
                         loadingGeo={loadingGeo}
+                        enrichmentEnabled={enrichmentEnabled}
                     />
                 </div>
             )}
@@ -551,67 +525,3 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
     );
 }
 
-function TriageDialog({ analysisId, onStatusChange }: { analysisId: string, onStatusChange?: (status: string) => void }) {
-    const { isSignedIn, user } = useUser();
-    const [isOpen, setIsOpen] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [triageData, setTriageData] = useState<{
-        status: "OPEN" | "IN_PROGRESS" | "CLOSED" | "ARCHIVED";
-        classification: "TRUE_POSITIVE" | "FALSE_POSITIVE" | "UNDETERMINED" | null;
-        comments: any[];
-    } | null>(null);
-
-    // Fetch fresh data when dialog opens
-    useEffect(() => {
-        if (isOpen && analysisId) {
-            setLoading(true);
-            getAnalysisTriageState(analysisId).then((data: any) => {
-                if (data) {
-                    setTriageData({
-                        status: data.triageStatus,
-                        classification: data.classification,
-                        comments: data.comments
-                    });
-                    if (onStatusChange) onStatusChange(data.triageStatus as string);
-                }
-                setLoading(false);
-            });
-        }
-    }, [isOpen, analysisId]);
-
-    if (!isSignedIn) return null;
-
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button variant="secondary" className="gap-2 bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20 hover:text-indigo-300">
-                    <Gavel className="w-4 h-4" /> Triage
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl text-left">
-                <DialogHeader>
-                    <DialogTitle>Analyst Triage</DialogTitle>
-                    <DialogDescription>
-                        Verify this analysis, add notes, and manage case status.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="pt-4 min-h-[400px]">
-                    {loading ? (
-                        <div className="flex justify-center items-center h-40 text-muted-foreground">Loading case details...</div>
-                    ) : (
-                        <AnalystTriagePanel
-                            analysisId={analysisId}
-                            initialStatus={triageData?.status || "OPEN"}
-                            initialClassification={triageData?.classification || null}
-                            initialComments={triageData?.comments || []}
-                            currentUserEmail={user.primaryEmailAddress?.emailAddress || ""}
-                            onStatusChange={(status) => {
-                                if (onStatusChange) onStatusChange(status);
-                            }}
-                        />
-                    )}
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
