@@ -24,7 +24,7 @@ const faqs = [
     {
         question: "What types of files can I upload?",
         answer:
-            "MXLens supports .eml and .msg email files, which are the standard formats exported from most email clients. You can also paste email headers directly for quick analysis.",
+            "MXLens supports .eml email files, the standard format exported from most email clients. You can also paste raw email content directly for quick analysis.",
     },
     {
         question: "Why is client-side analysis better?",

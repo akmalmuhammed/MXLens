@@ -67,7 +67,7 @@ const faqItems = [
     },
     {
         q: "What file formats are supported?",
-        a: "MXLens supports .eml files (standard email format), .msg files (Microsoft Outlook), and raw email headers pasted as text. You can also drag and drop multiple files for bulk analysis."
+        a: "MXLens supports .eml files (the standard email format) and raw email content pasted as text. You can also drag and drop multiple files for bulk analysis."
     },
     {
         q: "How accurate is the threat detection?",
@@ -265,7 +265,7 @@ export default function DocsPage() {
                             <StepCard
                                 step={1}
                                 title="Export the suspicious email"
-                                desc="In your email client, save the email as .eml or .msg file. In Gmail: Open email → More → Download message. In Outlook: File → Save As."
+                                desc="In your email client, save the email as an .eml file. In Gmail: Open email → More → Download message. In Outlook: Save As → MIME HTML (.eml)."
                             />
                             <StepCard
                                 step={2}

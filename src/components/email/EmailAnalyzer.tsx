@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import PostalMime from 'postal-mime';
 import { HeaderParser, AnalysisResult } from "@/lib/email/HeaderParser";
 import { AnalysisEngine } from "@/lib/email/scoring/AnalysisEngine";
@@ -14,7 +13,6 @@ import { BulkAnalysisDashboard } from "./BulkAnalysisDashboard";
 // Sub-components
 import { AnalyzerDropzone } from "./analyzer/AnalyzerDropzone";
 import { ResultsDashboard } from "./analyzer/ResultsDashboard";
-import { UsageBanner } from "./analyzer/UsageBanner";
 
 export interface EnhancedAnalysis {
     id?: string;
@@ -29,8 +27,18 @@ interface EmailAnalyzerProps {
     userPlan?: string;
 }
 
+function getSafeHeaderMetadata(headers: AnalysisResult["headers"], name: string, maxLength: number) {
+    const entry = Object.entries(headers).find(([key]) => key.toLowerCase() === name.toLowerCase());
+    const value = Array.isArray(entry?.[1]) ? entry[1][0] : entry?.[1];
+
+    return (value || "")
+        .replace(/[\r\n\t]+/g, " ")
+        .replace(/\s{2,}/g, " ")
+        .trim()
+        .slice(0, maxLength);
+}
+
 export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
-    const router = useRouter();
     const [analysis, setAnalysis] = useState<EnhancedAnalysis | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -38,9 +46,7 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
     const [viewMode, setViewMode] = useState<'single' | 'bulk'>('single');
     const [bulkQueue, setBulkQueue] = useState<BulkFile[]>([]);
     const bulkProcessorRef = useRef<BulkProcessor | null>(null);
-
-    // Usage State
-    const [usageStatus, setUsageStatus] = useState<{ allowed: boolean; message?: string }>({ allowed: true });
+    const bulkUnsubscribeRef = useRef<(() => void) | null>(null);
 
     // Privacy Controls State
     const [analyzeBody, setAnalyzeBody] = useState(false);
@@ -48,6 +54,8 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
 
     // Original input ref for re-analysis
     const [rawInput, setRawInput] = useState("");
+    const analysisRunRef = useRef(0);
+    const previousPrivacySettingsRef = useRef({ analyzeBody, analyzeAttachments });
 
     // Session Storage Key
     const SESSION_KEY = "mxlens_current_analysis";
@@ -68,30 +76,10 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
         }
     }, []);
 
-    const checkUsage = async (): Promise<boolean> => {
-        try {
-            const { checkAndTrackUsage } = await import("@/actions/analysis");
-            const serverResult = await checkAndTrackUsage();
-
-            if (!serverResult.allowed) {
-                setUsageStatus({ allowed: false, message: serverResult.reason });
-                return false;
-            }
-
-            return true;
-        } catch (e) {
-            console.error("Usage check failed", e);
-            return true;
-        }
-    };
-
-    const performAnalysis = async (content: string, runBody: boolean, runAttachments: boolean, skipUsageCheck = false) => {
+    const performAnalysis = async (content: string, runBody: boolean, runAttachments: boolean) => {
         if (!content.trim()) return;
 
-        if (!skipUsageCheck) {
-            const allowed = await checkUsage();
-            if (!allowed) return;
-        }
+        const runId = ++analysisRunRef.current;
 
         setLoading(true);
         const startTime = Date.now();
@@ -103,11 +91,15 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
             const emailPromise = parser.parse(content);
             const [headerRes, email] = await Promise.all([headerResPromise, emailPromise]);
 
+            if (runId !== analysisRunRef.current) return;
+
             const { signals, result } = await AnalysisEngine.analyze(
                 headerRes,
                 email,
                 { checkBody: runBody, checkAttachments: runAttachments }
             );
+
+            if (runId !== analysisRunRef.current) return;
 
             setAnalysis({
                 header: headerRes,
@@ -149,15 +141,21 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                     return "UNKNOWN";
                 };
 
-                const savedLog = await saveAnalysis({
+                const persistenceData = {
                     verdict: mapVerdict(result.verdict.verdict),
                     score: result.trust.score,
                     hasAttachments: runAttachments,
                     hasBody: runBody,
-                    processingTimeMs: Date.now() - startTime
-                });
+                    processingTimeMs: Date.now() - startTime,
+                    subject: getSafeHeaderMetadata(headerRes.headers, "Subject", 512),
+                    sender: getSafeHeaderMetadata(headerRes.headers, "From", 320),
+                    spfStatus: headerRes.auth.spf.status,
+                    dkimStatus: headerRes.auth.dkim.status,
+                    dmarcStatus: headerRes.auth.dmarc.status
+                };
+                const savedLog = await saveAnalysis(persistenceData);
 
-                if (savedLog && savedLog.id) {
+                if (runId === analysisRunRef.current && savedLog && savedLog.id) {
                     // Just update state with ID - stay on same page
                     setAnalysis(prev => prev ? ({ ...prev, id: savedLog.id }) : null);
                 }
@@ -166,38 +164,74 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                 console.error("Failed to save analysis history:", err);
             }
 
-        } catch (e: any) {
-            console.error("Analysis failed", e);
+        } catch (error) {
+            console.error("Analysis failed", error);
             alert("Analysis failed. Please check the console or try a different file.");
         } finally {
-            setLoading(false);
+            if (runId === analysisRunRef.current) setLoading(false);
         }
     };
 
     // Re-run if settings change while viewing result
     useEffect(() => {
-        if (analysis && rawInput) {
-            const timer = setTimeout(() => {
-                performAnalysis(rawInput, analyzeBody, analyzeAttachments, true); // Skip usage check on re-run
-            }, 200);
-            return () => clearTimeout(timer);
-        }
-    }, [analyzeBody, analyzeAttachments]);
+        const previousSettings = previousPrivacySettingsRef.current;
+        const settingsChanged = previousSettings.analyzeBody !== analyzeBody ||
+            previousSettings.analyzeAttachments !== analyzeAttachments;
+        previousPrivacySettingsRef.current = { analyzeBody, analyzeAttachments };
+
+        if (!settingsChanged || !analysis || !rawInput) return;
+
+        const timer = setTimeout(() => {
+            performAnalysis(rawInput, analyzeBody, analyzeAttachments);
+        }, 200);
+        return () => clearTimeout(timer);
+    }, [analysis, rawInput, analyzeBody, analyzeAttachments]);
+
+    const disposeBulkProcessor = () => {
+        bulkUnsubscribeRef.current?.();
+        bulkUnsubscribeRef.current = null;
+        bulkProcessorRef.current?.cancel();
+        bulkProcessorRef.current = null;
+    };
+
+    useEffect(() => {
+        return () => {
+            bulkUnsubscribeRef.current?.();
+            bulkUnsubscribeRef.current = null;
+            bulkProcessorRef.current?.cancel();
+            bulkProcessorRef.current = null;
+        };
+    }, []);
 
     const handleBulkStart = (processor: BulkProcessor, initialQueue: BulkFile[]) => {
+        analysisRunRef.current++;
+        setLoading(false);
+        disposeBulkProcessor();
         setViewMode('bulk');
         setAnalysis(null);
         bulkProcessorRef.current = processor;
-        processor.subscribe(() => setBulkQueue(processor.getState()));
+        bulkUnsubscribeRef.current = processor.subscribe(() => setBulkQueue(processor.getState()));
         setBulkQueue(initialQueue);
-        // Processor is started by the Dropzone or here? 
-        // Dropzone started it.
+    };
+
+    const handleBulkCancel = () => {
+        bulkProcessorRef.current?.cancel();
+    };
+
+    const handleBackToSingle = () => {
+        disposeBulkProcessor();
+        setBulkQueue([]);
+        setViewMode('single');
     };
 
     const handleClear = () => {
+        analysisRunRef.current++;
+        setLoading(false);
+        disposeBulkProcessor();
         setAnalysis(null);
         setRawInput("");
-        setUsageStatus({ allowed: true });
+        setBulkQueue([]);
+        setViewMode('single');
         // Clear sessionStorage cache
         try {
             sessionStorage.removeItem(SESSION_KEY);
@@ -211,15 +245,11 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
             <div className="absolute inset-0 z-0 pointer-events-none opacity-50 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)]"></div>
 
             <div className="relative z-10 flex-1 flex flex-col">
-                <UsageBanner allowed={usageStatus.allowed} message={usageStatus.message} />
-
                 {viewMode === 'bulk' && (
                     <div className="h-full animate-in fade-in zoom-in-95 duration-300">
                         <div className="mb-4 flex items-center">
                             <Button variant="ghost" className="gap-2 pl-0 hover:bg-transparent hover:text-primary" onClick={() => {
-                                setViewMode('single');
-                                setBulkQueue([]);
-                                bulkProcessorRef.current = null;
+                                handleBackToSingle();
                             }}>
                                 <ArrowLeft className="h-4 w-4" /> Back to Single Analysis
                             </Button>
@@ -227,9 +257,9 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                         <BulkAnalysisDashboard
                             files={bulkQueue}
                             onClear={() => {
-                                setBulkQueue([]);
-                                setViewMode('single');
+                                handleBackToSingle();
                             }}
+                            onCancel={handleBulkCancel}
                             onSelectFile={(result) => {
                                 setAnalysis(result);
                                 setRawInput(result.header.rawHeaders || "");
@@ -244,7 +274,10 @@ export function EmailAnalyzer({ userPlan = "FREE" }: EmailAnalyzerProps) {
                         onAnalyze={performAnalysis}
                         onBulkStart={handleBulkStart}
                         loading={loading}
-                        usageStatus={usageStatus}
+                        analyzeBody={analyzeBody}
+                        setAnalyzeBody={setAnalyzeBody}
+                        analyzeAttachments={analyzeAttachments}
+                        setAnalyzeAttachments={setAnalyzeAttachments}
                     />
                 )}
 

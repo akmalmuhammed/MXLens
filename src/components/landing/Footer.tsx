@@ -1,37 +1,34 @@
 "use client";
 
-import { Shield, Github, Twitter, Linkedin } from "lucide-react";
+import { Shield, Github } from "lucide-react";
 import Link from "next/link";
 
 const footerLinks = {
     Product: [
-        { label: "Features", href: "#features" },
+        { label: "Features", href: "/features" },
         { label: "Analyze Free", href: "/analyze" },
-        { label: "Roadmap", href: "#" },
-        { label: "Changelog", href: "#" },
+        { label: "Changelog", href: "/resources/changelog" },
     ],
     Resources: [
-        { label: "Docs", href: "#" },
-        { label: "API", href: "#" },
-        { label: "Security", href: "#" },
-        { label: "Status", href: "#" },
+        { label: "Docs", href: "/resources/docs" },
+        { label: "API", href: "/resources/api-docs" },
+        { label: "Security", href: "/security" },
+        { label: "Status", href: "/status" },
     ],
     Company: [
-        { label: "About", href: "#" },
-        { label: "Blog", href: "#" },
+        { label: "About", href: "/about" },
+        { label: "Blog", href: "/resources/blog" },
         { label: "Contact", href: "mailto:hello@mxlens.com" },
     ],
     Legal: [
-        { label: "Privacy", href: "/privacy" },
-        { label: "Terms", href: "/terms" },
-        { label: "Security Policy", href: "#" },
+        { label: "Privacy", href: "/legal/privacy" },
+        { label: "Terms", href: "/legal/terms" },
+        { label: "Security Policy", href: "/legal/security-policy" },
     ],
 };
 
 const socialLinks = [
     { icon: Github, href: "https://github.com/akmalmuhammed/mxlens", label: "GitHub" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
 ];
 
 export const Footer = () => {
@@ -92,10 +89,10 @@ export const Footer = () => {
                 {/* Bottom bar */}
                 <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} MXLens. All rights reserved.
+                        &copy; {new Date().getFullYear()} MXLens. All rights reserved.
                     </p>
                     <p className="text-xs font-mono text-muted-foreground/70">
-                        Built with 🔒 in Doha, Qatar
+                        Built with security in mind in Doha, Qatar
                     </p>
                 </div>
             </div>

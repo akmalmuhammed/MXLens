@@ -15,9 +15,9 @@ export default function ChangelogPage() {
                         version="v1.2.0"
                         date="December 20, 2024"
                         title="Advanced Header Analysis"
-                        description="Added support for recursive unpacking of msg files and deeper X-Originating-IP tracing."
+                        description="Improved .eml attachment inspection and deeper X-Originating-IP tracing."
                         changes={[
-                            "New: Support for Outlook .msg files",
+                            "Improved: Outlook .eml analysis guidance",
                             "Improved: SPF lookup speed by 30%",
                             "Fix: Rate limit handling for API users"
                         ]}

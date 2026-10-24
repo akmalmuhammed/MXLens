@@ -13,12 +13,12 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-inline' https://*.sentry.io https://js.stripe.com;
+              script-src 'self' 'unsafe-inline' https://*.sentry.io https://js.stripe.com https://clerk.mxlens.com;
               style-src 'self' 'unsafe-inline';
-              img-src 'self' blob: data: https://*.stripe.com https://api.ipgeolocation.io;
+              img-src 'self' blob: data: https://*.stripe.com https://api.ipgeolocation.io https://img.clerk.com;
               font-src 'self';
-              connect-src 'self' https://*.sentry.io https://api.stripe.com https://*.googleapis.com https://api.ipgeolocation.io https://ip-api.com https://ipinfo.io;
-              frame-src 'self' https://js.stripe.com;
+              connect-src 'self' https://*.sentry.io https://api.stripe.com https://*.googleapis.com https://api.ipgeolocation.io https://ip-api.com https://ipinfo.io https://clerk.mxlens.com https://accounts.mxlens.com;
+              frame-src 'self' https://js.stripe.com https://clerk.mxlens.com https://accounts.mxlens.com;
               object-src 'none';
               base-uri 'self';
               form-action 'self';

@@ -50,7 +50,7 @@ export function Hero() {
                 <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground animate-in fade-in duration-1000 delay-500">
                     <div className="flex items-center gap-2">
                         <Check className="w-5 h-5 text-primary" />
-                        <span>No signup • 3 free analyses</span>
+                        <span>No signup required</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <Check className="w-5 h-5 text-primary" />

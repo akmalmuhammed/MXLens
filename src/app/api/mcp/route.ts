@@ -5,7 +5,8 @@ import {
     maybeEnforceAgentRateLimit,
     type AuthenticatedAgent
 } from "@/lib/agent-api/auth";
-import { createAnalysisBatch, getBatchForAgent, processAnalysisBatch } from "@/lib/agent-api/batch-processor";
+import { createAnalysisBatch, getBatchForAgent, mapWithConcurrency, markAnalysisBatchFailed, processAnalysisBatch } from "@/lib/agent-api/batch-processor";
+import { BATCH_CONCURRENCY } from "@/lib/agent-api/limits";
 import { AgentApiError, toAgentError } from "@/lib/agent-api/errors";
 import {
     normalizeOptions,
@@ -146,14 +147,11 @@ async function createBatchViaMcp(agent: AuthenticatedAgent | null, args: unknown
     const clientReferenceId = typeof args.clientReferenceId === "string" ? args.clientReferenceId : undefined;
 
     if (!agent) {
-        const results = [];
-
-        for (let index = 0; index < items.length; index++) {
-            const item = items[index];
+        const results = await mapWithConcurrency(items, BATCH_CONCURRENCY, async (item, index) => {
             try {
                 const resolved = await resolvePendingInput(item);
                 const analysis = await analyzeResolvedEmail(resolved, options);
-                results.push({
+                return {
                     id: `public-${index + 1}`,
                     position: index,
                     status: "COMPLETED",
@@ -164,9 +162,9 @@ async function createBatchViaMcp(agent: AuthenticatedAgent | null, args: unknown
                     clientReferenceId: item.clientReferenceId,
                     result: summarizeForBatch(analysis),
                     processingMs: analysis.processingMs
-                });
+                };
             } catch (error) {
-                results.push({
+                return {
                     id: `public-${index + 1}`,
                     position: index,
                     status: "FAILED",
@@ -177,9 +175,9 @@ async function createBatchViaMcp(agent: AuthenticatedAgent | null, args: unknown
                     clientReferenceId: item.clientReferenceId,
                     errorCode: "analysis_failed",
                     errorMessage: error instanceof Error ? error.message : "Analysis failed"
-                });
+                };
             }
-        }
+        });
 
         const failedItems = results.filter(item => item.status === "FAILED").length;
 
@@ -203,6 +201,9 @@ async function createBatchViaMcp(agent: AuthenticatedAgent | null, args: unknown
             await processAnalysisBatch({ agent, batchId: batch.id, options, workItems });
         } catch (error) {
             console.error("[MCP_BATCH] Processing failed:", error);
+            await markAnalysisBatchFailed({ agent, batchId: batch.id }).catch((markError) => {
+                console.error("[MCP_BATCH] Failed to mark batch as failed:", markError);
+            });
         }
     });
 

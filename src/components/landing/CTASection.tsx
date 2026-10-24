@@ -72,7 +72,7 @@ export const CTASection = () => {
                         className="flex flex-wrap items-center justify-center gap-4 text-sm"
                     >
                         <span className="text-muted-foreground">✓ No credit card</span>
-                        <span className="text-muted-foreground">✓ 3 free analyses</span>
+                        <span className="text-muted-foreground">✓ No account required</span>
                         <span className="text-muted-foreground">✓ Full features</span>
                     </motion.div>
 

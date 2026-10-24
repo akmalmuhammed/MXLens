@@ -1,7 +1,8 @@
 import { after, NextRequest, NextResponse } from "next/server";
 import { authenticateOptionalApiRequest, maybeEnforceAgentRateLimit } from "@/lib/agent-api/auth";
 import { agentErrorResponse } from "@/lib/agent-api/errors";
-import { createAnalysisBatch, processAnalysisBatch } from "@/lib/agent-api/batch-processor";
+import { createAnalysisBatch, mapWithConcurrency, markAnalysisBatchFailed, processAnalysisBatch } from "@/lib/agent-api/batch-processor";
+import { BATCH_CONCURRENCY } from "@/lib/agent-api/limits";
 import { parseBatchRequest, resolvePendingInput } from "@/lib/agent-api/ingestion";
 import { analyzeResolvedEmail, summarizeForBatch } from "@/lib/agent-api/analysis-service";
 
@@ -17,14 +18,11 @@ export async function POST(req: NextRequest) {
         const { items, options, clientReferenceId } = await parseBatchRequest(req);
 
         if (!agent) {
-            const results = [];
-
-            for (let index = 0; index < items.length; index++) {
-                const item = items[index];
+            const results = await mapWithConcurrency(items, BATCH_CONCURRENCY, async (item, index) => {
                 try {
                     const resolved = await resolvePendingInput(item);
                     const analysis = await analyzeResolvedEmail(resolved, options);
-                    results.push({
+                    return {
                         id: `public-${index + 1}`,
                         position: index,
                         status: "COMPLETED",
@@ -35,10 +33,10 @@ export async function POST(req: NextRequest) {
                         clientReferenceId: item.clientReferenceId,
                         result: summarizeForBatch(analysis),
                         processingMs: analysis.processingMs
-                    });
+                    };
                 } catch (error) {
                     const message = error instanceof Error ? error.message : "Analysis failed";
-                    results.push({
+                    return {
                         id: `public-${index + 1}`,
                         position: index,
                         status: "FAILED",
@@ -49,9 +47,9 @@ export async function POST(req: NextRequest) {
                         clientReferenceId: item.clientReferenceId,
                         errorCode: "analysis_failed",
                         errorMessage: message
-                    });
+                    };
                 }
-            }
+            });
 
             const failedItems = results.filter(item => item.status === "FAILED").length;
 
@@ -85,6 +83,9 @@ export async function POST(req: NextRequest) {
                 });
             } catch (error) {
                 console.error("[AGENT_BATCH] Processing failed:", error);
+                await markAnalysisBatchFailed({ agent, batchId: batch.id }).catch((markError) => {
+                    console.error("[AGENT_BATCH] Failed to mark batch as failed:", markError);
+                });
             }
         });
 

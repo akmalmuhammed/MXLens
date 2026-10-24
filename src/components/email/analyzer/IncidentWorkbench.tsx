@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 import {
     ShieldAlert,
     BookOpen,
@@ -53,6 +53,8 @@ export function IncidentWorkbench({ analysis, initialStatus, initialSeverity, in
     const [status, setStatus] = useState<IncidentStatus>(initialStatus);
     const [severity, setSeverity] = useState<IncidentSeverity>(initialSeverity);
     const [activeTab, setActiveTab] = useState("overview");
+    const analystName = currentUser?.name || currentUser?.email || "Unassigned";
+    const analystInitial = analystName.charAt(0).toUpperCase();
 
     const severityColors = {
         LOW: "bg-blue-500/10 text-blue-500 border-blue-500/20",
@@ -62,7 +64,7 @@ export function IncidentWorkbench({ analysis, initialStatus, initialSeverity, in
     };
 
     return (
-        <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-background">
+        <div className="flex min-h-screen flex-col overflow-hidden bg-background lg:h-[calc(100vh-4rem)] lg:flex-row">
             {/* MAIN CONTENT (Left - 65%) */}
             <div className="flex-1 flex flex-col min-w-0 border-r border-border/40">
                 {/* Workbench Header */}
@@ -146,7 +148,7 @@ export function IncidentWorkbench({ analysis, initialStatus, initialSeverity, in
             </div>
 
             {/* SIDEBAR (Right - 35%) */}
-            <div className="w-[400px] flex flex-col bg-muted/5">
+            <div className="flex w-full shrink-0 flex-col border-t border-border/40 bg-muted/5 lg:w-[400px] lg:border-l lg:border-t-0">
                 <div className="p-4 border-b border-border/40">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-3">
@@ -169,14 +171,13 @@ export function IncidentWorkbench({ analysis, initialStatus, initialSeverity, in
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-8 w-8">
                                                 <AvatarImage src={currentUser?.image} />
-                                                <AvatarFallback>AM</AvatarFallback>
+                                                <AvatarFallback>{analystInitial}</AvatarFallback>
                                             </Avatar>
                                             <div className="text-sm">
-                                                <div className="font-medium text-foreground">Akmal Muhammed</div>
-                                                <div className="text-xs text-muted-foreground">SOC Analyst</div>
+                                                <div className="font-medium text-foreground">{analystName}</div>
+                                                <div className="text-xs text-muted-foreground">Current analyst</div>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="sm" className="text-xs">Change</Button>
                                     </div>
                                 </div>
 

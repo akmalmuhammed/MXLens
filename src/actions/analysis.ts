@@ -22,6 +22,16 @@ export async function saveAnalysis(data: {
     hasAttachments: boolean;
     hasBody: boolean;
     processingTimeMs: number;
+    subject?: string;
+    sender?: string;
+    spfStatus?: string;
+    dkimStatus?: string;
+    dmarcStatus?: string;
+    auth?: {
+        spf?: string;
+        dkim?: string;
+        dmarc?: string;
+    };
 }) {
     console.log("[MXLENS_DEBUG] [ANALYSIS/saveAnalysis] Called with:", data);
 
@@ -85,7 +95,12 @@ export async function saveAnalysis(data: {
                     incidentId, // Will be null for Free/Basic
                     meta: {
                         hasAttachments: data.hasAttachments,
-                        hasBody: data.hasBody
+                        hasBody: data.hasBody,
+                        subject: data.subject?.replace(/\s+/g, " ").trim().slice(0, 256),
+                        sender: data.sender?.replace(/\s+/g, " ").trim().slice(0, 256),
+                        spf: data.spfStatus ?? data.auth?.spf,
+                        dkim: data.dkimStatus ?? data.auth?.dkim,
+                        dmarc: data.dmarcStatus ?? data.auth?.dmarc,
                     }
                 } as any
             });

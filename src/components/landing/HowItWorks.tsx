@@ -23,7 +23,7 @@ export function HowItWorks() {
                     <Step
                         icon={UploadCloud}
                         title="1. Upload Email"
-                        description="Drag & drop any .eml or .msg file directly into the browser. Or paste headers manually."
+                        description="Drag & drop an .eml file directly into the browser, or paste raw email content manually."
                     />
                     <Step
                         icon={Zap}

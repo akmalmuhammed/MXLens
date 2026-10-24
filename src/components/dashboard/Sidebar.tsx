@@ -12,11 +12,17 @@ import {
     Settings,
     FileText,
     LogOut,
-    Clock
+    Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { useState, useEffect } from "react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const sidebarItems = [
     {
@@ -46,44 +52,13 @@ const sidebarItems = [
     },
 ];
 
-export function DashboardSidebar({
-    dailyUsage = 0,
-    planTier = "FREE"
-}: {
-    dailyUsage?: number;
-    planTier?: string;
-}) {
+export function DashboardSidebar() {
     const pathname = usePathname();
     const { signOut } = useClerk();
-    const dailyLimit = 10;
-    const usagePercent = (dailyUsage / dailyLimit) * 100;
-
-    // Calculate time until midnight reset
-    const [timeUntilReset, setTimeUntilReset] = useState("");
-
-    useEffect(() => {
-        const updateResetTime = () => {
-            const now = new Date();
-            const midnight = new Date();
-            midnight.setHours(24, 0, 0, 0);
-            const diff = midnight.getTime() - now.getTime();
-
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-            setTimeUntilReset(`${hours}h ${minutes}m`);
-        };
-
-        updateResetTime();
-        const interval = setInterval(updateResetTime, 60000); // Update every minute
-        return () => clearInterval(interval);
-    }, []);
-
-    const isPro = planTier !== "FREE";
 
     return (
-        <div className="flex h-screen w-64 flex-col border-r bg-muted/10 md:flex border-border/50 bg-card">
-            <div className="flex h-14 items-center border-b border-border/50 px-4 lg:h-[60px] lg:px-6">
+        <>
+            <header className="flex h-14 items-center justify-between border-b border-border/50 bg-card px-4 md:hidden">
                 <Link href="/" className="flex items-center gap-2 font-semibold text-primary">
                     <div className="relative h-6 w-24">
                         <Image
@@ -95,7 +70,63 @@ export function DashboardSidebar({
                         />
                     </div>
                 </Link>
-            </div>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-foreground"
+                            aria-label="Open dashboard navigation"
+                        >
+                            <Menu className="h-5 w-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] max-w-sm p-2">
+                        <DropdownMenuLabel>Dashboard</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {sidebarItems.map((item) => (
+                            <DropdownMenuItem
+                                key={item.href}
+                                asChild
+                                className={cn(
+                                    "h-10 cursor-pointer gap-3 px-3",
+                                    pathname === item.href && "bg-primary/10 text-primary focus:bg-primary/10 focus:text-primary"
+                                )}
+                            >
+                                <Link href={item.href}>
+                                    <item.icon className="h-4 w-4" />
+                                    <span>{item.title}</span>
+                                </Link>
+                            </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            variant="destructive"
+                            className="h-10 cursor-pointer gap-3 px-3"
+                            onClick={() => signOut({ redirectUrl: "/" })}
+                        >
+                            <LogOut className="h-4 w-4" />
+                            Sign Out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </header>
+
+            <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-border/50 bg-card md:flex">
+                <div className="flex h-14 items-center border-b border-border/50 px-4 lg:h-[60px] lg:px-6">
+                    <Link href="/" className="flex items-center gap-2 font-semibold text-primary">
+                        <div className="relative h-6 w-24">
+                            <Image
+                                src="/logo.png"
+                                alt="MXLens Logo"
+                                fill
+                                className="object-contain dark:invert"
+                                priority
+                            />
+                        </div>
+                    </Link>
+                </div>
 
             <div className="flex-1 overflow-auto py-2">
                 <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-1">
@@ -123,73 +154,9 @@ export function DashboardSidebar({
             </div>
 
             <div className="mt-auto p-4 border-t border-border/50 space-y-4">
-                <div className={cn(
-                    "rounded-lg p-4 shadow-sm",
-                    isPro
-                        ? "bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20"
-                        : "bg-muted/50 border border-primary/20"
-                )}>
-                    <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-sm text-foreground">
-                            {isPro ? "Pro Plan" : "Free Plan"}
-                        </h4>
-                        {isPro && (
-                            <span className="text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded">
-                                ACTIVE
-                            </span>
-                        )}
-                    </div>
-
-                    {isPro ? (
-                        <p className="text-xs text-muted-foreground">
-                            Unlimited analyses
-                        </p>
-                    ) : (
-                        <>
-                            {/* Progress Bar */}
-                            <div className="mb-2">
-                                <Progress
-                                    value={usagePercent}
-                                    className={cn(
-                                        "h-2",
-                                        usagePercent >= 80 ? "[&>div]:bg-amber-500" : "",
-                                        usagePercent >= 100 ? "[&>div]:bg-rose-500" : ""
-                                    )}
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between text-xs">
-                                <span className={cn(
-                                    "font-medium",
-                                    usagePercent >= 100 ? "text-rose-500" :
-                                        usagePercent >= 80 ? "text-amber-500" : "text-muted-foreground"
-                                )}>
-                                    {dailyUsage}/{dailyLimit} used
-                                </span>
-                                <span className="text-muted-foreground flex items-center gap-1">
-                                    <Clock className="w-3 h-3" />
-                                    {timeUntilReset}
-                                </span>
-                            </div>
-                        </>
-                    )}
-
-                    <div className="mt-3">
-                        <Link href="/dashboard/billing">
-                            <Button
-                                size="sm"
-                                className={cn(
-                                    "w-full shadow-lg",
-                                    isPro
-                                        ? "bg-muted text-foreground hover:bg-muted/80 shadow-none border border-border"
-                                        : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20"
-                                )}
-                                variant="default"
-                            >
-                                {isPro ? "Manage Plan" : "Upgrade Pro"}
-                            </Button>
-                        </Link>
-                    </div>
+                <div className="rounded-lg border border-primary/20 bg-muted/50 p-4 shadow-sm">
+                    <h4 className="text-sm font-semibold text-foreground">Local Analysis</h4>
+                    <p className="mt-1 text-xs text-muted-foreground">Unlimited analyses run locally.</p>
                 </div>
 
                 <button
@@ -200,6 +167,7 @@ export function DashboardSidebar({
                     Sign Out
                 </button>
             </div>
-        </div>
+            </aside>
+        </>
     );
 }

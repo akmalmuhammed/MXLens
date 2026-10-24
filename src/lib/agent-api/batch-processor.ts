@@ -76,8 +76,9 @@ export async function processAnalysisBatch(params: {
         data: { status: "PROCESSING" }
     });
 
-    await runWithConcurrency(workItems, BATCH_CONCURRENCY, async (item) => {
+    await mapWithConcurrency(workItems, BATCH_CONCURRENCY, async (item) => {
         await processBatchItem({ agent, batchId, options, item });
+        return undefined;
     });
 
     const itemCounts = await db.analysisBatchItem.groupBy({
@@ -99,6 +100,40 @@ export async function processAnalysisBatch(params: {
             status: finalStatus,
             completedItems: completed,
             failedItems: failed
+        } as any
+    });
+}
+
+export async function markAnalysisBatchFailed(params: {
+    agent: AuthenticatedAgent;
+    batchId: string;
+}) {
+    const { agent, batchId } = params;
+    const failureMessage = "Batch processing could not complete. Submit a new batch to retry.";
+
+    await db.analysisBatchItem.updateMany({
+        where: {
+            batchId,
+            status: { in: ["QUEUED", "PROCESSING"] }
+        },
+        data: {
+            status: "FAILED",
+            errorCode: "batch_processing_failed",
+            errorMessage: failureMessage
+        }
+    });
+
+    const [completedItems, failedItems] = await Promise.all([
+        db.analysisBatchItem.count({ where: { batchId, status: "COMPLETED" } }),
+        db.analysisBatchItem.count({ where: { batchId, status: "FAILED" } })
+    ]);
+
+    await db.analysisBatch.updateMany({
+        where: { id: batchId, orgId: agent.orgId },
+        data: {
+            status: completedItems > 0 ? "PARTIAL_FAILED" : "FAILED",
+            completedItems,
+            failedItems
         } as any
     });
 }
@@ -220,21 +255,24 @@ async function processBatchItem(params: {
     }
 }
 
-async function runWithConcurrency<T>(
+export async function mapWithConcurrency<T, TResult>(
     items: T[],
     concurrency: number,
-    worker: (item: T) => Promise<void>
+    worker: (item: T, index: number) => Promise<TResult>
 ) {
     let index = 0;
+    const results = new Array<TResult>(items.length);
 
     async function next() {
         while (index < items.length) {
-            const item = items[index++];
-            await worker(item);
+            const currentIndex = index++;
+            results[currentIndex] = await worker(items[currentIndex], currentIndex);
         }
     }
 
     await Promise.all(
         Array.from({ length: Math.min(concurrency, items.length) }, () => next())
     );
+
+    return results;
 }

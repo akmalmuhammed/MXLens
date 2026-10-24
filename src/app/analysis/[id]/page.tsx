@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
-import { ShieldAlert, ShieldCheck, ArrowLeft, Download, FileText } from "lucide-react";
+import { ShieldAlert, ShieldCheck, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -76,12 +76,20 @@ export default async function AnalysisDetailPage(props: { params: Promise<{ id: 
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        {(meta?.subject || meta?.sender) && (
+                            <dl className="grid gap-3 rounded-lg border bg-background/50 p-4 text-sm sm:grid-cols-2">
+                                {meta?.subject && <div><dt className="text-muted-foreground">Subject</dt><dd className="mt-1 break-words font-medium">{meta.subject}</dd></div>}
+                                {meta?.sender && <div><dt className="text-muted-foreground">Sender</dt><dd className="mt-1 break-all font-medium">{meta.sender}</dd></div>}
+                            </dl>
+                        )}
                         <div className="mt-4 p-4 rounded-lg bg-muted/50 text-sm">
                             <h4 className="font-semibold mb-2">Findings Summary</h4>
                             <ul className="space-y-2 list-disc list-inside text-muted-foreground">
                                 {meta?.spf && <li>SPF Authentication: <Badge variant="outline">{meta.spf}</Badge></li>}
                                 {meta?.dkim && <li>DKIM Signature: <Badge variant="outline">{meta.dkim}</Badge></li>}
+                                {meta?.dmarc && <li>DMARC Authentication: <Badge variant="outline">{meta.dmarc}</Badge></li>}
                                 {meta?.hasAttachments && <li>Contains Attachments: <Badge variant="outline">Yes</Badge></li>}
+                                {!meta?.spf && !meta?.dkim && !meta?.dmarc && !meta?.hasAttachments && <li>No additional privacy-safe findings were retained for this analysis.</li>}
                             </ul>
                         </div>
                     </CardContent>
@@ -105,12 +113,9 @@ export default async function AnalysisDetailPage(props: { params: Promise<{ id: 
                             <span className="text-muted-foreground">Method</span>
                             <span className="font-medium">Web/Client</span>
                         </div>
-                        <div className="mt-6">
-                            <Button variant="outline" className="w-full gap-2" disabled>
-                                <Download className="w-4 h-4" />
-                                Export JSON
-                            </Button>
-                        </div>
+                        <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
+                            Raw emails and attachments are not retained, so this report cannot be exported as the original message.
+                        </p>
                     </CardContent>
                 </Card>
             </div>

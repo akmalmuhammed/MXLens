@@ -1,4 +1,4 @@
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
 
 export interface SanitizeOptions {
     blockImages?: boolean; // Default true, replaces src with data-src

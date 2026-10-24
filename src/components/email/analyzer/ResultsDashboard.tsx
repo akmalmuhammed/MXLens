@@ -142,13 +142,25 @@ export function ResultsDashboard({ analysis, onClear, analyzeBody, setAnalyzeBod
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 py-6 px-2">
             {/* Header Actions & Tabs */}
             <div className="flex flex-col xl:flex-row items-center justify-between gap-4 pb-4 border-b border-border/40">
-                <div className="flex items-center gap-4 w-full xl:w-auto overflow-x-auto">
+                <div className="flex min-w-0 items-center gap-4 w-full xl:w-auto">
                     <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full md:w-auto">
-                        <TabsList className="grid w-full grid-cols-4 h-9 bg-muted/50 p-1 rounded-lg border border-white/5 text-xs">
-                            <TabsTrigger value="analyst">Analyst View</TabsTrigger>
-                            <TabsTrigger value="threat-intel">Threat Intel</TabsTrigger>
-                            <TabsTrigger value="raw">Raw Data</TabsTrigger>
-                            <TabsTrigger value="it">Quick IT</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-4 h-9 bg-muted/50 p-1 rounded-lg border border-white/5 text-[11px] sm:text-xs">
+                            <TabsTrigger value="analyst" className="px-1.5 whitespace-nowrap sm:px-2">
+                                <span className="sm:hidden">Analysis</span>
+                                <span className="hidden sm:inline">Analyst View</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="threat-intel" className="px-1.5 whitespace-nowrap sm:px-2">
+                                <span className="sm:hidden">Intel</span>
+                                <span className="hidden sm:inline">Threat Intel</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="raw" className="px-1.5 whitespace-nowrap sm:px-2">
+                                <span className="sm:hidden">Raw</span>
+                                <span className="hidden sm:inline">Raw Data</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="it" className="px-1.5 whitespace-nowrap sm:px-2">
+                                <span className="sm:hidden">IT</span>
+                                <span className="hidden sm:inline">Quick IT</span>
+                            </TabsTrigger>
                         </TabsList>
                     </Tabs>
 

@@ -11,7 +11,7 @@ const steps = [
         step: "01",
         title: "Drag Email",
         time: "2 sec",
-        description: "Drop .eml/.msg file — browser intercepts instantly",
+        description: "Drop an .eml file — browser intercepts instantly",
         highlight: "File stays on YOUR device",
         color: "primary",
     },

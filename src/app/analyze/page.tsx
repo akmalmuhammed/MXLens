@@ -2,7 +2,7 @@ import { EmailAnalyzer } from "@/components/email/EmailAnalyzer";
 
 export default async function AnalyzePage() {
     return (
-        <div className="container mx-auto py-2 min-h-screen space-y-3">
+        <div className="container mx-auto min-h-screen space-y-3 px-4 py-4 sm:px-6">
             <h1 className="text-xl font-bold tracking-tight text-foreground font-heading bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
                 Email Analysis Studio
             </h1>

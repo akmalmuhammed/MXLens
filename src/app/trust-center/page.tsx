@@ -131,18 +131,23 @@ export default function TrustCenterPage() {
                                     <tr>
                                         <td className="p-3">Timestamp</td>
                                         <td className="p-3 text-muted-foreground">Activity history</td>
-                                        <td className="p-3 text-muted-foreground">90 days</td>
+                                        <td className="p-3 text-muted-foreground">Saved-history retention</td>
                                     </tr>
                                     <tr>
                                         <td className="p-3">Processing Time (ms)</td>
                                         <td className="p-3 text-muted-foreground">Performance monitoring</td>
-                                        <td className="p-3 text-muted-foreground">30 days</td>
+                                        <td className="p-3 text-muted-foreground">Saved-history retention</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3">Subject, sender, and SPF/DKIM/DMARC status</td>
+                                        <td className="p-3 text-muted-foreground">Identify and review saved reports</td>
+                                        <td className="p-3 text-muted-foreground">Saved-history retention</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <p className="mt-6 text-sm text-muted-foreground">
-                            <strong>Note:</strong> We never store email content, headers, sender information, or any text from the email itself.
+                            <strong>Note:</strong> We never store raw email bodies, raw .eml files, or attachment contents. Saved reports retain only the metadata listed above.
                         </p>
                     </div>
                 </section>

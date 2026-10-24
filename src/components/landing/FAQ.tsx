@@ -32,7 +32,7 @@ export function FAQ() {
                     <AccordionItem value="item-3">
                         <AccordionTrigger>What types of files can I upload?</AccordionTrigger>
                         <AccordionContent>
-                            We support standard `.eml` and `.msg` email files. You can also paste raw email headers directly for analysis.
+                            We support standard `.eml` email files. You can also paste raw email content directly for analysis.
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-4">
