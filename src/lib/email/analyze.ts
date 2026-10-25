@@ -51,7 +51,7 @@ export interface EmailAnalysis {
 export async function analyzeEmail(rawEmail: string, options: AnalyzeOptions = {}): Promise<EmailAnalysis> {
     const start = Date.now();
     const [headerResult, email] = await Promise.all([
-        HeaderParser.parse(rawEmail),
+        HeaderParser.parse(rawEmail, { checkAttachments: options.attachments ?? true }),
         new PostalMime().parse(rawEmail)
     ]);
     const { signals, result } = await AnalysisEngine.analyze(headerResult, email, {

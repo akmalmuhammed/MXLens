@@ -46,3 +46,4 @@ users*.json
 tsc*.txt
 test_output*.txt
 build-output.txt
+/test-samples/

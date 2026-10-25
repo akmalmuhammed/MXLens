@@ -45,6 +45,8 @@ export interface BulkAnalysisResult {
     emailContent: { text: string; html: string };
     timestamp: number;
     filename: string;
+    /** Original message, kept so an opened report can be re-analyzed with a different scope. */
+    rawEmail: string;
 }
 
 export class BulkProcessor {
@@ -110,7 +112,7 @@ export class BulkProcessor {
             if (this.cancelled) return;
 
             // 1. Header Parse
-            const headerResPromise = HeaderParser.parse(content);
+            const headerResPromise = HeaderParser.parse(content, { checkAttachments: this.analyzeAttachments });
 
             // 2. MIME Parse
             const parser = new PostalMime();
@@ -136,7 +138,8 @@ export class BulkProcessor {
                     html: email.html || ""
                 },
                 timestamp: Date.now(),
-                filename: next.file.name
+                filename: next.file.name,
+                rawEmail: content
             };
 
             next.status = 'completed';

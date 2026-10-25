@@ -71,7 +71,7 @@ export function EmailAnalyzer({ enrichmentEnabled = false }: EmailAnalyzerProps)
         setRawInput(content); // Store for re-runs
 
         try {
-            const headerResPromise = HeaderParser.parse(content);
+            const headerResPromise = HeaderParser.parse(content, { checkAttachments: runAttachments });
             const parser = new PostalMime();
             const emailPromise = parser.parse(content);
             const [headerRes, email] = await Promise.all([headerResPromise, emailPromise]);
@@ -203,7 +203,7 @@ export function EmailAnalyzer({ enrichmentEnabled = false }: EmailAnalyzerProps)
                             onCancel={handleBulkCancel}
                             onSelectFile={(result) => {
                                 setAnalysis(result);
-                                setRawInput(result.header.rawHeaders || "");
+                                setRawInput(result.rawEmail);
                                 setViewMode('single');
                             }}
                         />
