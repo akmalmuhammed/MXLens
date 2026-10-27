@@ -392,9 +392,11 @@ const SHORTENERS = ["bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd",
 function buildLinks(signals: NormalizedSignals): LinkIndicator[] {
     const byUrl = new Map<string, LinkIndicator>();
 
+    const fromQr = new Set(signals.qrPayloads ?? []);
     for (const url of signals.extractedUrls) {
         const host = hostOf(url);
         const flags: string[] = [];
+        if (fromQr.has(url)) flags.push("From QR code");
         if (SHORTENERS.includes(host)) flags.push("URL shortener");
         if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) flags.push("Raw IP address");
         if (url.startsWith("http://")) flags.push("Not HTTPS");

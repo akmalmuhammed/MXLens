@@ -12,6 +12,7 @@ import { NormalizedSignals, ParsedEmailBody, ScoringResult, ValidationPenalty } 
 import { DetectionPipeline } from "../detection/Pipeline";
 import type { DetectionResult, DetectionTag } from "../detection/Detector";
 import { AnalysisResult } from "../HeaderParser";
+import { expandEmbeddedMessages } from "../analysis/EmbeddedMessages";
 
 export class AnalysisEngine {
     static async analyze(
@@ -20,8 +21,17 @@ export class AnalysisEngine {
         options: { checkBody: boolean; checkAttachments: boolean }
     ): Promise<{ signals: NormalizedSignals; result: ScoringResult }> {
 
+        // 0. Open attached emails so their lure, links and images are analyzed too.
+        let embedded: Awaited<ReturnType<typeof expandEmbeddedMessages>> | null = null;
+        if (emailBody && (options.checkBody || options.checkAttachments)) {
+            embedded = await expandEmbeddedMessages(emailBody);
+            emailBody = embedded.body;
+        }
+
         // 1. Normalize
         const signals = await SignalNormalizer.normalize(headerResult, emailBody, options);
+        signals.embeddedMessages = embedded?.embedded ?? [];
+        signals.outerVisibleText = embedded?.outerVisibleText ?? signals.visibleText;
 
         // 2. Score Components
         const headerScore = HeaderScorer.score(signals);

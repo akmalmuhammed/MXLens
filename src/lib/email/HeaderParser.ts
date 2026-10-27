@@ -244,7 +244,9 @@ export class HeaderParser {
             { key: 'X-Mailer', label: 'Mailer Client' },
             { key: 'X-Distribution', label: 'Distribution List' },
             { key: 'X-Originating-IP', label: 'Originating IP' },
-            { key: 'X-Gophish', label: 'GoPhish Header (Phishing Tool)' }
+            { key: 'X-Gophish', label: 'GoPhish Header (Phishing Tool)' },
+            { key: 'X-TM-Has-Qrcode', label: 'Trend Micro gateway found a QR code in this message' },
+            { key: 'X-MS-Exchange-Organization-SCL', label: 'Exchange spam confidence level (-1 = filtering skipped)' }
         ];
 
         const xHeaders: AnalysisResult['xHeaders'] = [];
@@ -312,14 +314,15 @@ export class HeaderParser {
 
     private static detectImpersonation(headers: HeaderMap, auth: AnalysisResult['auth']): string | undefined {
         const from = getHeaderValue(headers, 'From') || '';
-        const highValueKeywords = ['admin', 'subport', 'security', 'hr', 'payroll', 'finance', 'ceo', 'it group', 'microsoft', 'google'];
+        const highValueKeywords = ['admin', 'support', 'security', 'hr', 'payroll', 'finance', 'ceo', 'it group', 'microsoft', 'google'];
 
         const fromHeader = Array.isArray(from) ? from[0] : from;
         const match = fromHeader.match(/^"?([^"<]+)"?\s*<.*>$/);
         if (!match) return undefined;
 
         const displayName = match[1].toLowerCase();
-        const triggeredKeyword = highValueKeywords.find(kw => displayName.includes(kw));
+        // Whole words only: "hr" must not match inside "Christopher" or a random token.
+        const triggeredKeyword = highValueKeywords.find(kw => new RegExp(`(?:^|[^a-z0-9])${kw}(?:$|[^a-z0-9])`).test(displayName));
 
         if (triggeredKeyword) {
             if (auth.dmarc.status !== 'pass' && auth.spf.status !== 'pass' && auth.dkim.status !== 'pass') {

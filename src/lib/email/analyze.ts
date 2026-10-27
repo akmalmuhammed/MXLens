@@ -121,6 +121,8 @@ function summarizeSignals(signals: NormalizedSignals) {
             rawIpLinks: signals.rawIpLinks,
             homoglyphDetected: signals.homoglyphDetected,
             extractedUrlCount: signals.extractedUrls.length,
+            qrPayloadCount: signals.qrPayloads?.length ?? 0,
+            embeddedMessageCount: signals.embeddedMessages?.length ?? 0,
             suspiciousUrlCount: signals.urlAnalysis.filter(url => url.riskScore > 0).length
         },
         attachments: {

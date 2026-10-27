@@ -4,7 +4,8 @@ import { NormalizedSignals, ScoreComponent } from "./types";
 const PROTECTED_DISPLAY_NAMES = [
     "microsoft", "google", "support", "security", "warning", "system",
     "admin", "administrator", "payroll", "hr", "finance", "ceo", "president",
-    "meta", "facebook", "instagram", "whatsapp", "apple", "amazon", "netflix"
+    "meta", "facebook", "instagram", "whatsapp", "apple", "amazon", "netflix",
+    "docusign", "dropbox", "wetransfer", "adobe sign", "onedrive", "sharepoint"
 ];
 
 // Domains that are allowed to send as these names (simplified whitelist)
@@ -18,7 +19,13 @@ const AUTHORIZED_DOMAINS: Record<string, string[]> = {
     "meta": ["meta.com", "facebook.com"],
     "facebook": ["facebook.com", "fb.com"],
     "instagram": ["instagram.com"],
-    "whatsapp": ["whatsapp.com"]
+    "whatsapp": ["whatsapp.com"],
+    "docusign": ["docusign.net", "docusign.com"],
+    "dropbox": ["dropbox.com", "dropboxmail.com"],
+    "wetransfer": ["wetransfer.com"],
+    "adobe sign": ["adobe.com", "adobesign.com", "echosign.com"],
+    "onedrive": ["microsoft.com", "microsoftonline.com", "sharepointonline.com", "onedrive.com", "office.com"],
+    "sharepoint": ["microsoft.com", "microsoftonline.com", "sharepointonline.com", "office.com"]
 };
 
 const FREE_EMAIL_PROVIDERS = [
@@ -57,7 +64,7 @@ export class ImpersonationScorer {
                 if (!isAuthorized) {
                     score -= 80;
                     penalties.push({
-                        reason: `Display Name Spoofing: Claims to be "${signals.fromDisplayName}" but sends from "${fromDomain}"`,
+                        reason: `Display Name Spoofing: Claims to be "${signals.fromDisplayName.length > 60 ? `${signals.fromDisplayName.slice(0, 57)}...` : signals.fromDisplayName}" but sends from "${fromDomain}"`,
                         value: -80,
                         critical: true,
                         source: 'header' as const

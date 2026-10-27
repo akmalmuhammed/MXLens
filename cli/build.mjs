@@ -14,6 +14,10 @@ const browserOnlyStub = {
         b.onResolve({ filter: /utils\/(pdf|qr)\.client$/ }, () => ({
             path: path.join(here, "src", "browser-only.ts"),
         }));
+        // QR decoding runs in the CLI too, with the WebAssembly reader embedded.
+        b.onResolve({ filter: /utils\/zxing\.loader$/ }, () => ({
+            path: path.join(here, "src", "zxing-loader.ts"),
+        }));
     },
 };
 
@@ -31,6 +35,7 @@ await build({
         js: "#!/usr/bin/env node\nimport { createRequire as __createRequire } from 'node:module';\nconst require = __createRequire(import.meta.url);",
     },
     plugins: [browserOnlyStub],
+    loader: { ".wasm": "binary" },
     minify: true,
     legalComments: "linked",
     logLevel: "warning",

@@ -6,6 +6,20 @@ export class HeaderScorer {
         let score = 100;
         const penalties = [];
 
+        // A file with neither Received nor Authentication-Results headers was never delivered
+        // as-is: it is an extracted attachment, a draft, or a crafted .eml. Authentication was
+        // never evaluated, so report that once instead of as missing SPF, DKIM, DMARC and hops.
+        const undelivered = !signals.hasReceivedHeaders && !signals.authenticationResultsPresent;
+        if (undelivered) {
+            score -= 25;
+            penalties.push({
+                reason: "No Delivery Headers: this file was never delivered as-is (extracted, draft or crafted message), so the sender cannot be verified. Judge it by its content",
+                value: -25,
+                warning: true,
+                source: 'header' as const
+            });
+        }
+
         // DMARC
         if (signals.dmarcResult === "fail") {
             score -= 50;
@@ -18,7 +32,7 @@ export class HeaderScorer {
                 score -= 15;
                 penalties.push({ reason: "DMARC Policy is Monitoring Only (None)", value: -15, source: 'header' as const });
             }
-        } else {
+        } else if (!undelivered) {
             score -= 15;
             penalties.push({
                 reason: signals.dmarcBestGuess
@@ -36,7 +50,7 @@ export class HeaderScorer {
         } else if (signals.spfResult === "softfail") {
             score -= 10;
             penalties.push({ reason: "SPF Softfail", value: -10, source: 'header' as const });
-        } else if (signals.spfResult === "none" || signals.spfResult === "neutral") {
+        } else if ((signals.spfResult === "none" || signals.spfResult === "neutral") && !undelivered) {
             score -= 10;
             penalties.push({ reason: "SPF Missing or Neutral", value: -10, source: 'header' as const });
         }
@@ -45,7 +59,7 @@ export class HeaderScorer {
         if (signals.dkimResult === "fail") {
             score -= 20;
             penalties.push({ reason: "DKIM Fail", value: -20, source: 'header' as const });
-        } else if (signals.dkimResult === "none") {
+        } else if (signals.dkimResult === "none" && !undelivered) {
             score -= 10;
             penalties.push({ reason: "DKIM Signature Missing", value: -10, source: 'header' as const });
         }
@@ -122,7 +136,7 @@ export class HeaderScorer {
         }
 
         // ROUTING
-        if (!signals.hasReceivedHeaders) {
+        if (!signals.hasReceivedHeaders && !undelivered) {
             score -= 40;
             penalties.push({ reason: "Missing Received Headers", value: -40, source: 'header' as const });
         } else if (signals.receivedHopCount === 1) {
