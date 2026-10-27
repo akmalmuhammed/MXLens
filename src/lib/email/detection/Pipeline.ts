@@ -96,7 +96,7 @@ export class DetectionPipeline {
                 result = await this.runDetectorWithTimeout(detector, context, 2000);
 
                 if (result && result.triggered) {
-                    return { ...result, tags: detector.tags }; // Value to be collected
+                    return { ...result, id: detector.id, tags: detector.tags }; // Value to be collected
                 }
             } catch (e: unknown) {
                 const message = e instanceof Error ? e.message : String(e);

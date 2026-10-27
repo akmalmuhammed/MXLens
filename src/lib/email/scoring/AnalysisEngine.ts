@@ -85,7 +85,8 @@ export class AnalysisEngine {
             value: r.penalty,
             critical: r.score > 0.8,
             source: this.mapDetectionSource(r),
-            tags: r.tags
+            tags: r.tags,
+            detectorId: r.id
         }));
         trustResult.penalties.push(...newPenalties);
 

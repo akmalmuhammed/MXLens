@@ -107,6 +107,8 @@ export interface ValidationPenalty {
     warning?: boolean;
     source?: 'header' | 'body' | 'cross' | 'attachment' | 'ml';
     tags?: DetectionTag[];
+    /** Detector id for pipeline findings (e.g. "embedded-message"). */
+    detectorId?: string;
 }
 
 export interface ParsedEmailAttachment {

@@ -2,6 +2,7 @@ import type { AnalysisResult, EmailHop } from "@/lib/email/HeaderParser";
 import { getFirstHeaderValue } from "@/lib/email/parser/HeaderUtils";
 import { isKnownAuthServ } from "@/lib/email/scoring/Config";
 import { organizationalDomain } from "@/lib/email/analysis/Domain";
+import { buildInvestigation, type Investigation } from "@/lib/investigation/Investigation";
 import type { AttachmentSignal, NormalizedSignals, ScoringResult, ValidationPenalty } from "@/lib/email/scoring/types";
 
 /**
@@ -142,6 +143,8 @@ export interface Report {
     attachments: AttachmentRow[];
     hops: Hop[];
     headerNotes: { key: string; value: string; explanation?: string }[];
+    /** Analyst-style investigation: questions answered, path, gaps, IOCs, response, hunting. */
+    investigation: Investigation;
 }
 
 const VERDICT_BY_LABEL: Record<ScoringResult["verdict"]["verdict"], Verdict> = {
@@ -194,6 +197,7 @@ export function buildReport(header: AnalysisResult, signals: NormalizedSignals, 
         attachments: signals.attachments.map(toAttachmentRow),
         hops: buildHops(header.hops),
         headerNotes: (header.xHeaders ?? []).filter(x => x.key.toLowerCase() !== "x-mailer" || x.value),
+        investigation: buildInvestigation(header, signals, scoring),
     };
 }
 

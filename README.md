@@ -6,6 +6,12 @@ Free, open-source phishing analysis for `.eml` files. Drop in a suspicious email
 verdict with the reasons behind it: SPF/DKIM/DMARC/ARC results, relay path, lookalike
 domains, link and attachment checks, and content heuristics.
 
+Every report includes an **Investigation**, the write-up a SOC analyst would produce: is it
+phishing, is the sender spoofed (and why a matching Return-Path proves nothing), who really
+sent it and from where, what it wants the recipient to do, why your defenses let it through,
+role-labelled indicators, ATT&CK techniques, a response checklist, and ready-to-run Microsoft
+Defender/Sentinel hunting and Purview purge queries. See [`docs/INVESTIGATION.md`](docs/INVESTIGATION.md).
+
 - **Runs in your browser.** The email is parsed and scored locally and never uploaded.
 - **No account, no database, no tracking.**
 - **Self-hostable** with Node or Docker. Nothing to configure.
@@ -38,6 +44,7 @@ For development: `npm run dev`.
 
 ```bash
 npx mxlens suspicious.eml              # readable report
+npx mxlens --investigate suspicious.eml > case.md   # full analyst write-up (Markdown)
 npx mxlens --json reported-folder/     # JSON for every .eml in a folder
 npx mxlens --fail-on malicious - < message.eml   # exit code 2 if malicious
 ```
