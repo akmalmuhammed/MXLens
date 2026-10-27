@@ -43,7 +43,9 @@ export class ImpersonationScorer {
 
                 let isAuthorized = false;
                 const allowed = AUTHORIZED_DOMAINS[brand];
-                if (allowed) {
+                // An empty list (e.g. "support") means "generic role", not "no domain may use
+                // it": [] is truthy, so it used to flag every helpdesk ("Acme Support") at -80.
+                if (allowed && allowed.length > 0) {
                     // Label boundary: "notmicrosoft.com" must not pass as "microsoft.com".
                     isAuthorized = allowed.some(d => fromDomain === d || fromDomain.endsWith(`.${d}`));
                 } else {

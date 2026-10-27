@@ -284,9 +284,17 @@ describe("Fixes to existing detectors", () => {
         expect(hr.has("Display Name Spoofing")).toBe(true);
     });
 
+    it("treats 'Support' as a generic role: fine from a company domain, suspicious from free mail", async () => {
+        const vendor = await run({ from: "Acme Support <help@acme-widgets.example>", text: "Your ticket was updated." });
+        expect(vendor.has("Display Name Spoofing")).toBe(false);
+        const free = await run({ from: "PayPal Support <paypal.help.desk@gmail.com>", text: "Your ticket was updated." });
+        expect(free.has("Display Name Spoofing")).toBe(true);
+    });
+
     it("requires a label boundary for authorized brand domains", async () => {
-        const r = await run({ from: "Microsoft Support <alerts@notmicrosoft.com>", text: "Hello" });
-        expect(r.has('Claims to be "Microsoft Support"')).toBe(true);
+        // "Microsoft" alone, so the generic "support" role cannot be what triggers it.
+        const r = await run({ from: "Microsoft <alerts@notmicrosoft.com>", text: "Hello" });
+        expect(r.has('Claims to be "Microsoft"')).toBe(true);
     });
 
     it("detects Punycode labels anywhere in the sender domain", async () => {

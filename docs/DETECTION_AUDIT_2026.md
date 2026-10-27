@@ -44,6 +44,7 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 | **False positive:** substring match, so "Christopher" contained `hr`, "Ceola" contained `ceo`, and "Appleby" contained `apple`. Any free-mail user with such a name got **-80, critical** | ✅ whole-word matching |
 | **Bypass:** authorized-domain check used `endsWith`, so `notmicrosoft.com` passed as `microsoft.com` | ✅ label-boundary check |
 | Microsoft's real sending domains missing (`microsoftonline.com`, `sharepointonline.com`, the `.microsoft` TLD), causing false positives | ✅ added |
+| **False positive:** the generic role "support" had an empty allowed-domain list, and `[]` is truthy, so every helpdesk ("Acme Support <help@acme.com>") got **-80, critical** | ✅ empty list now means "generic role", so it is only suspicious from free mail |
 
 ### `HomographDetector` / `Typosquatting`
 
@@ -164,7 +165,7 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 
 ## 6. Verification
 
-- `tests/unit/detection-2026.test.ts`: 43 tests, at least one positive and one negative per new rule and per fix.
+- `tests/unit/detection-2026.test.ts`: 44 tests, at least one positive and one negative per new rule and per fix.
 - `tests/unit/legit-regressions.test.ts`: 8 legitimate-mail shapes the new rules must leave alone. These include an order confirmation with a phone number, a newsletter with hidden preheaders, verified IT MFA enrollment with a QR code, a Google Calendar invite with dial-in numbers, remittance and eFax PDFs, a dev newsletter linking to github.io/vercel.app, and a security newsletter that quotes "Win+R" and "ignore previous instructions".
 - The bundled demo phishing sample stays malicious (risk 75; 86 before, because the false-positive "hidden text" penalty is gone). The demo legitimate sample stays clean.
 
