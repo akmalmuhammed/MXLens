@@ -2,6 +2,8 @@ import { AnalysisResult } from "../HeaderParser";
 import { NormalizedSignals, AttachmentSignal, ParsedEmailAttachment, ParsedEmailBody } from "./types";
 import { UrlAnalyzer } from "../analysis/UrlAnalyzer";
 import { getFirstHeaderValue, getHeaderValue, getHeaderValues } from "../parser/HeaderUtils";
+import { AuthenticationAnalyzer } from "../parser/Authentication";
+import { decodeHtmlEntities, htmlToVisibleText } from "../analysis/HtmlText";
 
 export class SignalNormalizer {
     static async normalize(
@@ -54,7 +56,12 @@ export class SignalNormalizer {
 
         if (options.checkBody && emailBody) {
             const text = (emailBody.text || "") + (emailBody.html || "");
-            bodySignals = this.extractBodyFeatures(text, emailBody.html || "");
+            bodySignals = this.extractBodyFeatures(
+                text,
+                emailBody.html || "",
+                emailBody.text || "",
+                getFirstHeaderValue(headerResult.headers, 'Subject')
+            );
         }
 
         // 4. Attachment Signals
@@ -197,6 +204,10 @@ export class SignalNormalizer {
             authenticationResultsPresent: authResultHeaders.length > 0,
             multipleAuthHeaders: authResultHeaders.length > 1,
             authservId: this.extractAuthServId(authResultHeaders),
+            dmarcBestGuess: headerResult.auth.dmarc.bestGuess === true,
+            originAuthMasked: headerResult.originAuth?.masked === true,
+            originAuthSummary: headerResult.originAuth?.masked ? this.describeOrigin(headerResult.originAuth) : null,
+            exchangeFilteringBypassed: headerResult.exchange?.filteringBypassed === true,
 
             // Routing
             receivedHopCount: headerResult.hops.length,
@@ -213,6 +224,7 @@ export class SignalNormalizer {
             // Body
             // Body
             bodyAnalysisEnabled: options.checkBody,
+            visibleText: bodySignals.visibleText || "",
             hasUrgency: bodySignals.hasUrgency || false,
             hasCredentialHarvesting: bodySignals.hasCredentialHarvesting || false,
             hasHiddenText: bodySignals.hasHiddenText || false,
@@ -244,10 +256,17 @@ export class SignalNormalizer {
         if (!header) return null;
         const h = Array.isArray(header) ? header[0] : header;
         if (!h || typeof h !== "string") return null;
-        const match = h.match(/^([^;]+)/);
-        const authservId = match ? match[1].trim() : "";
-        if (!authservId || authservId.includes("=")) return null;
-        return authservId;
+        // The authserv-id may be followed by a version token ("mx.microsoft.com 1"),
+        // which is not part of the host name.
+        return AuthenticationAnalyzer.parseAuthServId(h) ?? null;
+    }
+
+    private static describeOrigin(origin: NonNullable<AnalysisResult['originAuth']>): string {
+        const parts: string[] = [];
+        if (origin.spf) parts.push(`SPF ${origin.spf}${origin.spfIp ? ` for ${origin.spfIp}` : ""}`);
+        if (origin.dmarc) parts.push(`DMARC ${origin.dmarc}${origin.dmarcAction ? ` (${origin.dmarcAction})` : ""}`);
+        const final = origin.finalSpfIp ? ` The final result checked SPF against ${origin.finalSpfIp} instead.` : "";
+        return `${origin.source} recorded ${parts.join(", ")}.${final}`;
     }
 
     private static findArcDetail(details: string[] | undefined, label: string): string | null {
@@ -255,12 +274,15 @@ export class SignalNormalizer {
         return detail?.split(": ")[1] || null;
     }
 
-    private static extractBodyFeatures(text: string, html: string) {
-        const t = text.toLowerCase();
+    private static extractBodyFeatures(text: string, html: string, plainText = "", subject = "") {
+        // Read what the recipient sees, not markup. HTML-only mail has an empty text part,
+        // and raw HTML (style names, attributes) otherwise pollutes keyword matching.
+        const visible = `${plainText} ${htmlToVisibleText(html)}`.trim();
+        const t = `${subject} ${visible}`.toLowerCase();
 
         // NLP Regex
-        const urgency = /\b(immediately|urgent|24 hours|suspend|unauthorized|terminate|lock|verify)\b/i;
-        const credential = /\b(password|credential|login|sign in|verify account|update security)\b/i;
+        const urgency = /\b(?:immediately|urgent(?:ly)?|24 hours|within \d{1,3} ?(?:hrs?|hours?|days?)|suspend(?:ed)?|unauthori[sz]ed|terminat(?:e|ed)|lock(?:ed)?|verify|blocked|deactivat(?:e|ed)|action required|final notice|failure to|fail to)\b/i;
+        const credential = /\b(?:password|credentials?|login|log in|sign in|sign-in|verify (?:your )?account|update (?:your )?(?:security|account|payment|billing)|confirm (?:your )?(?:account|identity|e-?mail|password|mailbox)|re-?validate|account (?:verification|confirmation)|mailbox (?:is )?(?:full|quota|storage))\b/i;
 
         // HTML Forms
         // ReDoS Mitigation: Avoid catastrophic backtracking on open-ended tags
@@ -273,7 +295,11 @@ export class SignalNormalizer {
         // Links
         // Links - Bounded Repeat to prevent ReDoS on massive strings
         const urlRegex = /https?:\/\/[^\s<>"']{1,2000}/g;
-        const urls = (text.match(urlRegex) || []);
+        // Decode entities first so "&amp;" in href attributes does not split query strings.
+        // Gmail's data-saferedirecturl attribute is a rewrite artifact the recipient never
+        // follows; the real destination is the href, so drop it to avoid phantom redirects.
+        const withoutRewrites = text.replace(/\bdata-saferedirecturl\s*=\s*(?:"[^"]{0,4000}"|'[^']{0,4000}')/gi, " ");
+        const urls = (decodeHtmlEntities(withoutRewrites).match(urlRegex) || []);
         // Basic IP check: http://1.2.3.4
         const ipLink = urls.some(u => /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}(?:\/|$)/.test(u));
 
@@ -297,6 +323,7 @@ export class SignalNormalizer {
         const hasLookalike = urlAnalysis.some(a => a.isLookalike);
 
         return {
+            visibleText: visible,
             hasUrgency: urgency.test(t),
             hasCredentialHarvesting: credential.test(t),
             hasHiddenText: invisibleText,

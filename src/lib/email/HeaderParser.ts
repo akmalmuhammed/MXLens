@@ -1,5 +1,6 @@
 import PostalMime from 'postal-mime';
-import { AuthenticationAnalyzer, AuthStatus } from './parser/Authentication';
+import { AuthenticationAnalyzer, AuthStatus, OriginAuth } from './parser/Authentication';
+import { ExchangeAnalyzer, ExchangeSignals } from './parser/Exchange';
 import { HopTracer } from './parser/Hops';
 import { ArtifactExtractor } from './parser/Artifacts';
 import { getHeaderValue } from './parser/HeaderUtils';
@@ -16,7 +17,7 @@ export interface EmailHop {
     annotations?: string[]; // Phase 4: Hops Intelligence
 }
 
-export type { AuthStatus }; // Re-export for compatibility
+export type { AuthStatus, OriginAuth, ExchangeSignals }; // Re-export for compatibility
 
 interface ParsedAttachment {
     filename?: string | null;
@@ -45,6 +46,10 @@ export interface AnalysisResult {
         status: 'pass' | 'fail' | 'none';
         details: string[];
     };
+    /** Earliest recorded auth evaluation (ARC i=1 / gateway header) compared with the final result. */
+    originAuth?: OriginAuth;
+    /** How Exchange Online / EOP handled the message (SCL, AuthAs, compauth). */
+    exchange?: ExchangeSignals;
     xHeaders?: { key: string; value: string; explanation?: string }[];
     attachments?: { filename: string; mimeType: string; size: number; hash: string }[]; // Phase 9: Workflow
 }
@@ -156,6 +161,8 @@ export class HeaderParser {
         const hops = HopTracer.analyze(getHeader('Received'));
         const artifacts = ArtifactExtractor.extract(headerMap, hops);
         const arc = AuthenticationAnalyzer.analyzeARC(headerMap);
+        const originAuth = AuthenticationAnalyzer.analyzeOrigin(headerMap, auth, arc?.status);
+        const exchange = ExchangeAnalyzer.analyze(headerMap);
 
         const { verdict, score, anomalies, scoreFactors } = this.calculateVerdict(headerMap, auth, hops);
         const impersonationAlert = this.detectImpersonation(headerMap, auth);
@@ -178,6 +185,8 @@ export class HeaderParser {
             impersonationAlert,
             recommendedActions,
             arc,
+            originAuth,
+            exchange,
             xHeaders,
             attachments
         };

@@ -35,7 +35,7 @@ MXLens starts every email at **100 points** and deducts points for each threat d
 
 ---
 
-# SECTION 1: EMAIL AUTHENTICATION (16 Rules)
+# SECTION 1: EMAIL AUTHENTICATION (19 Rules)
 
 These rules analyze the technical headers that prove whether an email actually came from who it claims to be from.
 
@@ -81,6 +81,15 @@ DMARC (Domain-based Message Authentication, Reporting, and Conformance) is the g
 | **Why It Matters** | Anyone can send emails claiming to be from this domain. No authentication protection. |
 | **How to Test** | Email without any `dmarc=` result in Authentication-Results |
 | **Score Impact** | **-15 points** |
+| **Severity** | 🟡 Medium |
+
+### Rule 1.1.5: DMARC `bestguesspass` (Inferred, Not a Pass)
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | Microsoft reports `dmarc=bestguesspass` when the domain publishes **no** DMARC record and SPF/DKIM happen to align |
+| **Why It Matters** | It looks like a pass but is an inference. MXLens treats it as "no DMARC", labels the DMARC card as a warning, and never counts it as a verified pass (the self-domain rule below also ignores it). |
+| **How to Test** | `tests/fixtures/email/gateway-masked-phish.eml` (`dmarc=bestguesspass action=none`) |
+| **Score Impact** | **-15 points** (same as 1.1.4, with a reason that names `bestguesspass`) |
 | **Severity** | 🟡 Medium |
 
 ---
@@ -216,8 +225,33 @@ These rules examine how the email traveled across the internet.
 | **What It Detects** | Authentication-Results added by a server that is not a well-known provider |
 | **Why It Matters** | The SPF/DKIM/DMARC results cannot be independently verified. Most organizations run their own receiving servers, so this lowers confidence rather than indicating phishing. Provider domains match on a label boundary (`google.com.attacker.example` is not trusted). |
 | **How to Test** | Email with Authentication-Results from `mx.example.org` |
+| **Parsing note** | The authserv-id is read without its optional version token (`mx.microsoft.com 1` → `mx.microsoft.com`), and `microsoft.com` (Exchange Online / EOP) is a recognized provider. |
 | **Score Impact** | **-5 points**, no "Trusted Authentication Source" confidence bonus |
 | **Severity** | 🟢 Low |
+
+---
+
+## 1.6 Gateway-Aware Authentication
+
+When a secure email gateway (Trend Micro, Mimecast, Proofpoint, ...) sits in front of Exchange Online, EOP evaluates SPF against the **gateway's** IP, which the domain authorizes. A message that failed SPF/DMARC at the edge can therefore show `spf=pass` in the final `Authentication-Results`. MXLens reads the earliest recorded evaluation (ARC `i=1`, otherwise a vendor header such as `X-TM-Authentication-Results`) and compares it with the final result. Evidence is read even when the ARC chain failed, but is labelled unverified and never feeds the ARC override.
+
+### Rule 1.6.1: Authentication Masked by Intermediary
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | The earliest evaluation recorded SPF `softfail`/`fail` or DMARC `fail` (and DMARC did not pass), while the final result shows SPF `pass` for a different IP |
+| **Why It Matters** | The final pass describes the relay, not the sender. This is how spoofed mail with no origin authentication reaches an inbox through an allow-listed gateway. A DMARC pass at the origin (forwarding that preserved DKIM) is **not** flagged. |
+| **How to Test** | `tests/fixtures/email/gateway-masked-phish.eml` |
+| **Score Impact** | **-35 points** |
+| **Severity** | 🟠 High |
+
+### Rule 1.6.2: Spam Filtering Bypassed (SCL -1)
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | `X-MS-Exchange-Organization-SCL: -1` with `AuthAs: Anonymous` **and** a masked origin (rule 1.6.1) |
+| **Why It Matters** | Explains why the message was delivered unfiltered (connector or transport-rule allow-listing). On its own SCL -1 is not penalized, because allow-listed senders are legitimate. The report always shows SCL, AuthAs and `compauth` (`reason=109` means no DMARC record, passed implicit evaluation). |
+| **How to Test** | Same fixture |
+| **Score Impact** | **-5 points** |
+| **Severity** | ⚪ Low |
 
 ---
 
@@ -235,7 +269,8 @@ These rules scan the content of the email for suspicious patterns.
 | **How to Test** | Include "Verify your account immediately or it will be suspended" in body |
 | **Score Impact** | **-10 points** |
 | **Severity** | ⚪ Low |
-| **Example Phrases** | "urgent", "immediately", "within 24 hours", "verify now", "act fast" |
+| **Example Phrases** | "urgent", "immediately", "within 24 hours", "within 72 hrs", "blocked", "deactivated", "action required", "verify now", "act fast" |
+| **Scope** | Matched against the **visible text** (HTML stripped, entities decoded) plus the subject, so HTML-only messages are analyzed and markup/CSS cannot trigger it |
 
 ### Rule 2.2: Credential Harvesting Keywords
 | Aspect | Details |
@@ -245,7 +280,7 @@ These rules scan the content of the email for suspicious patterns.
 | **How to Test** | Include "Please update your login password to secure your account" |
 | **Score Impact** | **-30 points** |
 | **Severity** | 🔴 Critical |
-| **Example Phrases** | "password", "login", "verify account", "update security", "confirm identity" |
+| **Example Phrases** | "password", "login", "verify account", "update security", "confirm your account", "confirm your identity", "account verification", "mailbox full" |
 
 ### Rule 2.3: HTML Form in Email Body
 | Aspect | Details |
@@ -449,7 +484,7 @@ These rules inspect attached files for malware, masquerading, and dangerous cont
 
 ---
 
-# SECTION 4: IMPERSONATION DETECTION (4 Rules)
+# SECTION 4: IMPERSONATION DETECTION (6 Rules)
 
 These rules detect when attackers pretend to be trusted brands or executives.
 
@@ -490,6 +525,24 @@ These rules detect when attackers pretend to be trusted brands or executives.
 | **Why It Matters** | `"HR Department" <hr@company.com>` is likely legitimate internal email. |
 | **Score Impact** | **No penalty** |
 | **Severity** | ✅ Pass |
+
+
+### Rule 4.5: Self-Domain Sender Without Real DMARC
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | From domain equals the recipient's own organization, the message was not attributed as internal by Exchange (`AuthAs`), and DMARC is not a verified pass (`bestguesspass` does not count) |
+| **Why It Matters** | Attackers send "from" the victim's domain to its own staff because users trust internal-looking mail. Genuine internal mail is authenticated as internal or passes real DMARC. |
+| **How to Test** | `tests/fixtures/email/gateway-masked-phish.eml` |
+| **Score Impact** | **-20 points** (**-25** when the display name is just the bare domain) |
+| **Severity** | 🟡 Medium |
+
+### Rule 4.6: Local Mail Injection
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | Oldest `Received` hop is a local hand-off (`from helo (localhost [::1]) by host`) on a host unrelated to the From domain, **and** the earliest evaluation failed SPF/DMARC |
+| **Why It Matters** | Points to a script or web shell on someone else's server rather than the claimed sender's mail system. Ignored when the origin evaluation passed, because web apps legitimately do this. |
+| **Score Impact** | **-5 points** |
+| **Severity** | ⚪ Low |
 
 ---
 
@@ -579,7 +632,7 @@ Attackers often send emails that look like replies to trick recipients.
 
 ---
 
-# SECTION 7: LINK OBFUSCATION DETECTION (4 Rules)
+# SECTION 7: LINK OBFUSCATION DETECTION (9 Rules)
 
 These rules detect attempts to hide malicious URLs.
 
@@ -621,6 +674,47 @@ These rules detect attempts to hide malicious URLs.
 | **Why It Matters** | These are internal/development links, not attacks. |
 | **Score Impact** | **No penalty** |
 | **Severity** | ✅ Pass |
+
+
+### Rule 7.5: Phishing Kit Hosting (IPFS / Compromised CMS)
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | Links to an IPFS gateway (`*.ipfs.*`, `ipfs.io`, `dweb.link`, `inbrowser.link`, CID subdomains, `/ipfs/<CID>` paths) and/or to a `.php`/`.html` file inside `/wp-content/{plugins,themes,uploads}/` on a site that is **not** the sender's own |
+| **Why It Matters** | IPFS hosting dodges takedown and domain reputation. A script planted in a compromised WordPress plugin directory is the classic hosting pattern for credential-harvesting kits. Plain uploads such as `/wp-content/uploads/report.pdf` are ignored. |
+| **How to Test** | `<a href="https://ipfs.io/ipfs/Qm...">` or `http://other.example/wp-content/plugins/x/index.php?e=1` |
+| **Score Impact** | **-20** (IPFS), **-25** (CMS kit), **-45** combined |
+| **Severity** | 🔴 Critical when both |
+
+### Rule 7.6: Recipient-Personalized Link
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | A link to a third-party host whose query or fragment contains an email address (`?email=alice@...`, `#alice@...`) |
+| **Why It Matters** | Kits prefill the victim's address so the fake sign-in page looks personal. First-party links and unsubscribe/preferences paths are ignored. |
+| **Score Impact** | **-15** when it is the recipient's address, **-10** for any other address |
+| **Severity** | 🟡 Medium |
+
+### Rule 7.7: Unrendered Template Placeholder
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | Leftover merge tags such as `[[-Email-]]`, `{{ name }}`, `%%FIRSTNAME%%`, `##X##`, `${x}` in link targets (including percent-encoded and Gmail `data-saferedirecturl` rewrites) or visible text |
+| **Why It Matters** | Real senders render templates before sending; a leaked placeholder marks a bulk phishing kit. The Gmail rewrite attribute is noted as supporting evidence (the template was copied from a mailbox) but is never a finding on its own and is excluded from the extracted URL list. |
+| **Score Impact** | **-10 points** |
+| **Severity** | 🟡 Medium |
+
+### Rule 7.8: Invisible Link
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | A clickable anchor with no visible text and no image (e.g. only `&nbsp;`) |
+| **Why It Matters** | A hidden click target. Stronger when it leads to a different site than the visible links. Image-only anchors are normal and ignored. |
+| **Score Impact** | **-15** (different site), **-5** (same site) |
+| **Severity** | 🟡 Medium |
+
+### Rule 7.9: Open Redirect via `google.com/url?q=`
+| Aspect | Details |
+|--------|---------|
+| **What It Detects** | A Google redirect URL whose `q` parameter holds an external target (previously only `url`, `dest`, `target`, ... were checked) |
+| **Score Impact** | **-10 points** |
+| **Severity** | ⚪ Low |
 
 ---
 
@@ -811,6 +905,7 @@ Use these complete test cases to verify the detection engine.
 | **BEC Attack** | CEO display name, gmail Reply-To, body: "Urgent wire transfer" | 🟡 SUSPICIOUS | 30-50 |
 | **Quishing Attack** | SPF pass, attached QR code image with URL, body: "Scan to verify" | 🟡 SUSPICIOUS | 50-70 |
 | **Fake Reply** | Subject: "Re: Invoice", no In-Reply-To header | 🟡 SUSPICIOUS | 25-40 |
+| **Gateway-Masked Spoof** | `gateway-masked-phish.eml`: edge SPF softfail + DMARC fail (no record), final `spf=pass` for the gateway IP, `bestguesspass`, SCL -1, IPFS + WordPress-kit links, `[[-Email-]]` leftover | 🔴 MALICIOUS | 0-10 |
 | **ISO Malware** | Unknown AuthServ-ID, attachment: malware.iso, body: "Download required update" | 🔴 MALICIOUS | 0-15 |
 
 ---

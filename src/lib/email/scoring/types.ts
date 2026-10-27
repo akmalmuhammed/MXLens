@@ -35,6 +35,15 @@ export interface NormalizedSignals {
     multipleAuthHeaders: boolean;
     authservId: string | null;
 
+    /** Receiver reported dmarc=bestguesspass: no DMARC record, result inferred. */
+    dmarcBestGuess: boolean;
+    /** Earliest evaluator failed SPF/DMARC but the final result passed for a relay IP. */
+    originAuthMasked: boolean;
+    /** Human-readable summary of the masked origin evaluation, when masked. */
+    originAuthSummary: string | null;
+    /** Exchange skipped spam filtering (SCL -1) for an anonymous external connection. */
+    exchangeFilteringBypassed: boolean;
+
     receivedHopCount: number;
     hasReceivedHeaders: boolean;
     headerInjectionDetected: boolean;
@@ -52,6 +61,8 @@ export interface NormalizedSignals {
     references: string | null;
 
     bodyAnalysisEnabled: boolean;
+    /** Text a recipient would read (HTML stripped, entities decoded) plus plain text part. */
+    visibleText?: string;
     hasUrgency: boolean;
     hasCredentialHarvesting: boolean;
     hasHiddenText: boolean;

@@ -20,7 +20,13 @@ export class HeaderScorer {
             }
         } else {
             score -= 15;
-            penalties.push({ reason: "No DMARC Result Found", value: -15, source: 'header' as const });
+            penalties.push({
+                reason: signals.dmarcBestGuess
+                    ? "No DMARC Record Published (receiver only inferred 'bestguesspass')"
+                    : "No DMARC Result Found",
+                value: -15,
+                source: 'header' as const
+            });
         }
 
         // SPF
@@ -76,6 +82,30 @@ export class HeaderScorer {
         } else if (signals.arcResult === "fail") {
             score -= 20;
             penalties.push({ reason: "ARC Chain Broken", value: -20, source: 'header' as const });
+        }
+
+        // GATEWAY MASKING
+        // A secure email gateway in front of the mailbox provider makes the provider
+        // evaluate SPF against the gateway's own (authorized) IP. When the gateway's
+        // earlier evaluation of the real sender failed, the final "pass" is not evidence
+        // that the sender is who they claim to be.
+        if (signals.originAuthMasked) {
+            score -= 35;
+            penalties.push({
+                reason: `Authentication Masked by Intermediary: ${signals.originAuthSummary ?? "the original sender failed SPF/DMARC before relay"}`,
+                value: -35,
+                source: 'header' as const
+            });
+
+            if (signals.exchangeFilteringBypassed) {
+                score -= 5;
+                penalties.push({
+                    reason: "Spam Filtering Bypassed (SCL -1, anonymous external sender)",
+                    value: -5,
+                    warning: true,
+                    source: 'header' as const
+                });
+            }
         }
 
         // ROUTING
