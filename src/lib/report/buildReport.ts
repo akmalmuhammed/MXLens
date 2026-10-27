@@ -442,6 +442,7 @@ function toAttachmentRow(attachment: AttachmentSignal): AttachmentRow {
     if (attachment.isExecutable) flags.push("Executable");
     if (attachment.isScript) flags.push("Script");
     if (attachment.hasDoubleExtension) flags.push("Double extension");
+    if (attachment.hasBidiOverride) flags.push("Right-to-left override in name");
     if (attachment.isMasquerading) flags.push(`Really ${attachment.magicType?.toUpperCase() ?? "another type"}`);
     if (attachment.macroDetected) flags.push("Contains macros");
     else if (attachment.isMacroEnabled) flags.push("Macro-enabled type");

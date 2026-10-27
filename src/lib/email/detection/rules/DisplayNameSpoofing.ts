@@ -39,6 +39,26 @@ export class DisplayNameSpoofingDetector implements Detector {
             }
         }
 
+        // Microsoft Q1 2026: sender names stuffed with URLs/tracking hosts
+        // ("awstrack.me", "zoom.nl") to borrow their reputation in the inbox preview.
+        const domainInName = displayName.toLowerCase().match(/\b(?:https?:\/\/)?((?:[a-z0-9-]+\.)+[a-z]{2,})\b/);
+        const from = context.signals.fromDomain.toLowerCase();
+        if (domainInName && from) {
+            const claimed = domainInName[1];
+            const claimedOrg = claimed.split(".").slice(-2).join(".");
+            const fromOrg = from.split(".").slice(-2).join(".");
+            if (claimedOrg !== fromOrg && !/^(?:e\.g|i\.e|n\.a|a\.m|p\.m)$/.test(claimed)) {
+                return {
+                    triggered: true,
+                    score: 0.6,
+                    penalty: -10,
+                    name: "Domain in Display Name",
+                    reason: `Display name shows the domain "${claimed}" but the message is from ${from}.`,
+                    metadata: { claimed, actual: from }
+                };
+            }
+        }
+
         return null;
     }
 }

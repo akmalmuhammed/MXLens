@@ -65,3 +65,78 @@ export function extractAnchors(html: string, limit = 500): HtmlAnchor[] {
     }
     return anchors;
 }
+
+// Inline styles that make content invisible to the reader while it stays in the
+// message source (where spam filters and AI assistants still read it).
+const HIDDEN_STYLE = new RegExp([
+    "display\\s*:\\s*none",
+    "visibility\\s*:\\s*hidden",
+    "font-size\\s*:\\s*0*[01](?:\\.0+)?(?:px|pt)?\\s*(?:!important\\s*)?(?:;|$)",
+    "font-size\\s*:\\s*0(?:\\.0+)?(?:em|rem|%)\\s*(?:;|$)",
+    "opacity\\s*:\\s*0(?:\\.0+)?\\s*(?:;|$)",
+    "max-height\\s*:\\s*0(?:px)?\\s*(?:;|$)",
+    "mso-hide\\s*:\\s*all"
+].join("|"), "i");
+
+export interface HiddenSegment {
+    /** Visible-text rendering of the hidden element's content. */
+    text: string;
+    /** Which CSS rule hid it, for reporting. */
+    rule: string;
+}
+
+/**
+ * Text inside elements a recipient cannot see (display:none, zero font, opacity:0, ...).
+ * Matching is bounded and tolerant of malformed HTML; nested hidden elements are
+ * reported once, as part of their outermost hidden ancestor.
+ */
+export function extractHiddenText(html: string, limit = 200): HiddenSegment[] {
+    const out: HiddenSegment[] = [];
+    if (!html) return out;
+    const opener = /<([a-z][a-z0-9]{0,15})\b([^>]{0,2000})>/gi;
+    let coveredUntil = -1;
+    let m: RegExpExecArray | null;
+    while ((m = opener.exec(html)) !== null && out.length < limit) {
+        if (m.index < coveredUntil) continue;
+        const style = m[2].match(/\bstyle\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+        const styleValue = style ? (style[1] ?? style[2] ?? "") : "";
+        const hiddenAttr = /\shidden(?:\s|=|$)/i.test(m[2]);
+        const rule = styleValue.match(HIDDEN_STYLE)?.[0] ?? (hiddenAttr ? "hidden attribute" : null);
+        if (!rule) continue;
+
+        const tag = m[1].toLowerCase();
+        if (/^(br|img|hr|input|meta|link|col|area|base|wbr|source)$/.test(tag)) continue;
+        const end = findClosing(html, tag, opener.lastIndex);
+        const inner = html.slice(opener.lastIndex, end);
+        coveredUntil = end;
+        const text = htmlToVisibleText(inner);
+        if (text) out.push({ text, rule: rule.replace(/\s+/g, "").replace(/;$/, "") });
+    }
+    return out;
+}
+
+function findClosing(html: string, tag: string, from: number): number {
+    const re = new RegExp(`<(/?)${tag}\\b[^>]{0,2000}>`, "gi");
+    re.lastIndex = from;
+    let depth = 1;
+    let m: RegExpExecArray | null;
+    const max = Math.min(html.length, from + 50000);
+    while ((m = re.exec(html)) !== null && m.index < max) {
+        depth += m[1] ? -1 : 1;
+        if (depth === 0) return m.index;
+    }
+    return Math.min(html.length, max);
+}
+
+/** Text of HTML comments, excluding Outlook conditional-comment markup. */
+export function extractCommentText(html: string): string {
+    if (!html) return "";
+    const parts: string[] = [];
+    for (const m of html.matchAll(/<!--([\s\S]{0,20000}?)-->/g)) {
+        const body = m[1];
+        if (/^\s*\[if\b|<!\[endif\]|^\s*\[endif\]/i.test(body)) continue;
+        const text = htmlToVisibleText(body);
+        if (text) parts.push(text);
+    }
+    return parts.join(" ");
+}

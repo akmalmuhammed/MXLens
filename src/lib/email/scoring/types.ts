@@ -8,6 +8,7 @@ export interface AttachmentSignal {
     magicType: string | null;             // Detected file type from bytes
     isMasquerading: boolean;              // magicType !== extension
     hasDoubleExtension: boolean;          // e.g., invoice.pdf.exe
+    hasBidiOverride: boolean;             // Right-to-left override in the filename
     isExecutable: boolean;                // .exe, .scr, .bat, .cmd
     isMacroEnabled: boolean;              // .docm, .xlsm, .pptm (Extension based)
     macroDetected: boolean;               // True if vbaProject.bin found in content
@@ -43,6 +44,9 @@ export interface NormalizedSignals {
     originAuthSummary: string | null;
     /** Exchange skipped spam filtering (SCL -1) for an anonymous external connection. */
     exchangeFilteringBypassed: boolean;
+    /** Microsoft composite authentication verdict and reason code, when present. */
+    compauthResult: string | null;
+    compauthReason: string | null;
 
     receivedHopCount: number;
     hasReceivedHeaders: boolean;

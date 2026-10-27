@@ -3,7 +3,19 @@ import { NormalizedSignals, AttachmentSignal, ParsedEmailAttachment, ParsedEmail
 import { UrlAnalyzer } from "../analysis/UrlAnalyzer";
 import { getFirstHeaderValue, getHeaderValue, getHeaderValues } from "../parser/HeaderUtils";
 import { AuthenticationAnalyzer } from "../parser/Authentication";
-import { decodeHtmlEntities, htmlToVisibleText } from "../analysis/HtmlText";
+import { decodeHtmlEntities, extractHiddenText, htmlToVisibleText } from "../analysis/HtmlText";
+import { extractPdfUris } from "../analysis/PdfLinks";
+
+// Attachment types grouped by how they hurt. Executables run code directly; "script" types
+// run through an interpreter or app (including OneNote, Excel web queries and SVG is handled
+// by the markup detector); shortcut types point Windows at remote content.
+const EXECUTABLE_EXTS = ['exe', 'scr', 'bat', 'cmd', 'com', 'pif', 'hta', 'msc', 'cpl', 'msi', 'msix', 'msixbundle', 'appx', 'appxbundle', 'appinstaller', 'xll', 'scf', 'chm', 'application', 'gadget', 'jnlp', 'reg', 'dll', 'sys', 'ocx', 'msp', 'mst'];
+const SCRIPT_EXTS = ['js', 'jse', 'vbs', 'vbe', 'wsf', 'wsh', 'ps1', 'psm1', 'jar', 'py', 'sh', 'html', 'htm', 'xhtml', 'shtml', 'mht', 'mhtml', 'one', 'onepkg', 'iqy', 'slk', 'xlam', 'ppam'];
+const SHORTCUT_EXTS = ['lnk', 'url', 'webloc', 'desktop', 'website', 'library-ms', 'search-ms', 'searchconnector-ms', 'settingcontent-ms'];
+const DOUBLE_EXT_TARGETS = [...EXECUTABLE_EXTS, 'js', 'jse', 'vbs', 'vbe', 'wsf', 'ps1', 'lnk', 'html', 'htm', 'svg'];
+const DOUBLE_EXT_DECOYS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'csv', 'rtf', 'mp3', 'wav', 'mp4', 'zip'];
+// Right-to-left override and friends can make "invoice\u202Efdp.exe" display as "invoiceexe.pdf".
+const BIDI_CONTROLS = /[\u202A-\u202E\u2066-\u2069\u200E\u200F]/;
 
 export class SignalNormalizer {
     static async normalize(
@@ -69,8 +81,9 @@ export class SignalNormalizer {
         if (options.checkAttachments && emailBody && emailBody.attachments) {
             for (const att of emailBody.attachments) {
                 const rawFilename = att.filename || 'unknown';
-                const ext = rawFilename.split('.').pop()?.toLowerCase() || "";
-                const filename = rawFilename.toLowerCase();
+                const hasBidiOverride = BIDI_CONTROLS.test(rawFilename);
+                const filename = rawFilename.toLowerCase().replace(new RegExp(BIDI_CONTROLS.source, 'g'), '').replace(/[\s.]+$/, '');
+                const ext = filename.split('.').pop() || "";
                 const content = this.toUint8Array(att.content);
 
                 // Advanced Analysis (Hash & Magic Bytes)
@@ -80,8 +93,8 @@ export class SignalNormalizer {
                 // Check for double extension
                 const parts = filename.split('.');
                 const hasDoubleExtension = parts.length > 2 &&
-                    ['exe', 'scr', 'bat', 'com', 'pif', 'js', 'vbs'].includes(parts[parts.length - 1]) &&
-                    ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'jpg', 'png'].includes(parts[parts.length - 2]);
+                    DOUBLE_EXT_TARGETS.includes(parts[parts.length - 1]) &&
+                    DOUBLE_EXT_DECOYS.includes(parts[parts.length - 2].trim());
 
                 // Check for Masquerading (Mismatch between Magic Bytes and Extension)
                 // e.g. Magic=EXE but Extension=PDF
@@ -102,7 +115,12 @@ export class SignalNormalizer {
                 if ((magicType === 'pdf' || (ext === 'pdf' && magicType !== 'exe')) && content) {
                     try {
                         const { extractLinksFromPdf } = await import('@/utils/pdf.client');
-                        const pdfLinks = await extractLinksFromPdf(this.toArrayBuffer(content));
+                        // pdf.js only runs in the browser; the native extractor also covers the CLI
+                        // and compressed object streams pdf.js annotations may not expose.
+                        const pdfLinks = [...new Set([
+                            ...await extractLinksFromPdf(this.toArrayBuffer(content)),
+                            ...await extractPdfUris(content)
+                        ])];
                         if (pdfLinks && pdfLinks.length > 0) {
                             if (!bodySignals.extractedUrls) bodySignals.extractedUrls = [];
                             bodySignals.extractedUrls.push(...pdfLinks);
@@ -122,16 +140,17 @@ export class SignalNormalizer {
                     magicType,
                     isMasquerading,
                     hasDoubleExtension,
-                    isExecutable: ['exe', 'scr', 'bat', 'cmd', 'com', 'pif'].includes(ext) || magicType === 'exe',
+                    hasBidiOverride,
+                    isExecutable: EXECUTABLE_EXTS.includes(ext) || magicType === 'exe' || magicType === 'elf',
                     isMacroEnabled: ['docm', 'xlsm', 'pptm'].includes(ext),
                     macroDetected,
-                    isScript: ['js', 'vbs', 'ps1', 'jar', 'py', 'sh', 'html', 'htm'].includes(ext),
+                    isScript: SCRIPT_EXTS.includes(ext),
                     dangerousFunctions,
                     // Phase 4: Enhanced Detection
                     isArchive: ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'cab'].includes(ext) || magicType === 'zip',
                     isPasswordProtected: this.isPasswordProtectedArchive(content, magicType || 'unknown'),
                     isDiskImage: ['iso', 'img', 'vhd', 'vhdx', 'dmg'].includes(ext) || magicType === 'iso',
-                    isShortcut: ['lnk', 'url', 'webloc', 'desktop'].includes(ext),
+                    isShortcut: SHORTCUT_EXTS.includes(ext),
                     lnkTarget: ext === 'lnk' ? this.extractLnkTarget(content) : undefined,
                     nestedFiles: this.detectNestedFiles(content, magicType || 'unknown', ext)
                 });
@@ -208,6 +227,8 @@ export class SignalNormalizer {
             originAuthMasked: headerResult.originAuth?.masked === true,
             originAuthSummary: headerResult.originAuth?.masked ? this.describeOrigin(headerResult.originAuth) : null,
             exchangeFilteringBypassed: headerResult.exchange?.filteringBypassed === true,
+            compauthResult: headerResult.exchange?.compauth ?? null,
+            compauthReason: headerResult.exchange?.compauthReason ?? null,
 
             // Routing
             receivedHopCount: headerResult.hops.length,
@@ -289,8 +310,7 @@ export class SignalNormalizer {
         // Limit the search scope for attributes to reasonable lengths
         const hasForm =
             /<form[\s>]/i.test(html) ||
-            /<input(?:\s+[^>]{0,1000})?\s+type=["']?password["']?/i.test(html) ||
-            /action\s*=\s*["'][^"']{0,1000}["']/i.test(html);
+            /<input(?:\s+[^>]{0,1000})?\s+type=["']?password["']?/i.test(html);
 
         // Links
         // Links - Bounded Repeat to prevent ReDoS on massive strings
@@ -301,20 +321,20 @@ export class SignalNormalizer {
         const withoutRewrites = text.replace(/\bdata-saferedirecturl\s*=\s*(?:"[^"]{0,4000}"|'[^']{0,4000}')/gi, " ");
         const urls = (decodeHtmlEntities(withoutRewrites).match(urlRegex) || []);
         // Basic IP check: http://1.2.3.4
-        const ipLink = urls.some(u => /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}(?:\/|$)/.test(u));
+        const ipLink = urls.some(u => /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}(?:[:/?#]|$)/.test(u));
 
         // Hidden Text / Evasion Detection
-        // Only flag if hidden elements contain suspicious patterns (avoid FP on responsive design)
-        // 1. Look for font-size: 0 or 1px (almost always malicious)
-        // 2. Only flag display:none/visibility:hidden if combined with urgency or credential keywords
-        const hasZeroFont = /font-size:\s*(?:0|1)px/i.test(html);
-        const hasHiddenCSS = /display:\s*none|visibility:\s*hidden|opacity:\s*0(?!\.)/i.test(html);
-        const hasWhiteText = /color:\s*(?:#fff|#ffffff|white|rgb\(255,\s*255,\s*255\))/i.test(html);
-
-        // Zero-font is almost always malicious - flag immediately
-        // For other hidden patterns, only flag if body also has urgency OR credential keywords
-        const invisibleText = hasZeroFont ||
-            ((hasHiddenCSS || hasWhiteText) && (urgency.test(t) || credential.test(t)));
+        // Hidden preheaders and responsive (mobile-only) blocks are normal in marketing mail,
+        // so the mere presence of display:none or a 1px font is not a signal. Flag:
+        //  1. ZeroFont: zero-size junk spliced inside visible words to break keyword filters
+        //  2. hidden content that itself carries credential/urgency wording
+        //  3. hidden-text "salting": more hidden filler than visible text
+        const zeroFontSplice = /[a-z]<span\b[^>]{0,300}font-size\s*:\s*0(?:px|pt)?\s*[;"'][^>]{0,300}>[^<]{1,30}<\/span>[a-z]/i.test(html);
+        const hidden = extractHiddenText(html);
+        const hiddenJoined = hidden.map(h => h.text).join(" ");
+        const hiddenLure = hidden.some(h => h.text.length > 15 && (urgency.test(h.text) || credential.test(h.text)));
+        const salting = hiddenJoined.length > 1000 && hiddenJoined.length > visible.length;
+        const invisibleText = zeroFontSplice || hiddenLure || salting;
 
         // Advanced URL Analysis
         const urlAnalysis = UrlAnalyzer.analyze(html);

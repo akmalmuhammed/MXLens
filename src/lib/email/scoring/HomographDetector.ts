@@ -7,33 +7,23 @@ export class HomographDetector {
         // 1. Mixed Script Detection (Cyrillic/Greek/Latin mixing)
         // Common attack: 'a' (Cyrillic U+0430) vs 'a' (Latin U+0061)
 
-        // Regex for non-Latin characters often used in spoofing
-        // Cyrillic, Greek, etc.
-        const nonLatin = /[^\u0000-\u007F]/;
+        // Punycode is plain ASCII, so check it before the non-ASCII gate (it used to be
+        // unreachable). Any label may be encoded, not just the first: login.xn--pypal-4ve.com
+        if (/(?:^|\.)xn--/i.test(text)) {
+            return { detected: true, reason: "Punycode (xn--) label detected - encoded Unicode domain" };
+        }
 
-        if (nonLatin.test(text)) {
-            // If it has non-latin chars, check if they are mixed with Latin in a suspicious way
-            // or if it's Punycode (xn--)
-
-            // Punycode in display text? suspicious if not decoded
-            if (text.startsWith("xn--")) {
-                return { detected: true, reason: "Punycode (xn--) detected in display text" };
+        if (/[^\u0000-\u007F]/.test(text)) {
+            // Zero-width and bidirectional control characters
+            if (/[\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF]/.test(text)) {
+                return { detected: true, reason: "Invisible/Zero-width or bidirectional control characters detected" };
             }
 
-            // Invisible characters check
-            // Zero-width space, joiner, non-joiner, etc.
-            const invisibleChars = /[\u200B-\u200D\uFEFF]/;
-            if (invisibleChars.test(text)) {
-                return { detected: true, reason: "Invisible/Zero-width characters detected" };
-            }
-
-            // Mixed Script Heuristic (Simplified)
-            // If we have both Latin and Cyrillic in the same string, it's highly suspicious for a domain/email
+            // Latin mixed with a confusable script (Cyrillic, Greek, Armenian, Cherokee)
             const hasLatin = /[a-zA-Z]/.test(text);
-            const hasCyrillic = /[\u0400-\u04FF]/.test(text);
-
-            if (hasLatin && hasCyrillic) {
-                return { detected: true, reason: "Mixed Script (Latin + Cyrillic) Detected - Potential Homograph Attack" };
+            const confusable = /[\u0370-\u03FF\u0400-\u04FF\u0500-\u052F\u0530-\u058F\u13A0-\u13FF]/.test(text);
+            if (hasLatin && confusable) {
+                return { detected: true, reason: "Mixed Script (Latin + Cyrillic/Greek/Armenian) Detected - Potential Homograph Attack" };
             }
         }
 

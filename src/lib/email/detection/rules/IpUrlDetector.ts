@@ -6,16 +6,18 @@ export class IpUrlDetector implements Detector {
     description = "Detects links that use raw IP addresses instead of domains.";
     tags: ('auth' | 'content' | 'link' | 'malware' | 'identity')[] = ['link'];
 
-    // Regex for IP v4
-    private ipRegex = /https?:\/\/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/g;
+    // IPv4 host, optionally with port/path. No /g flag: .test() on a global regex keeps
+    // lastIndex between calls and silently skips every other URL.
+    private ipRegex = /^https?:\/\/(?:[^@/?#]*@)?((?:[0-9]{1,3}\.){3}[0-9]{1,3})(?:[:/?#]|$)/i;
 
     detect(context: DetectionContext): DetectionResult | null {
         if (!context.signals.extractedUrls || context.signals.extractedUrls.length === 0) return null;
 
         const ipLinks = context.signals.extractedUrls.filter(url => {
-            // Skip common local IPs 127.0.0.1, 192.168...
-            if (url.includes("127.0.0.1") || url.includes("localhost")) return false;
-            return this.ipRegex.test(url);
+            const ip = url.match(this.ipRegex)?.[1];
+            if (!ip) return false;
+            // Loopback, RFC1918 and link-local addresses are internal tooling, not attacker hosting.
+            return !/^(?:127\.|10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.|169\.254\.|0\.)/.test(ip);
         });
 
         if (ipLinks.length > 0) {

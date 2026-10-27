@@ -131,6 +131,7 @@ function summarizeSignals(signals: NormalizedSignals) {
                 attachment.isMacroEnabled ||
                 attachment.macroDetected ||
                 attachment.hasDoubleExtension ||
+                attachment.hasBidiOverride ||
                 attachment.isMasquerading ||
                 attachment.isScript ||
                 attachment.isDiskImage ||

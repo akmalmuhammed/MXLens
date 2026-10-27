@@ -68,7 +68,10 @@ export class UrlAnalyzer {
                 for (const brand of this.TOP_BRANDS) {
                     // If hostname STARTS with brand but doesn't end with brand.TLD
                     // e.g. "paypal.com.security-check.com"
-                    if (hrefHostname.includes(brand) && !this.isOfficialDomain(hrefHostname, brand)) {
+                    // Brand must be a whole label or hyphen/dot-delimited token, so
+                    // "purchase.example" is not "chase" and "pineapple" is not "apple".
+                    const brandToken = new RegExp(`(?:^|[.-])${brand}(?:$|[.-])`);
+                    if (brandToken.test(hrefHostname) && !this.isOfficialDomain(hrefHostname, brand)) {
                         // Check if brand is in the SLD (Second Level Domain)
                         const sld = this.getSLD(hrefHostname);
                         if (!sld.includes(brand)) {
@@ -148,6 +151,7 @@ export class UrlAnalyzer {
 
     private static isOfficialDomain(hostname: string, brand: string): boolean {
         // Simplified check. Realworld needs a comprehensive list or flexible logic.
-        return hostname.includes(`${brand}.com`) || hostname.includes(`${brand}.net`) || hostname.includes(`${brand}.org`);
+        // Registrable domain must be the brand itself (label boundary), not merely contain it.
+        return [`${brand}.com`, `${brand}.net`, `${brand}.org`].some(d => hostname === d || hostname.endsWith(`.${d}`));
     }
 }

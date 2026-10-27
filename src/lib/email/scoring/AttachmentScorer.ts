@@ -64,6 +64,12 @@ export class AttachmentScorer {
                 penalties.push({ reason: `Dangerous Files in Archive: ${att.filename} contains [${att.nestedFiles.join(', ')}]`, value: -85, critical: true, source: 'attachment' as const });
             }
 
+            // CRITICAL: Right-to-left override disguises the real extension
+            if (att.hasBidiOverride) {
+                basePenalty = Math.max(basePenalty, 70);
+                penalties.push({ reason: `Filename Uses Right-to-Left Override: ${att.filename.replace(/[\u202A-\u202E\u2066-\u2069\u200E\u200F]/g, "[RLO]")} hides its real extension`, value: -70, critical: true, source: 'attachment' as const });
+            }
+
             // MEDIUM: Double Extension
             if (att.hasDoubleExtension) {
                 basePenalty = Math.max(basePenalty, 70);
