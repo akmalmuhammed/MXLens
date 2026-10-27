@@ -1,0 +1,41 @@
+Received: from DB9PR00MB0001.EXAMPLE.PROD.OUTLOOK.example (2001:db8:790:b::11) by DB9PR00MB0002.EXAMPLE.PROD.OUTLOOK.example with HTTPS; Mon, 26 Oct 2026 07:55:09 +0000
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=fail; b=c3ludGhldGljLXNlYWwtMg==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; s=arcselector10001; h=From:Date:Subject:Message-ID; bh=c3ludGhldGlj; b=c3ludGhldGljLW1zLTI=
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is 203.0.113.61) smtp.rcpttodomain=corp.example smtp.mailfrom=corp.example; dmarc=bestguesspass action=none header.from=corp.example; dkim=none (message not signed); arc=fail (35)
+Received: from DB9PR00MB0003.EXAMPLE.PROD.OUTLOOK.example (2001:db8:10:9e::6) by DB9PR00MB0001.EXAMPLE.PROD.OUTLOOK.example (2001:db8:790:b::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Mon, 26 Oct 2026 07:55:05 +0000
+Received: from MB1PEPF00000001.example.prod.outlook.example (2001:db8:10:9e:cafe::91) by DB9PR00MB0003.EXAMPLE.PROD.OUTLOOK.example (2001:db8:10:9e::6) with Microsoft SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.6 via Frontend Transport; Mon, 26 Oct 2026 07:55:04 +0000
+Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP is 203.0.113.61) smtp.mailfrom=corp.example; dkim=none (message not signed) header.d=none;dmarc=bestguesspass action=none header.from=corp.example;compauth=pass reason=109
+Received-SPF: Pass (protection.outlook.example: domain of corp.example designates 203.0.113.61 as permitted sender) receiver=protection.outlook.example; client-ip=203.0.113.61; helo=gateway.example.net; pr=C
+Received: from gateway.example.net (203.0.113.61) by MB1PEPF00000001.mail.protection.outlook.example (192.0.2.133) with Microsoft SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.4 via Frontend Transport; Mon, 26 Oct 2026 07:55:04 +0000
+Received: from 198.51.100.24_.gateway.example.net (unknown [172.21.200.64]) by gateway.example.net (Postfix) with SMTP id 0F0C4C000280 for <alice@corp.example>; Mon, 26 Oct 2026 07:55:04 +0000 (UTC)
+ARC-Authentication-Results: i=1; gateway.example.net; spf=softfail (sender IP address: 198.51.100.24) smtp.mailfrom=corp.example; dkim=none (no processed signatures) header.d=none; dmarc=fail action=no records header.from=corp.example; arc=none
+ARC-Message-Signature: i=1; a=rsa-sha256; d=gateway.example.net; s=gw-arc; t=1793001303; c=relaxed/relaxed; bh=c3ludGhldGlj; h=From; b=c3ludGhldGljLW1zLTE=
+ARC-Seal: i=1; a=rsa-sha256; d=gateway.example.net; s=gw-arc; t=1793001303; cv=none; b=c3ludGhldGljLXNlYWwtMQ==
+X-GW-Received-Time: 1792846013.397000
+Received: from host-198-51-100-24.hosting.example (unknown [198.51.100.24]) by inbound.gateway.example.net (Gateway Email Security) with ESMTP id 6131DC00129F for <alice@corp.example>; Sat, 24 Oct 2026 12:46:53 +0000 (UTC)
+Received: from mailer.example.net (localhost [IPv6:::1]) by host-198-51-100-24.hosting.example (Postfix) with ESMTP id 74F4825CF26 for <alice@corp.example>; Sat, 24 Oct 2026 12:46:52 +0000 (UTC)
+From: corp.example <noreply@corp.example>
+To: <alice@corp.example>
+Subject: EXTERNAL: E-MAIL - alice@corp.example Please confirm your account!!!
+Date: Sat, 24 Oct 2026 12:46:51 +0000
+Message-ID: <20261024124651.FB1281000E0D8926@corp.example>
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+X-GW-Received-SPF: SoftFail (domain of transitioning noreply@corp.example discourages use of 198.51.100.24 as permitted sender) client-ip=198.51.100.24; envelope-from=noreply@corp.example; helo=host-198-51-100-24.hosting.example
+X-GW-Authentication-Results: spf=softfail (sender IP address: 198.51.100.24) smtp.mailfrom=corp.example; dkim=none (no processed signatures) header.d=none; dmarc=fail action=no records header.from=corp.example; arc=none
+Return-Path: noreply@corp.example
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-SCL: -1
+X-Forefront-Antispam-Report: CIP:203.0.113.61;CTRY:DE;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:NSPM;H:gateway.example.net;DIR:INB;
+
+<html><head><title></title></head>
+<body>
+<p>CAUTION: This email originated from an external entity outside of Example Org. Do not click on links or open attachments unless you recognize the sender.</p>
+<div><b>e-MAIL ADMIN</b></div>
+<div dir="ltr"><div dir="ltr"><div dir="ltr">&nbsp;</div></div></div>
+<div>You will be blocked from sending and receiving emails if you fail to&nbsp;confirm&nbsp;your account within 72 hrs of receiving this automated mail.</div>
+<div><a href="http://bafkreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ipfs.inbrowser.link/#alice@corp.example" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://bafkreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ipfs.inbrowser.link/%23%5B%5B-Email-%5D%5D&amp;source=gmail&amp;ust=1792890982754000&amp;usg=synthetic">CONFIRM HERE</a>
+<a href="http://compromised-site.example/wp-content/plugins/abcdefg/tt/upg/index.php?email=alice@corp.example" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://compromised-site.example/wp-content/plugins/abcdefg/tt/upg/index.php?email%3D%5B%5B-Email-%5D%5D&amp;source=gmail&amp;ust=1792890982754000&amp;usg=synthetic">
+&nbsp; </a></div>
+<div>Thank you!<br>2026 &copy; corp.example&nbsp;Online App</div>
+</body></html>

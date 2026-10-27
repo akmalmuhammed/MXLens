@@ -1,6 +1,7 @@
 import type { AnalysisResult, EmailHop } from "@/lib/email/HeaderParser";
 import { getFirstHeaderValue } from "@/lib/email/parser/HeaderUtils";
 import { isKnownAuthServ } from "@/lib/email/scoring/Config";
+import { organizationalDomain } from "@/lib/email/analysis/Domain";
 import type { AttachmentSignal, NormalizedSignals, ScoringResult, ValidationPenalty } from "@/lib/email/scoring/types";
 
 /**
@@ -36,6 +37,29 @@ export interface AuthCheck {
     tone: Tone;
     detail: string;
     explanation: string;
+}
+
+export interface AuthOrigin {
+    /** Where the earliest evaluation was read from. */
+    source: string;
+    spf: string | null;
+    dkim: string | null;
+    dmarc: string | null;
+    dmarcAction: string | null;
+    spfIp: string | null;
+    finalSpfIp: string | null;
+    /** The chain is not cryptographically verified (ARC absent or failed). */
+    unverified: boolean;
+    /** The earliest evaluation failed but the final result passed for a different IP. */
+    masked: boolean;
+}
+
+export interface ReceiverHandling {
+    scl: number | null;
+    authAs: string | null;
+    compauth: string | null;
+    compauthReason: string | null;
+    filteringBypassed: boolean;
 }
 
 export interface IdentityRow {
@@ -106,6 +130,10 @@ export interface Report {
         authservId: string | null;
         authservKnown: boolean;
         resultsPresent: boolean;
+        /** Earliest recorded evaluation (ARC i=1 / gateway header), when present. */
+        origin: AuthOrigin | null;
+        /** How Exchange Online / EOP handled the message, when its headers are present. */
+        receiver: ReceiverHandling | null;
     };
     identity: { rows: IdentityRow[]; checks: IdentityCheck[] };
     links: LinkIndicator[];
@@ -269,7 +297,14 @@ function buildAuth(header: AnalysisResult, signals: NormalizedSignals): Report["
         checks: [
             authCheck("SPF", header.auth.spf.status, header.auth.spf.details, header.auth.spf.explanation),
             authCheck("DKIM", header.auth.dkim.status, header.auth.dkim.details, header.auth.dkim.explanation),
-            authCheck("DMARC", header.auth.dmarc.status, header.auth.dmarc.details, `${header.auth.dmarc.explanation ?? ""}${dmarcPolicy}`.trim()),
+            authCheck(
+                "DMARC",
+                header.auth.dmarc.status,
+                header.auth.dmarc.details,
+                `${header.auth.dmarc.explanation ?? ""}${dmarcPolicy}`.trim(),
+                // An inferred "bestguesspass" is not a pass; do not show it as neutral/OK.
+                header.auth.dmarc.bestGuess ? "warn" : undefined
+            ),
             authCheck(
                 "ARC",
                 arcStatus,
@@ -284,11 +319,33 @@ function buildAuth(header: AnalysisResult, signals: NormalizedSignals): Report["
         authservId: signals.authservId,
         authservKnown: signals.authservId ? isKnownAuthServ(signals.authservId) : false,
         resultsPresent: signals.authenticationResultsPresent,
+        origin: header.originAuth
+            ? {
+                source: header.originAuth.source,
+                spf: header.originAuth.spf ?? null,
+                dkim: header.originAuth.dkim ?? null,
+                dmarc: header.originAuth.dmarc ?? null,
+                dmarcAction: header.originAuth.dmarcAction ?? null,
+                spfIp: header.originAuth.spfIp ?? null,
+                finalSpfIp: header.originAuth.finalSpfIp ?? null,
+                unverified: header.originAuth.unverified,
+                masked: header.originAuth.masked,
+            }
+            : null,
+        receiver: header.exchange
+            ? {
+                scl: header.exchange.scl ?? null,
+                authAs: header.exchange.authAs ?? null,
+                compauth: header.exchange.compauth ?? null,
+                compauthReason: header.exchange.compauthReason ?? null,
+                filteringBypassed: header.exchange.filteringBypassed,
+            }
+            : null,
     };
 }
 
-function authCheck(name: AuthCheck["name"], status: string, detail: string, explanation?: string): AuthCheck {
-    return { name, status: status || "none", tone: toneOf(status || "none"), detail: detail || "", explanation: explanation || "" };
+function authCheck(name: AuthCheck["name"], status: string, detail: string, explanation?: string, tone?: Tone): AuthCheck {
+    return { name, status: status || "none", tone: tone ?? toneOf(status || "none"), detail: detail || "", explanation: explanation || "" };
 }
 
 // ---------------------------------------------------------------- identity
@@ -318,13 +375,7 @@ function buildIdentity(header: AnalysisResult, signals: NormalizedSignals): Repo
 }
 
 /** Rough organizational domain (last two labels, three for common ccTLD second levels). */
-export function organizationalDomain(domain: string): string {
-    const labels = domain.toLowerCase().replace(/\.$/, "").split(".").filter(Boolean);
-    if (labels.length <= 2) return labels.join(".");
-    const secondLevel = labels[labels.length - 2];
-    const takeThree = labels[labels.length - 1].length === 2 && ["co", "com", "org", "net", "ac", "gov", "edu"].includes(secondLevel);
-    return labels.slice(takeThree ? -3 : -2).join(".");
-}
+export { organizationalDomain };
 
 // ---------------------------------------------------------------- indicators
 
@@ -442,6 +493,16 @@ export function defang(value: string): string {
         .replace(/\./g, "[.]");
 }
 
+/**
+ * Defangs hostnames and IPv4 addresses that appear inside prose (finding titles),
+ * without touching ordinary text such as "e.g." or version numbers.
+ */
+export function defangInline(text: string): string {
+    return text
+        .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, m => m.replace(/\./g, "[.]"))
+        .replace(/\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}\b/gi, m => m.replace(/\./g, "[.]"));
+}
+
 /** Plain-text summary for tickets and chat. */
 export function reportToText(report: Report, options: { defang: boolean } = { defang: true }): string {
     const d = (v: string) => (options.defang ? defang(v) : v);
@@ -453,9 +514,17 @@ export function reportToText(report: Report, options: { defang: boolean } = { de
     if (report.message.date) lines.push(`Date: ${report.message.date}`);
     const auth = report.auth.checks.map(c => `${c.name} ${c.status}`).join(", ");
     lines.push(`Authentication: ${auth}`);
+    const origin = report.auth.origin;
+    if (origin && (origin.masked || origin.spf === "softfail" || origin.spf === "fail" || origin.dmarc === "fail")) {
+        const parts = [
+            origin.spf ? `SPF ${origin.spf}${origin.spfIp ? ` for ${d(origin.spfIp)}` : ""}` : "",
+            origin.dmarc ? `DMARC ${origin.dmarc}${origin.dmarcAction ? ` (${origin.dmarcAction})` : ""}` : "",
+        ].filter(Boolean).join(", ");
+        lines.push(`Earliest evaluation (${origin.source}${origin.unverified ? ", unverified" : ""}): ${parts}${origin.masked ? " - final result hides this" : ""}`);
+    }
     if (report.findings.length) {
         lines.push("", "Findings:");
-        for (const f of report.findings) lines.push(`- [${f.severity}] ${f.title}`);
+        for (const f of report.findings) lines.push(`- [${f.severity}] ${options.defang ? defangInline(f.title) : f.title}`);
     }
     const iocs = [
         ...report.domains.map(d),

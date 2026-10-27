@@ -21,8 +21,9 @@ export class OpenRedirectDetector implements Detector {
 
                 if (isAbused) {
                     const url = new URL(urlStr);
-                    // 2. Does it have a redirect param?
-                    for (const param of this.redirectParams) {
+                    // 2. Does it have a redirect param? google.com/url carries its target in "q".
+                    const params = urlStr.includes("google.com/url") ? [...this.redirectParams, "q"] : this.redirectParams;
+                    for (const param of params) {
                         const target = url.searchParams.get(param);
                         if (target && (target.startsWith("http") || target.startsWith("//"))) {
                             return {

@@ -10,6 +10,12 @@ import { SpellingGrammarDetector } from "./rules/SpellingGrammar";
 import { QuishingDetector } from "./rules/QuishingDetector";
 import { CredentialFormDetector } from "./rules/CredentialFormDetector";
 import { LinkObfuscationDetector } from "./rules/LinkObfuscationDetector";
+import { PhishingKitLinkDetector } from "./rules/PhishingKitLink";
+import { PersonalizedLinkDetector } from "./rules/PersonalizedLink";
+import { TemplateArtifactsDetector } from "./rules/TemplateArtifacts";
+import { InvisibleLinkDetector } from "./rules/InvisibleLink";
+import { SelfDomainSpoofDetector } from "./rules/SelfDomainSpoof";
+import { LocalMailInjectionDetector } from "./rules/LocalMailInjection";
 
 export class DetectionPipeline {
     private detectors: Detector[] = [];
@@ -30,6 +36,14 @@ export class DetectionPipeline {
 
         this.detectors.push(new CredentialFormDetector());
         this.detectors.push(new LinkObfuscationDetector());
+
+        // Phishing kit / infrastructure patterns
+        this.detectors.push(new PhishingKitLinkDetector());
+        this.detectors.push(new PersonalizedLinkDetector());
+        this.detectors.push(new TemplateArtifactsDetector());
+        this.detectors.push(new InvisibleLinkDetector());
+        this.detectors.push(new SelfDomainSpoofDetector());
+        this.detectors.push(new LocalMailInjectionDetector());
 
         // AI Detector (POC) - Disabled per user request
         // this.detectors.push(new SemanticIntentDetector());

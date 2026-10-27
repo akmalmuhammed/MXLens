@@ -10,8 +10,12 @@ export class ContentUrgencyDetector implements Detector {
     private urgencyKeywords = [
         "urgent", "immediate action", "suspend", "terminate", "24 hours",
         "account blocked", "verification required", "unauthorized access",
-        "security alert", "click below", "password expiry", "final notice"
+        "security alert", "click below", "password expiry", "final notice",
+        "will be blocked", "confirm your account", "action required"
     ];
+
+    // Deadline phrasing with any number ("within 72 hrs", "within 3 days").
+    private deadlinePattern = /\bwithin \d{1,3} ?(?:hrs?|hours?|days?)\b/;
 
     private paymentKeywords = [
         "invoice", "wire transfer", "payment", "bank details", "swift copy",
@@ -21,7 +25,9 @@ export class ContentUrgencyDetector implements Detector {
     detect(context: DetectionContext): DetectionResult | null {
         if (!context.options.checkBody || !context.emailBody) return null;
 
-        const text = `${context.emailBody.text || ""} ${getFirstHeaderValue(context.header.headers, 'Subject')}`.toLowerCase();
+        // visibleText covers HTML-only messages, where the text part is empty.
+        const body = context.signals.visibleText || context.emailBody.text || "";
+        const text = `${body} ${getFirstHeaderValue(context.header.headers, 'Subject')}`.toLowerCase();
 
         let urgencyCount = 0;
         let paymentCount = 0;
@@ -33,6 +39,12 @@ export class ContentUrgencyDetector implements Detector {
                 if (matches.length < 3) matches.push(kw);
             }
         });
+
+        const deadline = text.match(this.deadlinePattern);
+        if (deadline) {
+            urgencyCount++;
+            if (matches.length < 3) matches.push(deadline[0]);
+        }
 
         this.paymentKeywords.forEach(kw => {
             if (text.includes(kw)) {

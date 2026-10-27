@@ -19,6 +19,7 @@ export const HIGH_VALUE_ROLES = [
 
 export const TRUSTED_MAIL_SERVERS = [
     'outlook.com',
+    'microsoft.com', // mx.microsoft.com is the Exchange Online / EOP authserv-id
     'gmail.com',
     'protection.outlook.com',
     'google.com',

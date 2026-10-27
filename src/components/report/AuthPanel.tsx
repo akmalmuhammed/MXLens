@@ -36,6 +36,20 @@ export function AuthPanel({ report }: { report: Report }) {
                 </p>
             )}
 
+            {auth.origin?.masked && (
+                <div className="mb-3 rounded-lg border border-sev-critical/35 bg-sev-critical/[0.06] px-3 py-2.5 text-xs leading-relaxed">
+                    <p className="font-semibold text-sev-critical">The passing result below is not about the real sender</p>
+                    <p className="mt-1 text-muted-foreground">
+                        An earlier hop ({auth.origin.source}) checked the original connection
+                        {auth.origin.spfIp ? <> from <span className="font-mono text-foreground/80">{auth.origin.spfIp}</span></> : null} and
+                        recorded SPF <b>{auth.origin.spf ?? "n/a"}</b>, DMARC <b>{auth.origin.dmarc ?? "n/a"}</b>
+                        {auth.origin.dmarcAction ? <> ({auth.origin.dmarcAction})</> : null}. The final server then checked SPF against
+                        {auth.origin.finalSpfIp ? <> <span className="font-mono text-foreground/80">{auth.origin.finalSpfIp}</span></> : " the relay"}, an
+                        authorized gateway, so SPF shows pass. Treat the earlier result as the real one.
+                    </p>
+                </div>
+            )}
+
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {auth.checks.map(check => {
                     const Icon = TONE_ICON[check.tone];
@@ -56,6 +70,22 @@ export function AuthPanel({ report }: { report: Report }) {
                     );
                 })}
             </div>
+
+            {auth.origin && !auth.origin.masked && (
+                <p className="mt-3 font-mono text-[11px] text-muted-foreground">
+                    Earliest evaluation ({auth.origin.source}{auth.origin.unverified ? ", unverified" : ""}):
+                    {" "}SPF {auth.origin.spf ?? "n/a"}, DKIM {auth.origin.dkim ?? "n/a"}, DMARC {auth.origin.dmarc ?? "n/a"}
+                </p>
+            )}
+
+            {auth.receiver && (
+                <p className="mt-3 font-mono text-[11px] text-muted-foreground">
+                    Exchange handling:
+                    {auth.receiver.scl !== null && <> SCL {auth.receiver.scl}{auth.receiver.scl === -1 ? " (spam filtering skipped)" : ""}</>}
+                    {auth.receiver.authAs && <>, AuthAs {auth.receiver.authAs}</>}
+                    {auth.receiver.compauth && <>, compauth {auth.receiver.compauth}{auth.receiver.compauthReason ? ` (reason ${auth.receiver.compauthReason})` : ""}</>}
+                </p>
+            )}
 
             {auth.authservId && (
                 <p className="mt-3 font-mono text-[11px] text-muted-foreground">
