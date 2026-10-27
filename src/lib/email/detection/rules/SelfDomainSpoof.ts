@@ -33,18 +33,29 @@ export class SelfDomainSpoofDetector implements Detector {
         // A verified DMARC pass (not the receiver's "bestguesspass") is real authentication.
         if (signals.dmarcResult === "pass" && !signals.dmarcBestGuess) return null;
 
+        // Direct Send: unauthenticated SMTP straight to <tenant>.mail.protection.outlook.com lets
+        // anyone deliver "internal" mail; it is usually self-addressed (user -> same user).
+        const received = getHeaderValues(header.headers, "Received").join("\n");
+        const directSend = /\.mail\.protection\.outlook\.com/i.test(received) && !header.originAuth
+            && header.exchange?.authAs?.toLowerCase() === "anonymous";
+        const fromAddress = (getHeaderValues(header.headers, "From")[0] || "").match(/[a-z0-9._%+-]+@[a-z0-9.-]+/i)?.[0]?.toLowerCase();
+        const toAddresses = [...(getHeaderValues(header.headers, "To").join(",")).matchAll(EMAIL)].map(m => m[0].toLowerCase());
+        const selfAddressed = !!fromAddress && toAddresses.length === 1 && toAddresses[0] === fromAddress;
+
         const bare = signals.fromDisplayName.trim().toLowerCase();
         const nameIsDomain = bare === signals.fromDomain || bare === fromOrg;
         const reasons = [`Sender domain ${fromOrg} matches the recipient's own domain, yet the message arrived from outside without a verified DMARC pass.`];
         if (nameIsDomain) reasons.push("The display name is just the domain name, which makes it look system-generated.");
+        if (selfAddressed) reasons.push("It is addressed from the recipient to themselves.");
+        if (directSend) reasons.push("It entered Microsoft 365 anonymously through the tenant's smart host, consistent with Direct Send abuse (disable it with Set-OrganizationConfig -RejectDirectSend $true if unused).");
 
         return {
             triggered: true,
             score: 0.7,
-            penalty: nameIsDomain ? -25 : -20,
+            penalty: Math.max(-35, (nameIsDomain ? -25 : -20) - (selfAddressed ? 5 : 0) - (directSend ? 5 : 0)),
             name: this.name,
             reason: reasons.join(" "),
-            metadata: { domain: fromOrg, displayNameIsDomain: nameIsDomain }
+            metadata: { domain: fromOrg, displayNameIsDomain: nameIsDomain, selfAddressed, directSend }
         };
     }
 }

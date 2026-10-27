@@ -9,7 +9,9 @@ export class ThreadScorer {
         // A "Reply" or "Forward" (Re:, Fwd:) MUST have In-Reply-To or References headers.
 
         const subject = signals.subject ? signals.subject.trim().toLowerCase() : "";
-        const isReplyOrForward = subject.startsWith("re:") || subject.startsWith("fwd:") || subject.startsWith("fw:") || subject.startsWith("aw:"); // aw: German
+        // English, German (AW/WG), Nordic (SV/VS/VB), Dutch (Antw/Doorst), French (TR/RE),
+        // Italian (R/RIF/I), Spanish (RV), Polish (ODP/PD), Chinese (回复/转发), "Re[2]:" forms.
+        const isReplyOrForward = /^(?:re|fwd?|aw|wg|sv|vs|vb|antw|doorst|tr|rif|rv|odp|pd|回复|回覆|答复|转发|轉寄)(?:\[\d+\])?\s*[:：]/i.test(subject);
         const hasThreadingHeaders = !!signals.inReplyTo || !!signals.references;
 
         if (isReplyOrForward && !hasThreadingHeaders) {

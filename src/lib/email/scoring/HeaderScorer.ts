@@ -84,6 +84,19 @@ export class HeaderScorer {
             penalties.push({ reason: "ARC Chain Broken", value: -20, source: 'header' as const });
         }
 
+        // MICROSOFT COMPOSITE AUTHENTICATION
+        // compauth combines SPF, DKIM, DMARC and Microsoft's implicit sender checks. A fail is
+        // Microsoft's own verdict that the From domain is spoofed (reason 000 = explicit DMARC
+        // fail, 001 = implicit fail, 601/6xx = spoof intelligence / intra-org spoof).
+        if (signals.compauthResult === "fail") {
+            score -= 15;
+            penalties.push({
+                reason: `Microsoft Composite Authentication Failed (compauth=fail${signals.compauthReason ? ` reason=${signals.compauthReason}` : ""})`,
+                value: -15,
+                source: 'header' as const
+            });
+        }
+
         // GATEWAY MASKING
         // A secure email gateway in front of the mailbox provider makes the provider
         // evaluate SPF against the gateway's own (authorized) IP. When the gateway's

@@ -20,8 +20,8 @@ export class TyposquattingDetector implements Detector {
         // 1. Homograph / Mixed Script Detection
         // Detects if the domain contains mixed scripts (e.g. Cyrillic + Latin) which is a strong indicator of spoofing
         // \u0400-\u04FF is Cyrillic. 
-        const mixedScriptRegex = /[a-zA-Z][\u0400-\u04FF]+|[\u0400-\u04FF]+[a-zA-Z]/;
-        if (mixedScriptRegex.test(fromDomain) || fromDomain.startsWith("xn--")) {
+        const mixedScriptRegex = /[a-zA-Z][\u0370-\u058F]+|[\u0370-\u058F]+[a-zA-Z]/;
+        if (mixedScriptRegex.test(fromDomain) || /(?:^|\.)xn--/.test(fromDomain)) {
             return {
                 triggered: true,
                 score: 1.0,

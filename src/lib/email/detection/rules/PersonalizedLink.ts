@@ -37,7 +37,7 @@ export class PersonalizedLinkDetector implements Detector {
             if (BENIGN_PATH.test(url.pathname)) continue;
 
             const haystack = this.decode(`${url.search}${url.hash}`);
-            const found = haystack.match(EMAIL);
+            const found = haystack.match(EMAIL) ?? this.base64Email(`${url.pathname}${url.search}${url.hash}`);
             if (!found) continue;
 
             const matchesRecipient = recipients.has(found[0].toLowerCase());
@@ -69,6 +69,20 @@ export class PersonalizedLinkDetector implements Detector {
             }
         }
         return out;
+    }
+
+    /** AiTM kits (Tycoon2FA and others) pass the victim as a Base64 token in the path, query or fragment. */
+    private base64Email(value: string): RegExpMatchArray | null {
+        for (const token of value.match(/[A-Za-z0-9+/_-]{16,400}={0,2}/g) || []) {
+            try {
+                const decoded = atob(token.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(token.length / 4) * 4, "="));
+                const m = decoded.match(EMAIL);
+                if (m) return m;
+            } catch {
+                /* not base64 */
+            }
+        }
+        return null;
     }
 
     private decode(value: string): string {

@@ -16,6 +16,18 @@ import { TemplateArtifactsDetector } from "./rules/TemplateArtifacts";
 import { InvisibleLinkDetector } from "./rules/InvisibleLink";
 import { SelfDomainSpoofDetector } from "./rules/SelfDomainSpoof";
 import { LocalMailInjectionDetector } from "./rules/LocalMailInjection";
+import { PromptInjectionDetector } from "./rules/PromptInjection";
+import { ClickFixDetector } from "./rules/ClickFix";
+import { DeviceCodeOAuthDetector } from "./rules/DeviceCodeOAuth";
+import { MarkupAttachmentDetector } from "./rules/MarkupAttachment";
+import { AttachmentLureDetector } from "./rules/AttachmentLure";
+import { CallbackPhishingDetector } from "./rules/CallbackPhishing";
+import { BecRequestDetector } from "./rules/BecRequest";
+import { HostingAbuseDetector } from "./rules/HostingAbuse";
+import { UrlObfuscationDetector } from "./rules/UrlObfuscation";
+import { OrgLookalikeDetector } from "./rules/OrgLookalike";
+import { NotificationAbuseDetector } from "./rules/NotificationAbuse";
+import { QrLureDetector } from "./rules/QrLure";
 
 export class DetectionPipeline {
     private detectors: Detector[] = [];
@@ -44,6 +56,20 @@ export class DetectionPipeline {
         this.detectors.push(new InvisibleLinkDetector());
         this.detectors.push(new SelfDomainSpoofDetector());
         this.detectors.push(new LocalMailInjectionDetector());
+
+        // 2026 tradecraft: MFA-bypass lures, payloads that skip link scanning, AI-era tricks
+        this.detectors.push(new DeviceCodeOAuthDetector());
+        this.detectors.push(new ClickFixDetector());
+        this.detectors.push(new MarkupAttachmentDetector());
+        this.detectors.push(new AttachmentLureDetector());
+        this.detectors.push(new QrLureDetector());
+        this.detectors.push(new UrlObfuscationDetector());
+        this.detectors.push(new HostingAbuseDetector());
+        this.detectors.push(new OrgLookalikeDetector());
+        this.detectors.push(new CallbackPhishingDetector());
+        this.detectors.push(new BecRequestDetector());
+        this.detectors.push(new NotificationAbuseDetector());
+        this.detectors.push(new PromptInjectionDetector());
 
         // AI Detector (POC) - Disabled per user request
         // this.detectors.push(new SemanticIntentDetector());

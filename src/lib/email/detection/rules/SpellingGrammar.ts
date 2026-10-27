@@ -9,7 +9,7 @@ export class SpellingGrammarDetector implements Detector {
 
     // Common typos in phishing/spam (Top 50)
     private commonTypos = [
-        "teh", "recieve", "account", "u pdate", "verif y", "immediatly", "becuase",
+        "teh", "recieve", "u pdate", "verif y", "immediatly", "becuase",
         "unti", "custome r", "bankof", "pay pal", "mic rosoft", "securty", "loggin",
         "pasword", "infomation", "suppor t", "kindley", "belive", "truely"
     ];
@@ -17,7 +17,9 @@ export class SpellingGrammarDetector implements Detector {
     detect(context: DetectionContext): DetectionResult | null {
         if (!context.options.checkBody || !context.emailBody) return null;
 
-        const text = (context.emailBody.text || "").toLowerCase();
+        // Visible text covers HTML-only messages. Note: LLM-written lures are fluent, so this
+        // detector is a weak, low-weight signal by design; intent detectors carry the load.
+        const text = (context.signals.visibleText || context.emailBody.text || "").toLowerCase();
 
         // 1. Check for broken words / spaced-out keywords
         // "V e r i f y" -> spam filter evasion

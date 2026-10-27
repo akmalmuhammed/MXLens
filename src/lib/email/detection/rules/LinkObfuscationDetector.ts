@@ -9,7 +9,9 @@ export class LinkObfuscationDetector implements Detector {
     private shortenerDomains = [
         "bit.ly", "goo.gl", "tinyurl.com", "t.co", "is.gd", "buff.ly", "ow.ly",
         "adcrun.ch", "zws.im", "shorte.st", "bc.vc", "snip.li", "fic.kr", "yhoo.it",
-        "lnkd.in", "db.tt", "qr.ae", "adf.ly", "bit.do", "cut.ly", "shorturl.at"
+        "lnkd.in", "db.tt", "qr.ae", "adf.ly", "bit.do", "cut.ly", "shorturl.at",
+        "t.ly", "rb.gy", "cutt.ly", "tiny.cc", "rebrand.ly", "s.id", "qrco.de", "l.ead.me", "v.gd", "urlz.fr",
+        "short.gy", "shorturl.gg", "u.to", "clck.ru", "bl.ink", "tinyurl.is", "linktr.ee"
     ];
 
     private trustedBrands = [

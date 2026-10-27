@@ -10,8 +10,8 @@ const PROTECTED_DISPLAY_NAMES = [
 // Domains that are allowed to send as these names (simplified whitelist)
 // In a real system, this would be much more comprehensive
 const AUTHORIZED_DOMAINS: Record<string, string[]> = {
-    "microsoft": ["microsoft.com", "office365.com", "azure.com"],
-    "google": ["google.com", "youtube.com", "android.com"],
+    "microsoft": ["microsoft.com", "microsoftonline.com", "office365.com", "office.com", "azure.com", "sharepointonline.com", "microsoft365.com", "outlook.com", "live.com", "mail.microsoft", "microsoft"],
+    "google": ["google.com", "youtube.com", "android.com", "googlemail.com"],
     "support": [], // Context-dependent, usually suspiciously generic if from gmail.com
     "apple": ["apple.com", "icloud.com"],
     "amazon": ["amazon.com", "aws.amazon.com"],
@@ -33,9 +33,10 @@ export class ImpersonationScorer {
         const displayName = signals.fromDisplayName.toLowerCase();
         const fromDomain = signals.fromDomain.toLowerCase();
 
-        // Check if Display Name contains a protected brand/role
+        // Check if Display Name contains a protected brand/role as a whole word, so
+        // "Christopher" is not "hr" and "Ceola" is not "ceo".
         for (const brand of PROTECTED_DISPLAY_NAMES) {
-            if (displayName.includes(brand)) {
+            if (new RegExp(`(?:^|[^a-z0-9])${brand}(?:$|[^a-z0-9])`).test(displayName)) {
                 // Check if the domain is authorized for this brand
                 // If it's a specific brand like "Microsoft", validation is strict
                 // If it's a role like "HR", we check if it comes from a Free Email Provider (suspicious)
@@ -43,7 +44,8 @@ export class ImpersonationScorer {
                 let isAuthorized = false;
                 const allowed = AUTHORIZED_DOMAINS[brand];
                 if (allowed) {
-                    isAuthorized = allowed.some(d => fromDomain.endsWith(d));
+                    // Label boundary: "notmicrosoft.com" must not pass as "microsoft.com".
+                    isAuthorized = allowed.some(d => fromDomain === d || fromDomain.endsWith(`.${d}`));
                 } else {
                     // For generic roles (HR, CEO), we just check if it's a free provider
                     // "HR Dept" <hr@gmail.com> is suspicious
