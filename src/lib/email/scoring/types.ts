@@ -67,6 +67,12 @@ export interface NormalizedSignals {
     bodyAnalysisEnabled: boolean;
     /** Text a recipient would read (HTML stripped, entities decoded) plus plain text part. */
     visibleText?: string;
+    /** Decoded QR/2D-code payloads found in images (attachments, inline, data: URIs). */
+    qrPayloads?: string[];
+    /** Emails attached to this one (.eml / message/rfc822), opened and merged into the analysis. */
+    embeddedMessages?: import("../analysis/EmbeddedMessages").EmbeddedMessageInfo[];
+    /** Visible text of the outer message alone, before attached emails were merged in. */
+    outerVisibleText?: string;
     hasUrgency: boolean;
     hasCredentialHarvesting: boolean;
     hasHiddenText: boolean;
@@ -101,6 +107,8 @@ export interface ValidationPenalty {
     warning?: boolean;
     source?: 'header' | 'body' | 'cross' | 'attachment' | 'ml';
     tags?: DetectionTag[];
+    /** Detector id for pipeline findings (e.g. "embedded-message"). */
+    detectorId?: string;
 }
 
 export interface ParsedEmailAttachment {

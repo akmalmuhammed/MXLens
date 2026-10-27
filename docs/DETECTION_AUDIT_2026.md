@@ -44,6 +44,7 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 | **False positive:** substring match, so "Christopher" contained `hr`, "Ceola" contained `ceo`, and "Appleby" contained `apple`. Any free-mail user with such a name got **-80, critical** | ✅ whole-word matching |
 | **Bypass:** authorized-domain check used `endsWith`, so `notmicrosoft.com` passed as `microsoft.com` | ✅ label-boundary check |
 | Microsoft's real sending domains missing (`microsoftonline.com`, `sharepointonline.com`, the `.microsoft` TLD), causing false positives | ✅ added |
+| **False positive:** the generic role "support" had an empty allowed-domain list, and `[]` is truthy, so every helpdesk ("Acme Support <help@acme.com>") got **-80, critical** | ✅ empty list now means "generic role", so it is only suspicious from free mail |
 
 ### `HomographDetector` / `Typosquatting`
 
@@ -91,6 +92,7 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 | Finding | Status |
 |---|---|
 | Only `Re:`, `Fwd:`, `Fw:`, `AW:`; the documented `SV:` was not implemented | ✅ adds WG, SV, VS, VB, Antw, Doorst, TR, RIF, RV, ODP, PD, 回复/转发 and `Re[2]:` |
+| **False positive:** forwards (`FW:`, `Fwd:`, `WG:`, `TR:`...) without `In-Reply-To` got **-75, critical** as "fake replies", but forwards normally have no threading headers (Gmail and many clients never add them), so ordinary forwarded mail was hit | ✅ rule now applies to reply prefixes only |
 | **-75 critical** for a missing `In-Reply-To` is harsh for ticketing systems that send "RE:" notifications without threading headers | 🔲 weight unchanged; consider -40 with an allowlist |
 
 ### Attachments (`AttachmentScorer`, normalizer)
@@ -109,11 +111,14 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 
 | Finding | Status |
 |---|---|
-| Image QR decoding only runs in the browser; the CLI and server never decode QR codes | 🔲 needs a pure-JS image decoder; see roadmap |
+| Image QR decoding only ran in the browser; the CLI and server never decoded QR codes | ✅ ZXing-C++ (WebAssembly, `zxing-wasm`) decodes in the browser, Node and the CLI. The wasm is bundled; it is never fetched from a CDN |
+| **Missed real kit QR codes:** jsQR-based scanners (`qr-scanner` fallback, jsQR) failed on dense, error-correction-H QR codes with no quiet zone from a live 2026 DocuSign campaign; ZXing reads them | ✅ ZXing is now the primary decoder |
+| Decompression-bomb images (tiny file, huge declared size) could exhaust memory | ✅ PNG/JPEG/GIF/BMP dimensions checked first (25 MP cap) |
 | QR codes inside PDFs (most QR volume) are not decoded | 🔲 needs PDF rendering |
 | QR codes drawn with Unicode blocks or HTML table cells defeat image scanners entirely | ✅ new `QrLure` rule |
 | "Scan the QR code to sign in" lure wording | ✅ `QrLure` (skips verified internal IT mail) |
-| QR URLs are pushed into the signals after the other link detectors have already run in parallel, so they miss them | 🔲 documented; needs a two-phase pipeline |
+| QR URLs were pushed into the signals after the other link detectors had already run in parallel, so they missed them | ✅ QR decoding moved into normalization, before any detector, so every link rule sees QR URLs; the report tags them "From QR code" |
+| Non-URL QR payloads (tickets, Wi-Fi) were penalized like phishing links | ✅ only URL payloads count |
 
 ### Sender identity (`DisplayNameSpoofing`, `ReplyToMismatch`, `CrossContextScorer`)
 
@@ -122,6 +127,23 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 | Sender names stuffed with domains/URLs (`"awstrack.me" <x@other>`), per Microsoft Q1 2026 | ✅ -10 |
 | BEC (gift cards, payroll diversion, bank-detail change, conversational opener) only partly covered by keyword urgency | ✅ new `BecRequest` rule |
 | The free-provider list differs between rules (`ReplyToMismatch` has 5 providers, `Config` has 15) | 🔲 consolidate |
+
+### Attached emails, brand templates and submission path (added after a live campaign review)
+
+A real DocuSign-themed QR campaign (October 2026) came out **Clean, risk 14, high confidence**. The delivered message was only a confidentiality notice, and the lure travelled as an attached `.eml` that MXLens never opened.
+
+| Finding | Status |
+|---|---|
+| Attached emails (`message/rfc822`, `.eml`) were never opened, so their body, links and images were invisible | ✅ opened recursively (depth 3, 10 messages, 15 MB) and merged into the analysis |
+| "Email inside an email" evasion: a disclaimer-only wrapper, an attached email forged from the recipient's own domain (`hr@<your org>`), and an attached email with no `Received` headers (crafted, never sent) | ✅ new `embedded-message` rule. A colleague forwarding a real message with "FYI" is not flagged |
+| DocuSign/Microsoft/Adobe/Dropbox **templates** reused by other senders, often hot-linking the brand's own logo CDN | ✅ new `brand-template` rule (asset hosts and template ids only; a logo alt text alone is too common for Microsoft) |
+| "Via DocuSign" display names from non-DocuSign domains | ✅ DocuSign, Dropbox, WeTransfer, Adobe Sign, OneDrive and SharePoint added to brand display-name checks |
+| Display names padded with a long random token (`... dse_NFCaERNSW...`) | ✅ -10 |
+| Sent by logging in to an unrelated mailbox (`Authenticated sender: info@other-domain`), often with a `[127.0.0.1]` HELO from a public IP | ✅ new `submission-anomaly` rule |
+| Attachment names containing the recipient's mailbox name (`QR_alice.smith.png`) | ✅ |
+| A file with no delivery headers at all was scored as four separate failures (-75): missing SPF, DKIM, DMARC and Received | ✅ one "No Delivery Headers" finding (-25); the content decides |
+| **False positive:** forwards (`FW:`/`Fwd:`) were "fake replies" at -75 critical | ✅ see ThreadScorer above |
+| **False positive:** a second copy of the role-keyword check (report identity panel) matched `hr` inside words and random tokens, and had a `subport` typo | ✅ whole words |
 
 ## 3. New detectors
 
@@ -139,6 +161,9 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 | `bec-request` | Gift cards, payroll/direct-deposit change, bank-detail change, urgent wire, conversational opener, when the sender is free-mail, Reply-To-diverted or unverified | -10 to -35 |
 | `notification-abuse` | Genuine platform notification (Google, Microsoft, PayPal, DocuSign, ...) delivered to someone other than its signed `To:`, carrying a phone number in a billing context, or linking to user-generated hosting | -10 to -35 |
 | `ai-prompt-injection` | Instructions aimed at AI assistants hidden in invisible text or HTML comments; visible-only matches need two signals | -40 hidden / -15 visible |
+| `embedded-message` | Lure inside an attached `.eml`: forged internal sender, never-delivered attached email, disclaimer-only wrapper from an external sender | -15 to -45 |
+| `brand-template` | DocuSign/Microsoft/Adobe/Dropbox/WeTransfer templates or "via DocuSign" from other domains, more so when the action leads off-brand | -20 / -30 |
+| `submission-anomaly` | Submitted through an authenticated mailbox on an unrelated domain; scripted `[127.0.0.1]` HELO | -15 / -20 |
 
 ## 4. AI-based attacks: what MXLens does and does not do
 
@@ -153,9 +178,9 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 
 ## 5. Remaining gaps (roadmap)
 
-1. **QR decoding outside the browser and inside PDFs.** The biggest remaining gap by volume. It needs a pure-JS image decoder (jsQR plus PNG/JPEG decoding) for the CLI, and PDF page rendering to reach QR codes inside PDFs.
+1. **QR codes inside PDFs and DOCX.** Image and inline QR codes are now decoded everywhere (ZXing). QR codes embedded in PDF pages (most QR volume) still need page rendering or image-XObject extraction. QR codes split across two images are not stitched.
 2. **Reading PDF and DOCX text.** Callback numbers and "scan this code" lures often live only in the attachment. Extracting text from PDF content streams and DOCX XML would let the content rules see them.
-3. **Two-phase pipeline.** Run extractors (QR, PDF) before the link detectors so their URLs are scored. Today the QR detector writes URLs after the link detectors have run.
+3. **Two-phase pipeline.** Done for QR codes and attached emails (extracted during normalization). Other late extractors should follow the same pattern.
 4. **What MXLens cannot see offline.** CAPTCHA-gated landing pages, AiTM proxies and redirect chains all live on the destination page. Pair MXLens with URL detonation (SentinelOne, Defender Safe Links, a sandbox). The report now names the hosting pattern to look for.
 5. **Sender history and first-contact baselines.** Generic BEC openers are best caught by "has this person ever written to us?", which needs mailbox history.
 6. **Fake quoted thread history** in a "reply" (conversation-hijack forgeries), and `.ics` calendar-invite lures.
@@ -164,7 +189,7 @@ Status: ✅ fixed in this change · ⚠️ improved, limits remain · 🔲 open 
 
 ## 6. Verification
 
-- `tests/unit/detection-2026.test.ts`: 43 tests, at least one positive and one negative per new rule and per fix.
+- `tests/unit/detection-2026.test.ts`: 44 tests, at least one positive and one negative per new rule and per fix.
 - `tests/unit/legit-regressions.test.ts`: 8 legitimate-mail shapes the new rules must leave alone. These include an order confirmation with a phone number, a newsletter with hidden preheaders, verified IT MFA enrollment with a QR code, a Google Calendar invite with dial-in numbers, remittance and eFax PDFs, a dev newsletter linking to github.io/vercel.app, and a security newsletter that quotes "Win+R" and "ignore previous instructions".
 - The bundled demo phishing sample stays malicious (risk 75; 86 before, because the false-positive "hidden text" penalty is gone). The demo legitimate sample stays clean.
 

@@ -2,6 +2,7 @@ import type { AnalysisResult, EmailHop } from "@/lib/email/HeaderParser";
 import { getFirstHeaderValue } from "@/lib/email/parser/HeaderUtils";
 import { isKnownAuthServ } from "@/lib/email/scoring/Config";
 import { organizationalDomain } from "@/lib/email/analysis/Domain";
+import { buildInvestigation, type Investigation } from "@/lib/investigation/Investigation";
 import type { AttachmentSignal, NormalizedSignals, ScoringResult, ValidationPenalty } from "@/lib/email/scoring/types";
 
 /**
@@ -142,6 +143,8 @@ export interface Report {
     attachments: AttachmentRow[];
     hops: Hop[];
     headerNotes: { key: string; value: string; explanation?: string }[];
+    /** Analyst-style investigation: questions answered, path, gaps, IOCs, response, hunting. */
+    investigation: Investigation;
 }
 
 const VERDICT_BY_LABEL: Record<ScoringResult["verdict"]["verdict"], Verdict> = {
@@ -194,6 +197,7 @@ export function buildReport(header: AnalysisResult, signals: NormalizedSignals, 
         attachments: signals.attachments.map(toAttachmentRow),
         hops: buildHops(header.hops),
         headerNotes: (header.xHeaders ?? []).filter(x => x.key.toLowerCase() !== "x-mailer" || x.value),
+        investigation: buildInvestigation(header, signals, scoring),
     };
 }
 
@@ -392,9 +396,11 @@ const SHORTENERS = ["bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd",
 function buildLinks(signals: NormalizedSignals): LinkIndicator[] {
     const byUrl = new Map<string, LinkIndicator>();
 
+    const fromQr = new Set(signals.qrPayloads ?? []);
     for (const url of signals.extractedUrls) {
         const host = hostOf(url);
         const flags: string[] = [];
+        if (fromQr.has(url)) flags.push("From QR code");
         if (SHORTENERS.includes(host)) flags.push("URL shortener");
         if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) flags.push("Raw IP address");
         if (url.startsWith("http://")) flags.push("Not HTTPS");

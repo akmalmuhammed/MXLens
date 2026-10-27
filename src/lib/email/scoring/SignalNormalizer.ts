@@ -5,6 +5,7 @@ import { getFirstHeaderValue, getHeaderValue, getHeaderValues } from "../parser/
 import { AuthenticationAnalyzer } from "../parser/Authentication";
 import { decodeHtmlEntities, extractHiddenText, htmlToVisibleText } from "../analysis/HtmlText";
 import { extractPdfUris } from "../analysis/PdfLinks";
+import { collectImages, decodeQrImages } from "../analysis/QrDecoder";
 
 // Attachment types grouped by how they hurt. Executables run code directly; "script" types
 // run through an interpreter or app (including OneNote, Excel web queries and SVG is handled
@@ -157,6 +158,16 @@ export class SignalNormalizer {
             }
         }
 
+        // 4b. QR codes: decode before any detector runs, so every link rule sees the URL.
+        let qrPayloads: string[] = [];
+        if (emailBody && (options.checkBody || options.checkAttachments)) {
+            qrPayloads = await decodeQrImages(collectImages(emailBody.attachments || [], emailBody.html || ""));
+            const qrUrls = qrPayloads.filter(p => /^https?:\/\//i.test(p));
+            if (qrUrls.length > 0) {
+                bodySignals.extractedUrls = [...new Set([...(bodySignals.extractedUrls || []), ...qrUrls])];
+            }
+        }
+
         // 5. Cross-Context Prep
         const fromArray = getFirstHeaderValue(headerResult.headers, 'From');
         // Safe parser for "Name <email>" format - ReDoS mitigated
@@ -246,6 +257,7 @@ export class SignalNormalizer {
             // Body
             bodyAnalysisEnabled: options.checkBody,
             visibleText: bodySignals.visibleText || "",
+            qrPayloads,
             hasUrgency: bodySignals.hasUrgency || false,
             hasCredentialHarvesting: bodySignals.hasCredentialHarvesting || false,
             hasHiddenText: bodySignals.hasHiddenText || false,

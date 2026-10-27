@@ -9,7 +9,14 @@ export class QuishingDetector implements Detector {
     tags: Detector['tags'] = ['malware', 'link'];
 
     async detect(context: DetectionContext): Promise<DetectionResult | null> {
-        // Client-side only check to prevent server rendering crashes
+        // Primary path: payloads decoded by ZXing during normalization (browser, Node and CLI),
+        // already merged into extractedUrls so the link rules have scored them.
+        const decoded = context.signals.qrPayloads || [];
+        // Tickets, Wi-Fi and contact QR codes carry no link; only URL payloads are a lure.
+        if (decoded.some(p => /^https?:\/\//i.test(p))) return this.report(decoded);
+        if (decoded.length > 0) return null;
+
+        // Fallback: the browser-only scanner (native BarcodeDetector where available).
         if (typeof window === 'undefined') return null;
 
         const foundUrls: string[] = [];
@@ -70,18 +77,31 @@ export class QuishingDetector implements Detector {
         if (foundUrls.length > 0) {
             context.signals.extractedUrls.push(...foundUrls);
             context.signals.suspiciousLinks = context.signals.suspiciousLinks || foundUrls.some(u => u.startsWith('http'));
-
-            return {
-                triggered: true,
-                score: 1.0,
-                penalty: -25, // High penalty for hiding payload
-                name: "Quishing Detected",
-                reason: `Hidden QR Code contains payload: ${foundUrls.join(', ').substring(0, 100)}`,
-                metadata: { payloads: foundUrls }
-            };
+            return this.report(foundUrls);
         }
 
         return null;
+    }
+
+    private report(payloads: string[]): DetectionResult {
+        const urls = payloads.filter(p => /^https?:\/\//i.test(p));
+        const hosts = [...new Set(urls.map(u => {
+            try {
+                return new URL(u).hostname;
+            } catch {
+                return u;
+            }
+        }))];
+        return {
+            triggered: true,
+            score: urls.length ? 1.0 : 0.6,
+            penalty: urls.length ? -25 : -10,
+            name: "Quishing Detected",
+            reason: urls.length
+                ? `QR code in the message opens ${hosts.slice(0, 2).join(", ")}. Scanning moves the click to a phone, outside link protection.`
+                : `QR code in the message contains: ${payloads[0].slice(0, 80)}`,
+            metadata: { payloads }
+        };
     }
 
     private toUint8Array(content: string | ArrayBuffer | Uint8Array): Uint8Array | null {

@@ -2,6 +2,7 @@ import PostalMime from "postal-mime";
 import { HeaderParser } from "./HeaderParser";
 import { AnalysisEngine } from "./scoring/AnalysisEngine";
 import type { NormalizedSignals, ScoringResult, ValidationPenalty } from "./scoring/types";
+import { buildInvestigation, type Investigation } from "../investigation/Investigation";
 
 /**
  * Public engine API: analyze one raw RFC 822 message (.eml contents) and return a
@@ -45,6 +46,8 @@ export interface EmailAnalysis {
     };
     findings: Finding[];
     signals: ReturnType<typeof summarizeSignals>;
+    /** Analyst-style investigation of the message (see docs/INVESTIGATION.md). */
+    investigation: Investigation;
     processingMs: number;
 }
 
@@ -78,6 +81,7 @@ export async function analyzeEmail(rawEmail: string, options: AnalyzeOptions = {
         },
         findings: result.trust.penalties.map(mapFinding),
         signals: summarizeSignals(signals),
+        investigation: buildInvestigation(headerResult, signals, result),
         processingMs: Date.now() - start
     };
 }
@@ -121,6 +125,8 @@ function summarizeSignals(signals: NormalizedSignals) {
             rawIpLinks: signals.rawIpLinks,
             homoglyphDetected: signals.homoglyphDetected,
             extractedUrlCount: signals.extractedUrls.length,
+            qrPayloadCount: signals.qrPayloads?.length ?? 0,
+            embeddedMessageCount: signals.embeddedMessages?.length ?? 0,
             suspiciousUrlCount: signals.urlAnalysis.filter(url => url.riskScore > 0).length
         },
         attachments: {

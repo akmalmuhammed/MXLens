@@ -36,11 +36,13 @@ export function VerdictHeader({
     report,
     summaryText,
     onExportJson,
+    onExportMarkdown,
     onNewAnalysis,
 }: {
     report: Report;
     summaryText: string;
     onExportJson: () => void;
+    onExportMarkdown?: () => void;
     onNewAnalysis: () => void;
 }) {
     const Icon = VERDICT_ICON[report.verdict];
@@ -97,6 +99,11 @@ export function VerdictHeader({
                                 <DropdownMenuItem onClick={onExportJson} className="gap-2">
                                     <FileText className="h-4 w-4" /> JSON report
                                 </DropdownMenuItem>
+                                {onExportMarkdown && (
+                                    <DropdownMenuItem onClick={onExportMarkdown} className="gap-2">
+                                        <FileText className="h-4 w-4" /> Investigation write-up (Markdown)
+                                    </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem onClick={() => window.print()} className="gap-2">
                                     <Printer className="h-4 w-4" /> Print or save as PDF
                                 </DropdownMenuItem>

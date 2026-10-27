@@ -32,10 +32,10 @@ export class AttachmentLureDetector implements Detector {
             const lower = name.toLowerCase();
             const ext = extensionOf(name);
 
-            const personal = recipients.find(r => lower.includes(r) || lower.includes(r.split("@")[0] + "@") || this.hasB64(name, r));
+            const personal = recipients.find(r => lower.includes(r) || this.hasB64(name, r) || this.hasLocalPart(lower, r));
             if (personal && penalty > -15) {
                 penalty = Math.min(penalty, -15);
-                reasons.push(`Attachment name "${name}" embeds the recipient's address, a per-recipient phishing kit trait.`);
+                reasons.push(`Attachment name "${name}" contains the recipient's own mailbox name/address, a per-recipient phishing kit trait.`);
             }
 
             const pretextName = name.replace(/[_.-]+/g, " ");
@@ -55,6 +55,15 @@ export class AttachmentLureDetector implements Detector {
             name: this.name,
             reason: reasons.slice(0, 2).join(" "),
         };
+    }
+
+    /** Mailbox name as a whole token (QR_alice.smith.png), long enough not to be a common word. */
+    private hasLocalPart(lowerName: string, recipient: string): boolean {
+        const local = recipient.split("@")[0];
+        if (local.length < 6 && !/[._-]/.test(local)) return false;
+        if (local.length < 4) return false;
+        const escaped = local.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return new RegExp(`(?:^|[^a-z0-9])${escaped}(?:[^a-z0-9]|$)`).test(lowerName);
     }
 
     private hasB64(name: string, recipient: string): boolean {

@@ -138,14 +138,14 @@ describe("HTML/SVG attachments", () => {
 describe("Attachment names and types", () => {
     it("flags recipient-personalized and voicemail-pretext attachment names", async () => {
         const r = await run({ text: "New message", attachments: [{ filename: "VM_Message_alice@recipient.example.html", type: "text/html", content: "<p>hi</p>" }] });
-        expect(r.has("embeds the recipient's address")).toBe(true);
+        expect(r.has("recipient's own mailbox name/address")).toBe(true);
         expect(r.has("voicemail/fax/payment pretext")).toBe(true);
     });
 
     it("flags Base64 of the recipient in a filename", async () => {
         const b64 = Buffer.from("alice@recipient.example").toString("base64").replace(/=+$/, "");
         const r = await run({ text: "Statement", attachments: [{ filename: `Statement_${b64}.pdf`, type: "application/pdf", content: "%PDF-1.4" }] });
-        expect(r.has("embeds the recipient's address")).toBe(true);
+        expect(r.has("recipient's own mailbox name/address")).toBe(true);
     });
 
     it("flags right-to-left override filenames and newer dangerous types", async () => {
@@ -284,9 +284,17 @@ describe("Fixes to existing detectors", () => {
         expect(hr.has("Display Name Spoofing")).toBe(true);
     });
 
+    it("treats 'Support' as a generic role: fine from a company domain, suspicious from free mail", async () => {
+        const vendor = await run({ from: "Acme Support <help@acme-widgets.example>", text: "Your ticket was updated." });
+        expect(vendor.has("Display Name Spoofing")).toBe(false);
+        const free = await run({ from: "PayPal Support <paypal.help.desk@gmail.com>", text: "Your ticket was updated." });
+        expect(free.has("Display Name Spoofing")).toBe(true);
+    });
+
     it("requires a label boundary for authorized brand domains", async () => {
-        const r = await run({ from: "Microsoft Support <alerts@notmicrosoft.com>", text: "Hello" });
-        expect(r.has('Claims to be "Microsoft Support"')).toBe(true);
+        // "Microsoft" alone, so the generic "support" role cannot be what triggers it.
+        const r = await run({ from: "Microsoft <alerts@notmicrosoft.com>", text: "Hello" });
+        expect(r.has('Claims to be "Microsoft"')).toBe(true);
     });
 
     it("detects Punycode labels anywhere in the sender domain", async () => {

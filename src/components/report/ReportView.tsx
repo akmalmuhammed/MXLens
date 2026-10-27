@@ -16,6 +16,8 @@ import { FindingsPanel } from "./FindingsPanel";
 import { HeaderNotesPanel } from "./HeaderNotesPanel";
 import { IdentityPanel } from "./IdentityPanel";
 import { IndicatorsPanel } from "./IndicatorsPanel";
+import { InvestigationPanel } from "./InvestigationPanel";
+import { investigationToMarkdown } from "@/lib/investigation/markdown";
 import { LinksPanel } from "./LinksPanel";
 import { ScopePanel } from "./ScopePanel";
 import { VerdictHeader } from "./VerdictHeader";
@@ -43,6 +45,7 @@ interface ReportViewProps {
 }
 
 const SECTIONS = [
+    { id: "investigation", label: "Investigation" },
     { id: "findings", label: "Findings" },
     { id: "authentication", label: "Auth" },
     { id: "sender", label: "Sender" },
@@ -82,6 +85,17 @@ export function ReportView({
         URL.revokeObjectURL(url);
     };
 
+    const exportMarkdown = () => {
+        const md = investigationToMarkdown(report.investigation, { defang: defanged, title: report.message.subject });
+        const blob = new Blob([md], { type: "text/markdown" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `mxlens-investigation-${new Date(analysis.timestamp).toISOString().slice(0, 19).replace(/[:T]/g, "-")}.md`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
     const actions = (className: string) => <ActionsPanel report={report} className={className} />;
 
     return (
@@ -91,7 +105,7 @@ export function ReportView({
                     <ArrowLeft className="h-4 w-4" /> {backLabel}
                 </button>
             )}
-            <VerdictHeader report={report} summaryText={summaryText} onExportJson={exportJson} onNewAnalysis={onClear} />
+            <VerdictHeader report={report} summaryText={summaryText} onExportJson={exportJson} onExportMarkdown={exportMarkdown} onNewAnalysis={onClear} />
 
             <nav
                 aria-label="Report sections"
@@ -121,6 +135,7 @@ export function ReportView({
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
                 <div className="min-w-0 space-y-4">
                     {actions("lg:hidden")}
+                    <InvestigationPanel report={report} defanged={defanged} />
                     <FindingsPanel report={report} />
                     <AuthPanel report={report} />
                     <IdentityPanel report={report} />

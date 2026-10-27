@@ -2,6 +2,7 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { analyzeEmail, type EmailAnalysis, type Verdict } from "@/lib/email/analyze";
+import { investigationToMarkdown } from "@/lib/investigation/markdown";
 import { mapWithConcurrency } from "@/lib/utils/concurrency";
 
 declare const __MXLENS_VERSION__: string;
@@ -19,6 +20,10 @@ Inputs:
 
 Options:
   --json            Print JSON (an object for one input, an array for several)
+  --investigate     Print the full analyst write-up (Markdown): key questions,
+                    delivery path, why it got through, IOCs, response steps,
+                    hunting and purge queries
+  --no-defang       With --investigate, print live URLs/domains/IPs
   --headers-only    Skip body and attachment analysis
   --no-body         Skip body analysis (links, forms, urgency, hidden text)
   --no-attachments  Skip attachment analysis
@@ -54,6 +59,8 @@ export async function run(argv: string[], io: Io): Promise<number> {
             allowPositionals: true,
             options: {
                 json: { type: "boolean" },
+                investigate: { type: "boolean" },
+                "no-defang": { type: "boolean" },
                 "headers-only": { type: "boolean" },
                 "no-body": { type: "boolean" },
                 "no-attachments": { type: "boolean" },
@@ -115,7 +122,14 @@ export async function run(argv: string[], io: Io): Promise<number> {
         }
     });
 
-    if (values.json) {
+    if (values.investigate && !values.json) {
+        const docs = outcomes.map(o => o.result
+            ? investigationToMarkdown(o.result.investigation, { defang: !values["no-defang"], title: o.result.message.subject || (o.input === "-" ? "stdin" : path.basename(o.input)) })
+            : `# ${o.input}
+
+error: ${o.error}`);
+        io.stdout(`${docs.join("\n\n---\n\n")}\n`);
+    } else if (values.json) {
         const rows = outcomes.map(o => (o.result ? { input: o.input, ...o.result } : { input: o.input, error: o.error }));
         io.stdout(`${JSON.stringify(rows.length === 1 ? rows[0] : rows, null, 2)}\n`);
     } else {
@@ -196,6 +210,9 @@ function formatOutcome({ input, result, error }: Outcome, color: boolean): strin
     if (result.message.subject) lines.push(`  ${paint("Subject", "gray", color)}  ${result.message.subject}`);
     if (result.message.from) lines.push(`  ${paint("From", "gray", color)}     ${result.message.from}`);
     lines.push(`  ${paint("Auth", "gray", color)}     SPF ${auth.spf}  DKIM ${auth.dkim}  DMARC ${auth.dmarc}  ARC ${auth.arc}`);
+    lines.push(`  ${paint("Assessment", "gray", color)} ${result.investigation.headline}`);
+    const spoof = result.investigation.questions.find(q => q.id === "spoofed");
+    if (spoof) lines.push(`  ${paint("Spoofed?", "gray", color)}   ${spoof.answer}: ${spoof.summary}`);
 
     const findings = [...result.findings].sort((a, b) => b.impact - a.impact).slice(0, 8);
     if (findings.length > 0) {
@@ -207,6 +224,7 @@ function formatOutcome({ input, result, error }: Outcome, color: boolean): strin
         const hidden = result.findings.length - findings.length;
         if (hidden > 0) lines.push(paint(`    ... ${hidden} more (use --json for all)`, "gray", color));
     }
+    lines.push(paint("  Full write-up with IOCs, response steps and hunting queries: --investigate", "gray", color));
     return `${lines.join("\n")}\n`;
 }
 

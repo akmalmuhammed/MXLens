@@ -28,6 +28,9 @@ import { UrlObfuscationDetector } from "./rules/UrlObfuscation";
 import { OrgLookalikeDetector } from "./rules/OrgLookalike";
 import { NotificationAbuseDetector } from "./rules/NotificationAbuse";
 import { QrLureDetector } from "./rules/QrLure";
+import { EmbeddedMessageDetector } from "./rules/EmbeddedMessage";
+import { BrandTemplateDetector } from "./rules/BrandTemplate";
+import { SubmissionAnomalyDetector } from "./rules/SubmissionAnomaly";
 
 export class DetectionPipeline {
     private detectors: Detector[] = [];
@@ -70,6 +73,9 @@ export class DetectionPipeline {
         this.detectors.push(new BecRequestDetector());
         this.detectors.push(new NotificationAbuseDetector());
         this.detectors.push(new PromptInjectionDetector());
+        this.detectors.push(new EmbeddedMessageDetector());
+        this.detectors.push(new BrandTemplateDetector());
+        this.detectors.push(new SubmissionAnomalyDetector());
 
         // AI Detector (POC) - Disabled per user request
         // this.detectors.push(new SemanticIntentDetector());
@@ -90,7 +96,7 @@ export class DetectionPipeline {
                 result = await this.runDetectorWithTimeout(detector, context, 2000);
 
                 if (result && result.triggered) {
-                    return { ...result, tags: detector.tags }; // Value to be collected
+                    return { ...result, id: detector.id, tags: detector.tags }; // Value to be collected
                 }
             } catch (e: unknown) {
                 const message = e instanceof Error ? e.message : String(e);

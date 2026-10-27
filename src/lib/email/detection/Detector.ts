@@ -12,6 +12,8 @@ export interface DetectionContext {
 }
 
 export interface DetectionResult {
+    /** Id of the detector that produced this result (set by the pipeline). */
+    id?: string;
     triggered: boolean;
     score: number; // 0 (Safe) to 1 (Malicious)
     penalty: number; // Score deduction (e.g. -10)

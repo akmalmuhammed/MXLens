@@ -39,6 +39,20 @@ export class DisplayNameSpoofingDetector implements Detector {
             }
         }
 
+        // Random/tracking token stuffed into the name ("... via DocuSign dse_NFCaERNSW..."):
+        // pushes the real address out of view in the inbox and mimics service senders.
+        const token = displayName.match(/[A-Za-z0-9+/=_-]{28,}/)?.[0];
+        if (token && /[A-Z]/.test(token) && /[a-z]/.test(token) && /\d/.test(token)) {
+            return {
+                triggered: true,
+                score: 0.6,
+                penalty: -10,
+                name: "Token-Stuffed Display Name",
+                reason: `Display name is padded with a ${token.length}-character random token ("${token.slice(0, 12)}..."), which hides the real address in the inbox preview.`,
+                metadata: { tokenLength: token.length }
+            };
+        }
+
         // Microsoft Q1 2026: sender names stuffed with URLs/tracking hosts
         // ("awstrack.me", "zoom.nl") to borrow their reputation in the inbox preview.
         const domainInName = displayName.toLowerCase().match(/\b(?:https?:\/\/)?((?:[a-z0-9-]+\.)+[a-z]{2,})\b/);

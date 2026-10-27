@@ -4,7 +4,9 @@ import type { NextConfig } from "next";
 // enabled, run on the server, so connect-src stays 'self'.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  // 'wasm-unsafe-eval' lets the bundled ZXing QR reader compile WebAssembly; it does not
+  // allow eval() of JavaScript.
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data:",
   "font-src 'self'",
